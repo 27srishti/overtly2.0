@@ -26,6 +26,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import Navbar from "@/components/Customcomponent/Navbar";
 
 const Page = () => {
   const formSchema = z.object({
@@ -65,22 +66,8 @@ const Page = () => {
   }
   return (
     <div>
-      <div className="border-b">
-        <div className="container flex justify-between px-2 sm:px-10 items-center">
-          <div className="flex items-center justify-center text-lg">
-            <img src="images.png" className="w-12" alt="Logo" />
-            <div className="ml-2">Public relation</div>
-          </div>
-
-          <div className="flex items-center">
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-      </div>
-      <div className="container px-2 sm:px-10">
+      <Navbar />
+      <div className="container px-5">
         <div className="text-3xl font-bold mt-4 ml-2">Dashboard</div>
         <Dialog>
           <DialogTrigger asChild>
@@ -160,7 +147,61 @@ const Page = () => {
             </Form>
           </DialogContent>
         </Dialog>
-        <div className="grid grid-cols-3 mt-5 gap-3">
+        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+          <div className="border rounded-sm p-4 flex gap-2 flex-col">
+            <div className="flex  gap-2 items-center">
+              <Icons.Person /> <div>Client name</div>
+            </div>
+            <div>
+              The ultimate app for your Apple Watch. Enhance your experience
+              with custom watch faces, health tracking, and more.
+            </div>
+          </div>
+          <div className="border rounded-sm p-4 flex gap-2 flex-col">
+            <div className="flex  gap-2 items-center">
+              <Icons.Person /> <div>Client name</div>
+            </div>
+            <div>
+              The ultimate app for your Apple Watch. Enhance your experience
+              with custom watch faces, health tracking, and more.
+            </div>
+          </div>
+          <div className="border rounded-sm p-4 flex gap-2 flex-col">
+            <div className="flex  gap-2 items-center">
+              <Icons.Person /> <div>Client name</div>
+            </div>
+            <div>
+              The ultimate app for your Apple Watch. Enhance your experience
+              with custom watch faces, health tracking, and more.
+            </div>
+          </div>{" "}
+          <div className="border rounded-sm p-4 flex gap-2 flex-col">
+            <div className="flex  gap-2 items-center">
+              <Icons.Person /> <div>Client name</div>
+            </div>
+            <div>
+              The ultimate app for your Apple Watch. Enhance your experience
+              with custom watch faces, health tracking, and more.
+            </div>
+          </div>
+          <div className="border rounded-sm p-4 flex gap-2 flex-col">
+            <div className="flex  gap-2 items-center">
+              <Icons.Person /> <div>Client name</div>
+            </div>
+            <div>
+              The ultimate app for your Apple Watch. Enhance your experience
+              with custom watch faces, health tracking, and more.
+            </div>
+          </div>
+          <div className="border rounded-sm p-4 flex gap-2 flex-col">
+            <div className="flex  gap-2 items-center">
+              <Icons.Person /> <div>Client name</div>
+            </div>
+            <div>
+              The ultimate app for your Apple Watch. Enhance your experience
+              with custom watch faces, health tracking, and more.
+            </div>
+          </div>
           <div className="border rounded-sm p-4 flex gap-2 flex-col">
             <div className="flex  gap-2 items-center">
               <Icons.Person /> <div>Client name</div>
