@@ -50,7 +50,7 @@ const StepThree: React.FC<StepTwoProps> = ({
 
   const handleSelect = (value: string) => {
     setSelectedItem(value);
-    console.log(value); // Log the selected value to the console
+    console.log(value);
   };
 
   return (

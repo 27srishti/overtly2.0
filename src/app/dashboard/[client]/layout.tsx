@@ -25,14 +25,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             onMouseOver={toggleSidebar}
             onMouseOut={toggleSidebar}
           >
-            <div className="flex items-center py-2 px-4 mt-6 gap-2">
-              <div>
-                <Icons.Vector />
+            <Link href={`/dashboard/${params.client}`}>
+              <div className="flex items-center py-2 px-4 mt-6 gap-2">
+                <div>
+                  <Icons.Vector />
+                </div>
+                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
+                  Home
+                </span>
               </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Home
-              </span>
-            </div>
+            </Link>
             <Link href={`/dashboard/${params.client}/datalibrary`}>
               <div className="flex items-center py-2 px-4 gap-2 gap-2">
                 <div>

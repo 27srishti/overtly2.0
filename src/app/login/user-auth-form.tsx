@@ -7,7 +7,7 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase/firebase";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/Icons";
 import { Button } from "@/components/ui/button";
