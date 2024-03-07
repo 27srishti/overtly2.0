@@ -30,7 +30,6 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Navbar from "@/components/Customcomponent/Navbar";
-
 const Page = () => {
   const [mini, setMini] = useState(true);
   const pathname = usePathname();
@@ -73,51 +72,7 @@ const Page = () => {
     console.log(values);
   }
   return (
-    <div>
-      <Navbar />
-      <div className="container px-0 relative">
-        <div className="flex transition  duration-1000 ease-in-out">
-          <div
-            className={`${
-              mini ? "w-16" : "w-32 rounded-r-sm"
-            } sm:w-36 z-50 h-[calc(100vh-3rem)] fixed top-12 border-x cursor-pointer flex flex-col gap-3 bg-opacity-20  backdrop-filter backdrop-blur-lg border border-opacity-20  border-y transition  duration-1000 ease-in-out`}
-            onMouseOver={toggleSidebar}
-            onMouseOut={toggleSidebar}
-          >
-            <div className="flex items-center py-2 px-4 mt-6 gap-2">
-              <div>
-                <Icons.Vector />
-              </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                About
-              </span>
-            </div>
-            <div className="flex items-center py-2 px-4 gap-2 gap-2">
-              <div>
-                <Icons.Vector />
-              </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Services
-              </span>
-            </div>
-            <div className="flex items-center py-2 px-4 gap-2">
-              <div>
-                <Icons.Vector />
-              </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Clients
-              </span>
-            </div>
-            <div className="flex items-center py-2 px-4 gap-2">
-              <div>
-                <Icons.Vector />
-              </div>
-              <div className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Contact
-              </div>
-            </div>
-          </div>
-          <div className="w-full px-5 mt-4 ml-16 sm:ml-36">
+          <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
             <div className="text-3xl font-bold mt-4 ml-2">Apple</div>
             <Dialog>
               <DialogTrigger asChild>
@@ -197,7 +152,7 @@ const Page = () => {
                 </Form>
               </DialogContent>
             </Dialog>
-            <div className="grid grid-cols-3 mt-5 gap-3">
+            <div className="grid mt-5 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               <div className="border rounded-sm p-4 flex gap-2 flex-col">
                 <div className="flex  gap-2 items-center">
                   <Icons.Person /> <div>Project name</div>
@@ -479,9 +434,6 @@ const Page = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
   );
 };
 
