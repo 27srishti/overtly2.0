@@ -2,12 +2,9 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import {
-  signInWithPopup,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-} from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { getDoc, doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/firebase";
 import { cn } from "@/lib/utils";
 import { Icons } from "@/components/ui/Icons";
@@ -15,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -65,49 +61,39 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
-
-    signInWithEmailAndPassword(auth, Email, Password)
-      .then((userCredential) => {
+    createUserWithEmailAndPassword(auth, Email, Password)
+      .then(async (userCredential) => {
         const user = userCredential.user;
         router.push("/dashboard");
         console.log(user);
         setIsLoading(false);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        if (errorCode == "auth/invalid-credential") {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: "invalid-credential",
-          });
-        }
-        setIsLoading(false);
-      });
-  }
 
-  function changePassword() {
-    sendPasswordResetEmail(auth, Email)
-      .then(() => {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "password reset link sent",
+        const userRef = doc(db, "users", userCredential.user.uid);
+        await setDoc(userRef, {
+          email: userCredential.user.email,
+          displayName: userCredential.user.displayName,
+          photoURL: userCredential.user.photoURL,
         });
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode);
-        if (errorCode == "auth/missing-email") {
+        if (errorCode == "auth/email-already-in-use") {
           toast({
             variant: "destructive",
             title: "Uh oh! Something went wrong.",
-            description: "missing-email",
+            description: "User already exists",
           });
         }
+        if (errorCode == "auth/weak-password") {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "weak-password",
+          });
+        }
+        setIsLoading(false);
       });
   }
 
@@ -147,12 +133,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             )}
             Sign In with Email
           </Button>
-        </div>
-        <div
-          onClick={changePassword}
-          className="underline underline-offset-4 hover:text-primary bg-background text-muted-foreground w-full text-center text-sm mt-2"
-        >
-          Forgot Password ?
         </div>
       </form>
 
