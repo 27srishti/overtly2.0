@@ -45,10 +45,18 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           console.log("User already exists");
         }
         console.log(result.user);
-        toast({
-          title: "Login Successful",
+        await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${await result.user.getIdToken()}`,
+          },
+        }).then(() => {
+          toast({
+            description: "Login Sucessfull",
+          });
+          router.push("/dashboard");
+          setIsLoading(false);
         });
-        router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);
@@ -67,11 +75,19 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     setIsLoading(true);
 
     signInWithEmailAndPassword(auth, Email, Password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        router.push("/dashboard");
-        console.log(user);
-        setIsLoading(false);
+      .then(async (result) => {
+        await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${await result.user.getIdToken()}`,
+          },
+        }).then(() => {
+          toast({
+            description: "Login Sucessfull",
+          });
+          router.push("/dashboard");
+          setIsLoading(false);
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -123,19 +139,16 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               id="email"
               placeholder="name@example.com"
               type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
+              autoComplete="off"
               disabled={isLoading}
               value={Email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Input
-              id="email"
+              id="password"
               placeholder="Password"
               type="password"
-              autoCapitalize="none"
-              autoCorrect="off"
+              autoComplete="off"
               disabled={isLoading}
               value={Password}
               onChange={(e) => setPassword(e.target.value)}

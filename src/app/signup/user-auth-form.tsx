@@ -41,10 +41,18 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           console.log("User already exists");
         }
         console.log(result.user);
-        toast({
-          title: "Login Successful",
+        await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${await result.user.getIdToken()}`,
+          },
+        }).then(() => {
+          toast({
+            description: "Login Sucessfull",
+          });
+          router.push("/dashboard");
+          setIsLoading(false);
         });
-        router.push("/dashboard");
       }
     } catch (error) {
       console.error(error);
@@ -62,17 +70,25 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     event.preventDefault();
     setIsLoading(true);
     createUserWithEmailAndPassword(auth, Email, Password)
-      .then(async (userCredential) => {
-        const user = userCredential.user;
-        router.push("/dashboard");
-        console.log(user);
-        setIsLoading(false);
-
-        const userRef = doc(db, "users", userCredential.user.uid);
+      .then(async (result) => {
+        const userRef = doc(db, "users", result.user.uid);
         await setDoc(userRef, {
-          email: userCredential.user.email,
-          displayName: userCredential.user.displayName,
-          photoURL: userCredential.user.photoURL,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL,
+        });
+
+        await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${await result.user.getIdToken()}`,
+          },
+        }).then(() => {
+          toast({
+            description: "Login Sucessfull",
+          });
+          router.push("/dashboard");
+          setIsLoading(false);
         });
       })
       .catch((error) => {
@@ -109,19 +125,16 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               id="email"
               placeholder="name@example.com"
               type="email"
-              autoCapitalize="none"
-              autoComplete="email"
-              autoCorrect="off"
+              autoComplete="off"
               disabled={isLoading}
               value={Email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Input
-              id="email"
+              id="password"
               placeholder="Password"
               type="password"
-              autoCapitalize="none"
-              autoCorrect="off"
+              autoComplete="off"
               disabled={isLoading}
               value={Password}
               onChange={(e) => setPassword(e.target.value)}

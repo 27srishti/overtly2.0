@@ -18,22 +18,19 @@ import { useRouter } from "next/navigation";
 const Navbar = () => {
   const user = auth.currentUser;
   const router = useRouter();
-  function signOutUser() {
-    signOut(auth)
-      .then(() => {
-        toast({
-          title: "Logout",
-          description: "Logout Sucessfull",
-        });
-        router.push("/");
-      })
-      .catch((error) => {
-        toast({
-          variant: "destructive",
-          title: "Logout",
-          description: "Logout not Sucessfull",
-        });
+  async function signOutUser() {
+    await signOut(auth).then(async () => {
+      await fetch("/api/signOut", {
+        method: "POST",
+      }).then((response) => {
+        if (response.status === 200) {
+          router.push("/");
+          toast({
+            description: "Sign out sucessfull!",
+          });
+        }
       });
+    });
   }
 
   return (
