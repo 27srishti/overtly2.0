@@ -40,7 +40,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
   };
 
   return (
-    <div className="w-full mt-4">
+    <div className="w-full mt-4 xl:px-52">
       <div className="">
         <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
         <div className="ml-2">Client Name - Apple</div>

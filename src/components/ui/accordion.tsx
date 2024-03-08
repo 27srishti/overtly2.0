@@ -18,7 +18,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
 }) => {
   const handleClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
     const value = props.value as string;
-    onSelect && onSelect(value); // Pass the value of the AccordionItem to onSelect
+    onSelect && onSelect(value);
   };
 
   return (
@@ -40,7 +40,7 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all [&[data-state=open]>svg]:rotate-180 text-justify flex-col",
+        "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all [&[data-state=open]>svg]:rotate-180 text-justify",
         className
       )}
       {...props}
@@ -58,10 +58,10 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+    className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down bg-secondary text-center items-center rounded-sm"
     {...props}
   >
-    <div className={cn("pb-4 pt-0", className)}>{children}</div>
+    <div className={cn("py-4", className)}>{children}</div>
   </AccordionPrimitive.Content>
 ));
 AccordionContent.displayName = AccordionPrimitive.Content.displayName;
