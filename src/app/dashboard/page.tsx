@@ -27,42 +27,109 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Navbar from "@/components/Customcomponent/Navbar";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/firebase";
+import { client } from "@/lib/firebase/types";
+import { toast } from "@/components/ui/use-toast";
+import { useEffect, useState } from "react";
+
+const formSchema = z.object({
+  name: z
+    .string()
+    .min(1, {
+      message: "Classname must be at least 1 characters.",
+    })
+    .max(15, {
+      message: "Classname must be at most 15 characters.",
+    }),
+  industry: z
+    .string()
+    .min(1, {
+      message: "Section must be at least 1 characters.",
+    })
+    .max(15, {
+      message: "Section must be at most 15 characters.",
+    }),
+  domain: z
+    .string()
+    .min(1, {
+      message: "Subject must be at least 1 characters.",
+    })
+    .max(15, {
+      message: "Subject must be at most 15 characters.",
+    }),
+  demographics: z
+    .string()
+    .min(1, {
+      message: "Subject must be at least 1 characters.",
+    })
+    .max(15, {
+      message: "Subject must be at most 15 characters.",
+    }),
+});
 
 const Page = () => {
-  const formSchema = z.object({
-    Name: z
-      .string()
-      .min(1, {
-        message: "Classname must be at least 1 characters.",
-      })
-      .max(15, {
-        message: "Classname must be at most 15 characters.",
-      }),
-    Company: z
-      .string()
-      .min(1, {
-        message: "Section must be at least 1 characters.",
-      })
-      .max(15, {
-        message: "Section must be at most 15 characters.",
-      }),
-    Service: z
-      .string()
-      .min(1, {
-        message: "Subject must be at least 1 characters.",
-      })
-      .max(15, {
-        message: "Subject must be at most 15 characters.",
-      }),
-  });
+  const [clients, setClients] = useState<client[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      name: "",
+      industry: "",
+      domain: "",
+      demographics: "",
+    },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+  //     if (authUser) {
+  //       try {
+  //         const querySnapshot = await getDocs(
+  //           query(
+  //             collection(db, `users/${authUser.uid}/clients`),
+  //             orderBy("createdAt", "desc")
+  //           )
+  //         );
+  //         const clientData = querySnapshot.docs.map((doc) => doc.data());
+  //         setClients(clientData);
+  //       } catch (error) {
+  //         console.error("Error fetching clients: ", error);
+  //       }
+  //     }
+  //   });
+
+  //   return () => unsubscribe();
+  // }, []);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const clientData: client = {
+      name: values.name,
+      industry: values.industry,
+      domain: values.domain,
+      demographics: values.demographics,
+      createdAt: Date.now(),
+    };
+
+    await addDoc(
+      collection(db, `users/${auth.currentUser?.uid}/clients`),
+      clientData
+    ).then(() => {
+      toast({
+        title: "Create Client",
+        description: `Client create with name ${values.name}!`,
+      });
+      form.setValue("name", "");
+      form.setValue("industry", "");
+      form.setValue("domain", "");
+      form.setValue("demographics", "");
+    });
   }
   return (
     <div>
@@ -91,9 +158,9 @@ const Page = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Edit profile</DialogTitle>
+              <DialogTitle>Create a Client</DialogTitle>
               <DialogDescription>
-                Make changes to your profile here. Click save when done.
+                Create a client. Click save when done.
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -103,12 +170,12 @@ const Page = () => {
               >
                 <FormField
                   control={form.control}
-                  name="Name"
+                  name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Raj" {...field} />
+                        <Input placeholder="Ex: Amazon" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -116,12 +183,12 @@ const Page = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="Company"
+                  name="industry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company</FormLabel>
+                      <FormLabel>Industry</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Apple" {...field} />
+                        <Input placeholder="Ex: Ecommerce" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -129,12 +196,25 @@ const Page = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="Service"
+                  name="domain"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Service</FormLabel>
+                      <FormLabel>Domain</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Email" {...field} />
+                        <Input placeholder="Ex: Grociery" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="demographics"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Demographics</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: India" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

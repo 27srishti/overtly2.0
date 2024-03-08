@@ -1,7 +1,9 @@
-export interface Client {
-    id: number;
+export interface client {
     name: string;
-    email: string;
+    industry: string;
+    domain: string;
+    demographics: string;
+    createdAt: number;
 }
 
 export interface Project {
