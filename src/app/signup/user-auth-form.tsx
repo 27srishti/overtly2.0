@@ -35,6 +35,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             email: result.user.email,
             displayName: result.user.displayName,
             photoURL: result.user.photoURL,
+            createdAt: Date.now(),
           });
           console.log("User account created");
         } else {
@@ -76,6 +77,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           email: result.user.email,
           displayName: result.user.displayName,
           photoURL: result.user.photoURL,
+          createdAt: Date.now(),
         });
 
         await fetch("/api/login", {

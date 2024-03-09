@@ -45,8 +45,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
         <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
         <div className="ml-2">Client Name - Apple</div>
         <div>
-          <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10">
-            <div className="grid lg:md-full lg:md:max-w-[50%]  items-center gap-1.5">
+          <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
+            <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
               <Label htmlFor="email">Media format</Label>
               <Select>
                 <SelectTrigger className="w-full">
@@ -64,16 +64,15 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="grid lg:md-full lg:md:max-w-[50%] items-center gap-1.5">
+            <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
               <Label htmlFor="email">Beat</Label>
               <Input type="email" id="email" placeholder="Idea hint" />
             </div>
-            <div className="grid lg:md-full lg:md:max-w-[50%] items-center gap-1.5">
+            <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
               <Label htmlFor="email">Outlet</Label>
               <Input type="email" id="email" placeholder="Idea hint" />
             </div>
-            <div className="grid lg:md-full lg:md:max-w-[50%] items-center gap-1.5">
+            <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
               <Label htmlFor="email">Objective</Label>
               <Input type="email" id="email" placeholder="Idea hint" />
             </div>

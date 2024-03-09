@@ -54,7 +54,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext, formData, setFormData }) => {
         <div className="text-3xl font-bold mt-4 ml-2">Create a project</div>
         <div className="ml-2">Client Name - Apple</div>
         <div>
-          <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10">
+          <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
             <div className="grid w-full max-w-lg items-center gap-1.5">
               <Label htmlFor="email">Idea hint</Label>
               <Input type="email" id="email" placeholder="Idea hint" />

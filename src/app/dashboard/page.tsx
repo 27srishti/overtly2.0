@@ -1,7 +1,6 @@
 "use client";
 
 import { Icons } from "@/components/ui/Icons";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -35,9 +34,12 @@ import {
   query,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/firebase";
-import { client } from "@/lib/firebase/types";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { client } from "@/lib/firebase/types";
+import Link from "next/link";
+import useClientStore from "@/store";
 
 const formSchema = z.object({
   name: z
@@ -76,7 +78,7 @@ const formSchema = z.object({
 
 const Page = () => {
   const [clients, setClients] = useState<client[]>([]);
-
+  const { client, setClient } = useClientStore()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -87,28 +89,43 @@ const Page = () => {
     },
   });
 
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-  //     if (authUser) {
-  //       try {
-  //         const querySnapshot = await getDocs(
-  //           query(
-  //             collection(db, `users/${authUser.uid}/clients`),
-  //             orderBy("createdAt", "desc")
-  //           )
-  //         );
-  //         const clientData = querySnapshot.docs.map((doc) => doc.data());
-  //         setClients(clientData);
-  //       } catch (error) {
-  //         console.error("Error fetching clients: ", error);
-  //       }
-  //     }
-  //   });
+  const fetchData = async () => {
+    const authUser = auth.currentUser;
+    if (!authUser) return [];
 
-  //   return () => unsubscribe();
-  // }, []);
+    try {
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, `users/${authUser.uid}/clients`),
+          orderBy("createdAt", "desc")
+        )
+      );
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+      const clientsWithIds = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as client[];
+
+      return clientsWithIds;
+    } catch (error) {
+      console.error("Error fetching clients: ", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        const clientData = await fetchData();
+        setClients(clientData);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  console.log(clients);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const clientData: client = {
       name: values.name,
       industry: values.industry,
@@ -117,20 +134,28 @@ const Page = () => {
       createdAt: Date.now(),
     };
 
-    await addDoc(
-      collection(db, `users/${auth.currentUser?.uid}/clients`),
-      clientData
-    ).then(() => {
+    try {
+      const docRef = await addDoc(
+        collection(db, `users/${auth.currentUser?.uid}/clients`),
+        clientData
+      );
+
+      const updatedClientData = await fetchData();
+      setClients(updatedClientData);
+
       toast({
         title: "Create Client",
-        description: `Client create with name ${values.name}!`,
+        description: `Client created with name ${values.name}!`,
       });
+
       form.setValue("name", "");
       form.setValue("industry", "");
       form.setValue("domain", "");
       form.setValue("demographics", "");
-    });
-  }
+    } catch (error) {
+      console.error("Error adding client: ", error);
+    }
+  };
   return (
     <div>
       <Navbar />
@@ -228,114 +253,23 @@ const Page = () => {
           </DialogContent>
         </Dialog>
         <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
+          {clients.map((client, index) => (
+            <div
+              key={index}
+              className="border rounded-sm p-4 flex gap-2 flex-col"
+              onClick={() => setClient(client)}
+            >
+              <Link href={`/dashboard/${client.id}`}>
+                <div className="flex  gap-2 items-center">
+                  <Icons.Person /> <div>{client.name}</div>
+                </div>
+                <div>
+                  The ultimate app for your Apple Watch. Enhance your experience
+                  with custom watch faces, health tracking, and more.
+                </div>
+              </Link>
             </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>{" "}
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-          <div className="border rounded-sm p-4 flex gap-2 flex-col">
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>Client name</div>
-            </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

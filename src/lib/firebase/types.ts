@@ -1,4 +1,5 @@
 export interface client {
+    id?: any;
     name: string;
     industry: string;
     domain: string;
@@ -6,9 +7,10 @@ export interface client {
     createdAt: number;
 }
 
-export interface Project {
-    id: number;
-    project: number;
+export interface project {
+    id?: string;
     name: string;
-    price: number;
+    company: string;
+    service: string;
+    createdAt: number;
 }
