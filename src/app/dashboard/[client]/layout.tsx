@@ -6,7 +6,7 @@ import Navbar from "@/components/Customcomponent/Navbar";
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import useClientStore from "@/store";
+import {useClientStore} from "@/store";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);

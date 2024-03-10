@@ -38,7 +38,7 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { client } from "@/lib/firebase/types";
 import Link from "next/link";
-import useClientStore from "@/store";
+import {useClientStore} from "@/store";
 
 const formSchema = z.object({
   name: z

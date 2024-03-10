@@ -1,14 +1,13 @@
-import { create } from 'zustand'
-import { devtools, persist } from 'zustand/middleware'
-import { client } from './lib/firebase/types'
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+import { client } from './lib/firebase/types';
 
 interface ClientStore {
     client: client | null;
     setClient: (client: client) => void;
 }
 
-
-const useClientStore = create<ClientStore>()(
+export const useClientStore = create<ClientStore>()(
     devtools(
         persist(
             (set) => ({
@@ -22,5 +21,44 @@ const useClientStore = create<ClientStore>()(
     ),
 );
 
+interface FormState {
+    formData: {
+        ideaHint: string;
+        Ideas: string[];
+        generatebyai: boolean;
+        mediaFormat: string;
+        beat: string;
+        outlet: string;
+        objective: string;
+    };
+    updateFormData: (data: Partial<FormState['formData']>) => void;
+    resetFormData: () => void;
+}
 
-export default useClientStore;
+export const useFormStore = create<FormState>((set) => ({
+    formData: {
+        ideaHint: '',
+        Ideas: [],
+        generatebyai: false,
+        mediaFormat: '',
+        beat: '',
+        outlet: '',
+        objective: ''
+    },
+    updateFormData: (data) =>
+        set((state) => ({
+            formData: { ...state.formData, ...data },
+        })),
+    resetFormData: () =>
+        set(() => ({
+            formData: {
+                ideaHint: '',
+                Ideas: [],
+                generatebyai: false,
+                mediaFormat: '',
+                beat: '',
+                outlet: '',
+                objective: ''
+            },
+        })),
+}));

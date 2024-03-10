@@ -40,7 +40,7 @@ import { toast } from "@/components/ui/use-toast";
 import { auth, db } from "@/lib/firebase/firebase";
 import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import useClientStore from "@/store";
+import {useClientStore} from "@/store";
 const formSchema = z.object({
   name: z
     .string()

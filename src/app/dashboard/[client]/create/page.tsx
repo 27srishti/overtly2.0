@@ -1,31 +1,14 @@
 "use client";
 
-import { Icons } from "@/components/ui/Icons";
 import { useState } from "react";
-import Navbar from "@/components/Customcomponent/Navbar";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
 import StepEnd from "./StepEnd";
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
 
 const Page = () => {
-  const [mini, setMini] = useState(true);
-  const toggleSidebar = () => {
-    setMini((prevState) => !prevState);
-  };
-
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    lastName: "",
-    email: "",
-  });
 
   const onNext = () => {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -38,33 +21,13 @@ const Page = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <StepOne
-            onNext={onNext}
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <StepOne onNext={onNext} />;
       case 2:
-        return (
-          <StepTwo
-            onPrevious={onPrevious}
-            onNext={onNext}
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <StepTwo onPrevious={onPrevious} onNext={onNext} />;
       case 3:
-        return (
-          <StepThree
-            onPrevious={onPrevious}
-            onNext={onNext}
-            formData={formData}
-            setFormData={setFormData}
-          />
-        );
+        return <StepThree onPrevious={onPrevious} onNext={onNext} />;
       case 4:
-        return <StepEnd onPrevious={onPrevious} formData={formData} />;
+        return <StepEnd onPrevious={onPrevious} />;
       default:
         return null;
     }

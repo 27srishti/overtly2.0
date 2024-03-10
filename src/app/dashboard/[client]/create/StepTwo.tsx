@@ -12,33 +12,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFormStore } from "@/store";
 
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
-  formData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  setFormData: React.Dispatch<
-    React.SetStateAction<{
-      firstName: string;
-      lastName: string;
-      email: string;
-    }>
-  >;
 }
-const StepTwo: React.FC<StepTwoProps> = ({
-  onPrevious,
-  onNext,
-  formData,
-  setFormData,
-}) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
+const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
+  const { formData, updateFormData } = useFormStore();
+  console.log(formData);
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
@@ -48,13 +31,20 @@ const StepTwo: React.FC<StepTwoProps> = ({
           <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
               <Label htmlFor="email">Media format</Label>
-              <Select>
+              <Select
+                onValueChange={(e) => {
+                  updateFormData({
+                    mediaFormat: e,
+                  });
+                }}
+                value={formData.mediaFormat}
+              >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a fruit" />
+                  <SelectValue placeholder="Media Details" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Fruits</SelectLabel>
+                    <SelectLabel>Media Details</SelectLabel>
                     <SelectItem value="apple">Apple</SelectItem>
                     <SelectItem value="banana">Banana</SelectItem>
                     <SelectItem value="blueberry">Blueberry</SelectItem>
@@ -65,16 +55,40 @@ const StepTwo: React.FC<StepTwoProps> = ({
               </Select>
             </div>
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label htmlFor="email">Beat</Label>
-              <Input type="email" id="email" placeholder="Idea hint" />
+              <Label>Beat</Label>
+              <Input
+                onChange={(e) => {
+                  updateFormData({
+                    beat: e.target.value,
+                  });
+                }}
+                value={formData.beat}
+                placeholder="Beat"
+              />
             </div>
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label htmlFor="email">Outlet</Label>
-              <Input type="email" id="email" placeholder="Idea hint" />
+              <Label>Outlet</Label>
+              <Input
+                placeholder="Outlet"
+                onChange={(e) => {
+                  updateFormData({
+                    outlet: e.target.value,
+                  });
+                }}
+                value={formData.outlet}
+              />
             </div>
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label htmlFor="email">Objective</Label>
-              <Input type="email" id="email" placeholder="Idea hint" />
+              <Label>Objective</Label>
+              <Input
+                placeholder="Objective"
+                onChange={(e) => {
+                  updateFormData({
+                    objective: e.target.value,
+                  });
+                }}
+                value={formData.objective}
+              />
             </div>
           </div>
           <div className="mt-4 sm:mx-2">

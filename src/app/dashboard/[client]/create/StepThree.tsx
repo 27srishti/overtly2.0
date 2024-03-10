@@ -13,28 +13,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
-  formData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  setFormData: React.Dispatch<
-    React.SetStateAction<{
-      firstName: string;
-      lastName: string;
-      email: string;
-    }>
-  >;
 }
 const StepThree: React.FC<StepTwoProps> = ({
   onPrevious,
   onNext,
-  formData,
-  setFormData,
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
@@ -49,7 +32,7 @@ const StepThree: React.FC<StepTwoProps> = ({
         <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
         <div className="ml-2">Client Name - Apple</div>
         <div>
-          <ScrollArea className="border rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 max-h-[50vh]">
+          <ScrollArea className="border rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh]">
             <Accordion type="multiple">
               <AccordionItem value="item-1" onSelect={handleSelect}>
                 <AccordionTrigger>Accordion Item 1</AccordionTrigger>

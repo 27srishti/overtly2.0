@@ -5,29 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, KeyboardEvent, ChangeEvent } from "react";
 import { Icons } from "@/components/ui/Icons";
+import { useFormStore } from "@/store";
 
 interface StepOneProps {
   onNext: () => void;
-  formData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-  setFormData: React.Dispatch<
-    React.SetStateAction<{
-      firstName: string;
-      lastName: string;
-      email: string;
-    }>
-  >;
 }
 
-const StepOne: React.FC<StepOneProps> = ({ onNext, formData, setFormData }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
+  const { formData, updateFormData } = useFormStore();
+  const [chips, setChips] = useState<string[]>(formData.Ideas);
+  const [ideahint, setIdeaHint] = useState<string>(formData.ideaHint);
+
   const [inputValue, setInputValue] = useState<string>("");
-  const [chips, setChips] = useState<string[]>([]);
+  const [error, setError] = useState<boolean>(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -46,7 +36,26 @@ const StepOne: React.FC<StepOneProps> = ({ onNext, formData, setFormData }) => {
     setChips(chips.filter((chip) => chip !== chipToDelete));
   };
 
-  console.log(chips);
+  function clickNext() {
+    if (ideahint.trim() === "" || chips.length === 0) {
+      setError(true);
+    } else {
+      setError(false);
+      updateFormData({
+        Ideas: chips,
+        ideaHint: ideahint,
+      });
+      onNext();
+    }
+  }
+
+  function handleGenerateUsingAI() {
+    setError(false);
+    updateFormData({
+      generatebyai: true,
+    });
+    onNext();
+  }
 
   return (
     <div className="w-full mt-4 xl:px-52">
@@ -57,12 +66,26 @@ const StepOne: React.FC<StepOneProps> = ({ onNext, formData, setFormData }) => {
           <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
             <div className="grid w-full max-w-lg items-center gap-1.5">
               <Label htmlFor="email">Idea hint</Label>
-              <Input type="email" id="email" placeholder="Idea hint" />
+              <Input
+                placeholder="Idea hint"
+                value={ideahint}
+                onChange={(e) => {
+                  setIdeaHint(e.target.value);
+                }}
+              />
+              {error && (
+                <div className="text-destructive text-sm">
+                  Please enter an idea hint
+                </div>
+              )}
             </div>
             <div className="grid w-full max-w-lg items-center gap-1.5">
               <Label htmlFor="ideas">Ideas</Label>
               <div>
-                <div id="ideas" className="flex flex-wrap flex w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50">
+                <div
+                  id="ideas"
+                  className="flex flex-wrap flex w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                >
                   {chips.map((chip, index) => (
                     <div
                       key={index}
@@ -88,10 +111,17 @@ const StepOne: React.FC<StepOneProps> = ({ onNext, formData, setFormData }) => {
                   />
                 </div>
               </div>
+              {error && (
+                <div className="text-destructive text-sm">
+                  Please enter an ideas
+                </div>
+              )}
             </div>
             <div className="flex justify-center items-center">or</div>
             <div className="flex justify-center items-center">
-              <Button className="items-center">Generate using ai</Button>
+            <Button className="items-center" onClick={handleGenerateUsingAI}>
+              Generate using ai
+            </Button>
             </div>
           </div>
           <div className="mt-4 sm:mx-2">
@@ -99,7 +129,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext, formData, setFormData }) => {
               <Button className="items-center" disabled>
                 Previous
               </Button>
-              <Button className="items-center" onClick={onNext}>
+              <Button className="items-center" onClick={clickNext}>
                 Next
               </Button>
             </div>
