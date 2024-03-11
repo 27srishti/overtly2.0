@@ -38,7 +38,9 @@ import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { client } from "@/lib/firebase/types";
 import Link from "next/link";
-import {useClientStore} from "@/store";
+import { useClientStore } from "@/store";
+import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z
@@ -77,7 +79,8 @@ const formSchema = z.object({
 
 const Page = () => {
   const [clients, setClients] = useState<client[]>([]);
-  const { client, setClient } = useClientStore()
+  const { client, setClient } = useClientStore();
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -147,10 +150,8 @@ const Page = () => {
         description: `Client created with name ${values.name}!`,
       });
 
-      form.setValue("name", "");
-      form.setValue("industry", "");
-      form.setValue("domain", "");
-      form.setValue("demographics", "");
+      setClient(clientData);
+      router.push(`dashboard/${docRef.id}`);
     } catch (error) {
       console.error("Error adding client: ", error);
     }

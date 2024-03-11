@@ -3,7 +3,7 @@ import { Icons } from "@/components/ui/Icons";
 import { Button } from "@/components/ui/button";
 import React, { ChangeEvent, useState } from "react";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "@/lib/firebase/firebase";
+import { auth, storage } from "@/lib/firebase/firebase";
 import { usePathname } from "next/navigation";
 import clearCachesByServerAction from "./revalidate";
 import { useParams } from "next/navigation";
@@ -15,6 +15,7 @@ const Fileupload = () => {
   const pathname = usePathname();
   const params = useParams();
   const clientid = params.client;
+  const authUser = auth.currentUser;
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -25,7 +26,7 @@ const Fileupload = () => {
   };
 
   const uploadFileToFirebase = () => {
-    if (file) {
+    if (file && authUser) {
       setLoading(true);
       const originalFileName = file.name;
       const fileNameWithoutExtension = originalFileName.slice(0, 12);
@@ -34,7 +35,10 @@ const Fileupload = () => {
       const uniqueId = uuidv4();
       const newFileName = `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`;
 
-      const storageRef = ref(storage, `${clientid}/${newFileName}`);
+      const storageRef = ref(
+        storage,
+        `${authUser?.uid}/${clientid}/${newFileName}`
+      );
       uploadBytes(storageRef, file)
         .then((snapshot) => getDownloadURL(snapshot.ref))
         .then((downloadURL) => {

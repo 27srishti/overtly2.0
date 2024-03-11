@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { client, project } from "@/lib/firebase/types";
 import {
   addDoc,
@@ -73,6 +73,7 @@ const Page = () => {
   const { client, setClient } = useClientStore();
   const params = useParams();
   const clientid = params.client;
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -144,9 +145,7 @@ const Page = () => {
         description: `Client created with name ${values.name}!`,
       });
 
-      form.setValue("name", "");
-      form.setValue("company", "");
-      form.setValue("service", "");
+      router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
     } catch (error) {
       console.error("Error adding client: ", error);
     }
