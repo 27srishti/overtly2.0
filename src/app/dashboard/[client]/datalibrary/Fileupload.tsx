@@ -43,6 +43,7 @@ const Fileupload = () => {
         .then((snapshot) => getDownloadURL(snapshot.ref))
         .then((downloadURL) => {
           console.log("File uploaded successfully! Download URL:", downloadURL);
+          console.log(pathname)
           clearCachesByServerAction(pathname);
           setFile(null);
         })

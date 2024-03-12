@@ -5,6 +5,7 @@ import { listAll, ref } from "firebase/storage";
 import { Files, columns } from "./columns";
 import { cookies } from "next/headers";
 import { auth } from "firebase-admin";
+export const revalidate = 3600
 
 const Page = async ({ params: { client } }: { params: { client: string } }) => {
   async function getData(client: string): Promise<Files[]> {
@@ -20,7 +21,6 @@ const Page = async ({ params: { client } }: { params: { client: string } }) => {
         try {
           const storageRef = ref(storage, `${decodedClaims.uid}/${client}`);
           const res = await listAll(storageRef);
-
           const files = res.items.map((item) => item.name);
           // console.log("Files retrieved successfully:", files);
           return files.map((fileName) => ({
