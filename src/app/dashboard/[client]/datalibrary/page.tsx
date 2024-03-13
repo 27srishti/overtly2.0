@@ -5,7 +5,8 @@ import { listAll, ref } from "firebase/storage";
 import { Files, columns } from "./columns";
 import { cookies } from "next/headers";
 import { auth } from "firebase-admin";
-export const revalidate = 3600
+export const revalidate = 0;
+export const dynamic = 'force-dynamic'
 
 const Page = async ({ params: { client } }: { params: { client: string } }) => {
   async function getData(client: string): Promise<Files[]> {
@@ -44,8 +45,6 @@ const Page = async ({ params: { client } }: { params: { client: string } }) => {
 
   return (
     <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
-      <div className="text-3xl font-bold mt-4 lg:ml-32">Create a project</div>
-      <div className="ml-2 lg:ml-32">Client Name - Apple</div>
       <Fileupload />
       <div className="mt-7">
         <div className="mx-auto overflow-hidden max-w-[70vw]">

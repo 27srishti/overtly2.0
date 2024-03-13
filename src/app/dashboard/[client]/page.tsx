@@ -40,7 +40,8 @@ import { toast } from "@/components/ui/use-toast";
 import { auth, db } from "@/lib/firebase/firebase";
 import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import {useClientStore} from "@/store";
+import { useClientStore } from "@/store";
+import { Skeleton } from "@/components/ui/skeleton";
 const formSchema = z.object({
   name: z
     .string()
@@ -50,27 +51,14 @@ const formSchema = z.object({
     .max(15, {
       message: "Classname must be at most 15 characters.",
     }),
-  company: z
-    .string()
-    .min(1, {
-      message: "Section must be at least 1 characters.",
-    })
-    .max(15, {
-      message: "Section must be at most 15 characters.",
-    }),
-  service: z
-    .string()
-    .min(1, {
-      message: "Subject must be at least 1 characters.",
-    })
-    .max(15, {
-      message: "Subject must be at most 15 characters.",
-    }),
 });
 
 const Page = () => {
   const [projects, setProjects] = useState<project[]>([]);
   const { client, setClient } = useClientStore();
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const params = useParams();
   const clientid = params.client;
   const router = useRouter();
@@ -78,15 +66,13 @@ const Page = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      company: "",
-      service: "",
     },
   });
 
   const fetchData = async () => {
     const authUser = auth.currentUser;
     if (!authUser) return [];
-
+    setLoading(true);
     try {
       const querySnapshot = await getDocs(
         query(
@@ -115,16 +101,16 @@ const Page = () => {
       if (authUser) {
         const projectsData = await fetchData();
         setProjects(projectsData);
+        setLoading(false);
       }
     });
     return () => unsubscribe();
   }, []);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const clientData: project = {
+    setSubmitting(true);
+    const clientData = {
       name: values.name,
-      company: values.company,
-      service: values.service,
       createdAt: Date.now(),
     };
 
@@ -136,25 +122,34 @@ const Page = () => {
         ),
         clientData
       );
-
-      const updatedClientData = await fetchData();
-      setProjects(updatedClientData);
+      setOpen(false);
+      // const updatedClientData = await fetchData();
+      // setProjects(updatedClientData);
 
       toast({
-        title: "Create Client",
-        description: `Client created with name ${values.name}!`,
+        title: "Created a project",
+        description: `Project created with name ${values.name}!`,
       });
 
       router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
     } catch (error) {
-      console.error("Error adding client: ", error);
+      console.error("Error adding Project: ", error);
+    } finally {
+      setSubmitting(false); // Set form submission loading state to false
     }
   };
 
   return (
     <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
-      <div className="text-3xl font-bold mt-4 ml-2">{client?.name}</div>
-      <Dialog>
+      <div className="text-3xl font-bold mt-4 ml-2">
+        {client?.name ? (
+          client.name
+        ) : (
+          <Skeleton className="h-10 w-[100px]" />
+        )}
+      </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button variant={"outline"} className="mt-5">
             <svg
@@ -171,14 +166,14 @@ const Page = () => {
                 clipRule="evenodd"
               ></path>
             </svg>
-            <div className="ml-1">Create a Client</div>
+            <div className="ml-1">Create a Project</div>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+            <DialogTitle>Create Project</DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when done.
+              Create a Project By entering the name
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -190,61 +185,62 @@ const Page = () => {
                   <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ex: Raj" {...field} />
+                      <Input placeholder="Ex: Amazon" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="company"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Company</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Apple" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              <Button type="submit" className="ml-full" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    <div>Creating..</div>
+                  </>
+                ) : (
+                  <>
+                    <div>Create</div>
+                  </>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="service"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Service</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="ml-full">
-                Submit
               </Button>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
-      <div className="grid mt-5 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {projects.map((project, index) => (
-          <div
-            key={index}
-            className="border rounded-sm p-4 flex gap-2 flex-col"
-          >
-            <div className="flex  gap-2 items-center">
-              <Icons.Person /> <div>{project.name}</div>
+
+      {loading ? (
+        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+          <Skeleton className="h-[125px] w-full rounded-xl" />
+        </div>
+      ) : !loading && projects.length === 0 ? (
+        <div className="flex text-center justify-center mt-52">
+          No Projects found! Start by creating a project now
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+          {projects.map((project, index) => (
+            <div
+              key={index}
+              className="border rounded-sm p-4 flex gap-2 flex-col"
+            >
+              <div className="flex  gap-2 items-center">
+                <Icons.Person /> <div>{project.name}</div>
+              </div>
+              <div>
+                The ultimate app for your Apple Watch. Enhance your experience
+                with custom watch faces, health tracking, and more.
+              </div>
             </div>
-            <div>
-              The ultimate app for your Apple Watch. Enhance your experience
-              with custom watch faces, health tracking, and more.
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

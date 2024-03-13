@@ -41,6 +41,7 @@ import Link from "next/link";
 import { useClientStore } from "@/store";
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const formSchema = z.object({
   name: z
@@ -80,7 +81,11 @@ const formSchema = z.object({
 const Page = () => {
   const [clients, setClients] = useState<client[]>([]);
   const { client, setClient } = useClientStore();
+  const [open, setOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const authUser = auth.currentUser;
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -92,9 +97,8 @@ const Page = () => {
   });
 
   const fetchData = async () => {
-    const authUser = auth.currentUser;
     if (!authUser) return [];
-
+    setLoading(true);
     try {
       const querySnapshot = await getDocs(
         query(
@@ -120,14 +124,16 @@ const Page = () => {
       if (authUser) {
         const clientData = await fetchData();
         setClients(clientData);
+        setLoading(false);
       }
     });
     return () => unsubscribe();
-  }, []);
+  }, [authUser]);
 
   console.log(clients);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setSubmitting(true);
     const clientData: client = {
       name: values.name,
       industry: values.industry,
@@ -141,9 +147,9 @@ const Page = () => {
         collection(db, `users/${auth.currentUser?.uid}/clients`),
         clientData
       );
-
-      const updatedClientData = await fetchData();
-      setClients(updatedClientData);
+      setOpen(false);
+      // const updatedClientData = await fetchData();
+      // setClients(updatedClientData);
 
       toast({
         title: "Create Client",
@@ -154,6 +160,8 @@ const Page = () => {
       router.push(`dashboard/${docRef.id}`);
     } catch (error) {
       console.error("Error adding client: ", error);
+    } finally {
+      setSubmitting(false); // Set form submission loading state to false
     }
   };
   return (
@@ -161,7 +169,7 @@ const Page = () => {
       <Navbar />
       <div className="container px-5">
         <div className="text-3xl font-bold mt-4 ml-2">Dashboard</div>
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button variant={"outline"} className="mt-3">
               <svg
@@ -245,32 +253,59 @@ const Page = () => {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="ml-full">
-                  Submit
+                <Button type="submit" className="ml-full" disabled={submitting}>
+                  {submitting ? (
+                    <>
+                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      <div>Creating..</div>
+                    </>
+                  ) : (
+                    <>
+                      <div>Create</div>
+                    </>
+                  )}
                 </Button>
               </form>
             </Form>
           </DialogContent>
         </Dialog>
-        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
-          {clients.map((client, index) => (
-            <div
-              key={index}
-              className="border rounded-sm p-4 flex gap-2 flex-col"
-              onClick={() => setClient(client)}
-            >
-              <Link href={`/dashboard/${client.id}`}>
-                <div className="flex  gap-2 items-center">
+        {loading ? (
+          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+            <Skeleton className="h-[125px] w-full rounded-xl" />
+          </div>
+        ) : !loading && clients.length === 0 ? (
+          <div className="flex text-center justify-center mt-52">
+            No Clients found! Start by creating a client now
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+            {clients.map((client, index) => (
+              <div
+                key={index}
+                className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer"
+                onClick={() => {
+                  setClient(client);
+                  router.push(`/dashboard/${client.id}`);
+                }}
+              >
+                <div className="flex gap-2 items-center">
                   <Icons.Person /> <div>{client.name}</div>
                 </div>
                 <div>
                   The ultimate app for your Apple Watch. Enhance your experience
                   with custom watch faces, health tracking, and more.
                 </div>
-              </Link>
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

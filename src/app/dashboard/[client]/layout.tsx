@@ -3,10 +3,10 @@
 import { Icons } from "@/components/ui/Icons";
 import { useState } from "react";
 import Navbar from "@/components/Customcomponent/Navbar";
-
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import {useClientStore} from "@/store";
+import { useClientStore } from "@/store";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);
@@ -14,6 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const toggleSidebar = () => {
     setMini((prevState) => !prevState);
   };
+  const router = useRouter();
   const pathname = usePathname();
   const params = useParams<{ client: string }>();
 
@@ -29,38 +30,43 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             onMouseOver={toggleSidebar}
             onMouseOut={toggleSidebar}
           >
-            <Link href={`/dashboard/${params.client}`}>
-              <div
-                className={`flex items-center py-2 px-4 mt-6 gap-2 
+            <div
+              className={`flex items-center py-2 px-4 mt-6 gap-2 
               ${pathname.endsWith(`${client?.id}`) ? "bg-secondary" : ""} 
              `}
-              >
-                <div>
-                  <Icons.Vector />
-                </div>
-                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                  Home
-                </span>
+              onClick={() => {
+                router.push(`/dashboard/${params.client}`);
+              }}
+            >
+              <div>
+                <Icons.Vector />
               </div>
-            </Link>
-            <Link href={`/dashboard/${params.client}/datalibrary`}>
-              <div
-                className={`flex items-center py-2 px-4 gap-2 
+              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
+                Home
+              </span>
+            </div>
+
+            <div
+              className={`flex items-center py-2 px-4 gap-2 
               ${pathname.endsWith("/datalibrary") ? "bg-secondary" : ""} 
              `}
-              >
-                <div>
-                  <Icons.Vector />
-                </div>
-                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                  Data&nbsp;Library
-                </span>
+              onClick={() => {
+                router.push(`/dashboard/${params.client}/datalibrary`);
+              }}
+            >
+              <div>
+                <Icons.Vector />
               </div>
-            </Link>
+              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
+                Data&nbsp;Library
+              </span>
+            </div>
 
-            <div className={`flex items-center py-2 px-4 gap-2 
+            <div
+              className={`flex items-center py-2 px-4 gap-2 
               ${pathname.endsWith("/analytics") ? "bg-secondary" : ""} 
-             `}>
+             `}
+            >
               <div>
                 <Icons.Vector />
               </div>
@@ -68,9 +74,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Analytics
               </span>
             </div>
-            <div className={`flex items-center py-2 px-4 gap-2 
+            <div
+              className={`flex items-center py-2 px-4 gap-2 
               ${pathname.endsWith("/settings") ? "bg-secondary" : ""} 
-             `}>
+             `}
+            >
               <div>
                 <Icons.Vector />
               </div>
