@@ -1,7 +1,6 @@
 "use client";
 
 import { Icons } from "@/components/ui/Icons";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -18,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,8 +25,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { usePathname, useRouter } from "next/navigation";
-import { client, project } from "@/lib/firebase/types";
+import { useRouter } from "next/navigation";
+import { project } from "@/lib/firebase/types";
 import {
   addDoc,
   collection,
@@ -42,6 +40,15 @@ import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { useClientStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
 const formSchema = z.object({
   name: z
     .string()
@@ -123,8 +130,6 @@ const Page = () => {
         clientData
       );
       setOpen(false);
-      // const updatedClientData = await fetchData();
-      // setProjects(updatedClientData);
 
       toast({
         title: "Created a project",
@@ -135,19 +140,36 @@ const Page = () => {
     } catch (error) {
       console.error("Error adding Project: ", error);
     } finally {
-      setSubmitting(false); // Set form submission loading state to false
+      setSubmitting(false);
     }
   };
 
   return (
     <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
       <div className="text-3xl font-bold mt-4 ml-2">
-        {client?.name ? (
-          client.name
-        ) : (
-          <Skeleton className="h-10 w-[100px]" />
-        )}
+        {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
       </div>
+      <Breadcrumb className="ml-2 mt-2">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink>
+              {client?.name ? (
+                client.name
+              ) : (
+                <Skeleton className="h-4 w-[20px]" />
+              )}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Home</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -231,7 +253,7 @@ const Page = () => {
               className="border rounded-sm p-4 flex gap-2 flex-col"
             >
               <div className="flex  gap-2 items-center">
-                <Icons.Person /> <div>{project.name}</div>
+                <Icons.Person /> <div className="">{project.name}</div>
               </div>
               <div>
                 The ultimate app for your Apple Watch. Enhance your experience

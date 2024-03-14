@@ -39,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               }}
             >
               <div>
-                <Icons.Vector />
+                <Icons.Home />
               </div>
               <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
                 Home
@@ -55,7 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               }}
             >
               <div>
-                <Icons.Vector />
+                <Icons.Files />
               </div>
               <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
                 Data&nbsp;Library
@@ -64,23 +64,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div
               className={`flex items-center py-2 px-4 gap-2 
-              ${pathname.endsWith("/analytics") ? "bg-secondary" : ""} 
-             `}
-            >
-              <div>
-                <Icons.Vector />
-              </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Analytics
-              </span>
-            </div>
-            <div
-              className={`flex items-center py-2 px-4 gap-2 
               ${pathname.endsWith("/settings") ? "bg-secondary" : ""} 
              `}
             >
               <div>
-                <Icons.Vector />
+                <Icons.Gear />
               </div>
               <div className={`${mini ? "hidden" : ""} sm:block ml-2`}>
                 Settings

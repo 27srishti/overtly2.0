@@ -10,11 +10,19 @@ import { useParams } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { useClientStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const Fileupload = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const { client, setClient } = useClientStore();
+  const { client } = useClientStore();
   const pathname = usePathname();
   const params = useParams();
   const clientid = params.client;
@@ -88,12 +96,35 @@ const Fileupload = () => {
     <div>
       <div className="text-3xl font-bold mt-4 lg:ml-32">Upload files</div>
       <div className="ml-2 lg:ml-32">
-        {client?.name ? (
+        {/* {client?.name ? (
           `Client Name - ${client.name}`
         ) : (
           <Skeleton className="h-10 w-[100px]" />
-        )}
+        )} */}
+        <Breadcrumb className="mt-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href={`/dashboard/${client?.id}`}>
+                {" "}
+                {client?.name ? (
+                  client.name
+                ) : (
+                  <Skeleton className="h-10 w-[100px]" />
+                )}
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Data Library</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
+
       <div className="flex flex-col items-center">
         <div className="flex justify-center mt-5 flex-col gap-4">
           <div className="bg-secondary rounded-md p-5 relative">

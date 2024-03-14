@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   DropdownMenu,
@@ -39,7 +39,10 @@ const Navbar = () => {
     <div className="sticky top-0 z-50 ">
       <div className="border-b bg-opacity-20  backdrop-filter backdrop-blur-lg">
         <div className="container flex justify-between px-2 items-center">
-          <div className="flex items-center justify-center text-lg">
+          <div
+            className="flex items-center justify-center text-lg cursor-pointer"
+            onClick={() => router.push("/dashboard")}
+          >
             <svg
               width="47"
               height="47"
@@ -67,7 +70,10 @@ const Navbar = () => {
             {/* <img src="/images.png" className="w-12" alt="Logo" /> */}
             <div className="ml-2">Public relation</div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={() => router.push("/dashboard")}>
+              Go to Dashboard
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

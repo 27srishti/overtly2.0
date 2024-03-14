@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -15,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,9 +35,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { client } from "@/lib/firebase/types";
-import Link from "next/link";
 import { useClientStore } from "@/store";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -161,7 +157,7 @@ const Page = () => {
     } catch (error) {
       console.error("Error adding client: ", error);
     } finally {
-      setSubmitting(false); // Set form submission loading state to false
+      setSubmitting(false);
     }
   };
   return (
@@ -296,11 +292,15 @@ const Page = () => {
                 }}
               >
                 <div className="flex gap-2 items-center">
-                  <Icons.Person /> <div>{client.name}</div>
+                  <Icons.Person /> <div className="font-bold capitalize">{client.name}</div>
                 </div>
                 <div>
-                  The ultimate app for your Apple Watch. Enhance your experience
-                  with custom watch faces, health tracking, and more.
+                  {`Industry : ${client.industry}`}
+                  <br />
+                  {`Domain : ${client.domain}`}
+                  <br />
+                  {`Demographics : ${client.demographics}`}
+                  <br />
                 </div>
               </div>
             ))}
