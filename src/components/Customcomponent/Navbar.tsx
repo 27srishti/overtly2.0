@@ -36,8 +36,8 @@ const Navbar = () => {
   }
 
   return (
-    <div className="sticky top-0 z-50 ">
-      <div className="border-b bg-opacity-20  backdrop-filter backdrop-blur-lg">
+    <div className="sticky top-0 z-50 bg-secondary">
+      <div className="border-b bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
         <div className="container flex justify-between px-2 items-center">
           <div
             className="flex items-center justify-center text-lg cursor-pointer"

@@ -149,27 +149,6 @@ const Page = () => {
       <div className="text-3xl font-bold mt-4 ml-2">
         {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
       </div>
-      <Breadcrumb className="ml-2 mt-2">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink>
-              {client?.name ? (
-                client.name
-              ) : (
-                <Skeleton className="h-4 w-[20px]" />
-              )}
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Home</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
@@ -188,7 +167,7 @@ const Page = () => {
                 clipRule="evenodd"
               ></path>
             </svg>
-            <div className="ml-1">Create a Project</div>
+            <div className="ml-1">Create Project</div>
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">

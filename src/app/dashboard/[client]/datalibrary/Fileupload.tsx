@@ -96,33 +96,11 @@ const Fileupload = () => {
     <div>
       <div className="text-3xl font-bold mt-4 lg:ml-32">Upload files</div>
       <div className="ml-2 lg:ml-32">
-        {/* {client?.name ? (
+        {client?.name ? (
           `Client Name - ${client.name}`
         ) : (
           <Skeleton className="h-10 w-[100px]" />
-        )} */}
-        <Breadcrumb className="mt-2">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink href={`/dashboard/${client?.id}`}>
-                {" "}
-                {client?.name ? (
-                  client.name
-                ) : (
-                  <Skeleton className="h-10 w-[100px]" />
-                )}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Data Library</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        )}
       </div>
 
       <div className="flex flex-col items-center">

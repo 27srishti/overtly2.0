@@ -5,7 +5,7 @@ import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
 import StepEnd from "./StepEnd";
-
+import StepFour from "./StepFour";
 
 const Page = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -27,6 +27,8 @@ const Page = () => {
       case 3:
         return <StepThree onPrevious={onPrevious} onNext={onNext} />;
       case 4:
+        return <StepFour onPrevious={onPrevious} onNext={onNext} />;
+      case 5:
         return <StepEnd onPrevious={onPrevious} />;
       default:
         return null;

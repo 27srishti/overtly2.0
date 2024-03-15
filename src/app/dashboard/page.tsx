@@ -182,7 +182,7 @@ const Page = () => {
                   clipRule="evenodd"
                 ></path>
               </svg>
-              <div className="ml-1">Create a Client</div>
+              <div className="ml-1">Create Client</div>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
