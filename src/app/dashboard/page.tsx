@@ -285,14 +285,15 @@ const Page = () => {
             {clients.map((client, index) => (
               <div
                 key={index}
-                className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer"
+                className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition"
                 onClick={() => {
                   setClient(client);
                   router.push(`/dashboard/${client.id}`);
                 }}
               >
                 <div className="flex gap-2 items-center">
-                  <Icons.Person /> <div className="font-bold capitalize">{client.name}</div>
+                  <Icons.Person />{" "}
+                  <div className="font-bold capitalize">{client.name}</div>
                 </div>
                 <div>
                   {`Industry : ${client.industry}`}

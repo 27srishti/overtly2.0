@@ -129,7 +129,6 @@ const Page = () => {
         ),
         clientData
       );
-      setOpen(false);
 
       toast({
         title: "Created a project",
@@ -137,6 +136,7 @@ const Page = () => {
       });
 
       router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
+      setOpen(false);
     } catch (error) {
       console.error("Error adding Project: ", error);
     } finally {
@@ -229,7 +229,7 @@ const Page = () => {
           {projects.map((project, index) => (
             <div
               key={index}
-              className="border rounded-sm p-4 flex gap-2 flex-col"
+              className="border rounded-sm p-4 flex gap-2 flex-col hover:bg-secondary transition cursor-pointer"
             >
               <div className="flex  gap-2 items-center">
                 <Icons.Person /> <div className="">{project.name}</div>

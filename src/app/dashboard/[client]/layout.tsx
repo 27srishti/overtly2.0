@@ -197,7 +197,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           >
             <div
               className={`flex items-center py-2 px-4 mt-6 gap-2 
-              ${pathname.endsWith(`${client?.id}`) ? "bg-primary text-primary-foreground" : ""} 
+              ${pathname.endsWith(`${client?.id}`) ? "bg-[#EFEFEF]" : ""} 
              `}
               onClick={() => {
                 router.push(`/dashboard/${params.client}`);
@@ -213,7 +213,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div
               className={`flex items-center py-2 px-4 gap-2 
-              ${pathname.endsWith("/datalibrary") ? "bg-primary text-primary-foreground" : ""} 
+              ${pathname.endsWith("/datalibrary") ? "bg-[#EFEFEF]" : ""} 
              `}
               onClick={() => {
                 router.push(`/dashboard/${params.client}/datalibrary`);
