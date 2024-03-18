@@ -80,7 +80,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
               )}
             </div>
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="ideas">Ideas</Label>
+              <Label htmlFor="ideas">Keywords</Label>
               <div>
                 <div
                   id="ideas"
@@ -106,7 +106,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                     value={inputValue}
                     onChange={handleInputChange}
                     onKeyDown={handleInputKeyDown}
-                    placeholder={"Enter chips..."}
+                    placeholder={"Enter Keywords..."}
                     className="border-none outline-none bg-transparent flex-grow file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground ml-2 mt-2 ml-2 mb-1"
                   />
                 </div>

@@ -32,7 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);
-  const { client, setClient } = useClientStore();
+  const { client } = useClientStore();
   const toggleSidebar = () => {
     setMini((prevState) => !prevState);
   };

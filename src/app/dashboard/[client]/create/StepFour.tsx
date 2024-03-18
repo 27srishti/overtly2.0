@@ -45,13 +45,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   </Button>
                 </div>
               </DialogTrigger>
-              <DialogContent className="min-w-[80vw] p-0">
-                {/* <DialogHeader>
-                  <DialogTitle>Create Project</DialogTitle>
-                  <DialogDescription>
-                    Create a Project By entering the name
-                  </DialogDescription>
-                </DialogHeader> */}
+              <DialogContent className="min-w-[90vw] max-h-[90vh] p-0">
                 <div>
                   <div className="border rounded-t-lg flex p-4 items-center justify-between">
                     <div>Pitch Email</div>
@@ -66,7 +60,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     <div className="flex flex-col space-y-4 p-5 border-r">
                       <Textarea
                         placeholder="We're writing to amazon. Congrats from OpenAI!"
-                        className="h-full min-h-[300px] lg:min-h-[700px] xl:min-h-[700px]"
+                        className="h-full min-h-[75vh]"
                       />
                     </div>
 
@@ -129,13 +123,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   </Button>
                 </div>
               </DialogTrigger>
-              <DialogContent className="min-w-[80vw] p-0">
-                {/* <DialogHeader>
-                  <DialogTitle>Create Project</DialogTitle>
-                  <DialogDescription>
-                    Create a Project By entering the name
-                  </DialogDescription>
-                </DialogHeader> */}
+              <DialogContent className="min-w-[90vw] max-h-[90vh] p-0">
                 <div>
                   <div className="border rounded-t-lg flex p-4 items-center justify-between">
                     <div>Pitch Content</div>{" "}
@@ -150,7 +138,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     <div className="flex flex-col space-y-4 p-5 border-r">
                       <Textarea
                         placeholder="We're writing to amazon. Congrats from OpenAI!"
-                        className="h-full min-h-[300px] lg:min-h-[700px] xl:min-h-[700px]"
+                        className="h-full min-h-[75vh]"
                       />
                     </div>
 
