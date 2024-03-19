@@ -24,7 +24,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   };
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue.trim() !== "") {
+    if (e.key === " " && inputValue.trim() !== "") {
       setChips([...chips, inputValue.trim()]);
       setInputValue("");
     } else if (e.key === "Backspace" && inputValue === "" && chips.length > 0) {
@@ -37,6 +37,14 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   };
 
   function clickNext() {
+
+    if (inputValue.trim() !== "") {
+      setChips([...chips, inputValue.trim()]);
+      setInputValue("");
+      return
+    }
+  
+    // Validate the form
     if (ideahint.trim() === "" || chips.length === 0) {
       setError(true);
     } else {
@@ -48,7 +56,9 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
       onNext();
     }
   }
-
+  
+  
+  
   function handleGenerateUsingAI() {
     setError(false);
     updateFormData({
@@ -119,9 +129,9 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             </div>
             <div className="flex justify-center items-center">or</div>
             <div className="flex justify-center items-center">
-            <Button className="items-center" onClick={handleGenerateUsingAI}>
-              Generate using ai
-            </Button>
+              <Button className="items-center" onClick={handleGenerateUsingAI}>
+                Generate using ai
+              </Button>
             </div>
           </div>
           <div className="mt-4 sm:mx-2">

@@ -38,6 +38,16 @@ import { client } from "@/lib/firebase/types";
 import { useClientStore } from "@/store";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {Demographics} from "@/lib/dropdown";
 
 const formSchema = z.object({
   name: z
@@ -64,14 +74,12 @@ const formSchema = z.object({
     .max(15, {
       message: "Subject must be at most 15 characters.",
     }),
-  demographics: z
-    .string()
-    .min(1, {
-      message: "Subject must be at least 1 characters.",
-    })
-    .max(15, {
-      message: "Subject must be at most 15 characters.",
-    }),
+  subDomain: z.string({
+    required_error: "Please select an Subdomain to display.",
+  }),
+  demographics: z.string({
+    required_error: "Please select an Subdomain to display.",
+  }),
 });
 
 const Page = () => {
@@ -87,8 +95,6 @@ const Page = () => {
     defaultValues: {
       name: "",
       industry: "",
-      domain: "",
-      demographics: "",
     },
   });
 
@@ -126,9 +132,11 @@ const Page = () => {
     return () => unsubscribe();
   }, [authUser]);
 
-  console.log(clients);
+  // console.log(clients);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+
     setSubmitting(true);
     const clientData: client = {
       name: values.name,
@@ -223,6 +231,7 @@ const Page = () => {
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="domain"
@@ -230,7 +239,80 @@ const Page = () => {
                     <FormItem>
                       <FormLabel>Domain</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Grociery" {...field} />
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a Domain" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Demographics</SelectLabel>
+                              {Demographics.map((demographic) => (
+                                <SelectItem
+                                  key={demographic}
+                                  value={demographic}
+                                >
+                                  {demographic}
+                                </SelectItem>
+                              ))}
+                              {/* <SelectItem value="apple">Apple</SelectItem>
+                              <SelectItem value="banana">Banana</SelectItem>
+                              <SelectItem value="blueberry">
+                                Blueberry
+                              </SelectItem>
+                              <SelectItem value="grapes">Grapes</SelectItem>
+                              <SelectItem value="pineapple">
+                                Pineapple
+                              </SelectItem> */}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        {/* <Input placeholder="Ex: India"  /> */}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                            <FormField
+                  control={form.control}
+                  name="subDomain"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Domain</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a Sub Domain" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Demographics</SelectLabel>
+                              {Demographics.map((demographic) => (
+                                <SelectItem
+                                  key={demographic}
+                                  value={demographic}
+                                >
+                                  {demographic}
+                                </SelectItem>
+                              ))}
+                              {/* <SelectItem value="apple">Apple</SelectItem>
+                              <SelectItem value="banana">Banana</SelectItem>
+                              <SelectItem value="blueberry">
+                                Blueberry
+                              </SelectItem>
+                              <SelectItem value="grapes">Grapes</SelectItem>
+                              <SelectItem value="pineapple">
+                                Pineapple
+                              </SelectItem> */}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        {/* <Input placeholder="Ex: India"  /> */}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -243,7 +325,37 @@ const Page = () => {
                     <FormItem>
                       <FormLabel>Demographics</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: India" {...field} />
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a Demography" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Demographics</SelectLabel>
+                              {Demographics.map((demographic) => (
+                                <SelectItem
+                                  key={demographic}
+                                  value={demographic}
+                                >
+                                  {demographic}
+                                </SelectItem>
+                              ))}
+                              {/* <SelectItem value="apple">Apple</SelectItem>
+                              <SelectItem value="banana">Banana</SelectItem>
+                              <SelectItem value="blueberry">
+                                Blueberry
+                              </SelectItem>
+                              <SelectItem value="grapes">Grapes</SelectItem>
+                              <SelectItem value="pineapple">
+                                Pineapple
+                              </SelectItem> */}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        {/* <Input placeholder="Ex: India"  /> */}
                       </FormControl>
                       <FormMessage />
                     </FormItem>

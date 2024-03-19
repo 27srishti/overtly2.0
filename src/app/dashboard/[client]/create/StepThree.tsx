@@ -9,23 +9,20 @@ import {
 } from "@/components/ui/accordion";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useFormStore } from "@/store";
 
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
 }
-const StepThree: React.FC<StepTwoProps> = ({
-  onPrevious,
-  onNext,
-}) => {
-
+const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-
+  const { formData, updateFormData } = useFormStore();
   const handleSelect = (value: string) => {
     setSelectedItem(value);
     console.log(value);
   };
-
+  console.log(formData);
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
@@ -38,7 +35,11 @@ const StepThree: React.FC<StepTwoProps> = ({
                 <AccordionTrigger>Accordion Item 1</AccordionTrigger>
                 <AccordionContent
                   onClick={() => setSelectedItem("use client")}
-                  className={selectedItem === "item-1" ? "bg-primary text-background" : ""}
+                  className={
+                    selectedItem === "item-1"
+                      ? "bg-primary text-background"
+                      : ""
+                  }
                 >
                   Content for Accordion Item 1
                 </AccordionContent>
@@ -47,7 +48,11 @@ const StepThree: React.FC<StepTwoProps> = ({
                 <AccordionTrigger>Accordion Item 5</AccordionTrigger>
                 <AccordionContent
                   onClick={() => setSelectedItem("use client")}
-                  className={selectedItem === "item-2" ? "bg-primary text-background" : ""}
+                  className={
+                    selectedItem === "item-2"
+                      ? "bg-primary text-background"
+                      : ""
+                  }
                 >
                   Content for Accordion Item 2
                 </AccordionContent>
@@ -56,7 +61,11 @@ const StepThree: React.FC<StepTwoProps> = ({
                 <AccordionTrigger>Accordion Item 2</AccordionTrigger>
                 <AccordionContent
                   onClick={() => setSelectedItem("use client")}
-                  className={selectedItem === "item-5" ? "bg-primary text-background" : ""}
+                  className={
+                    selectedItem === "item-5"
+                      ? "bg-primary text-background"
+                      : ""
+                  }
                 >
                   Content for Accordion Item 2
                 </AccordionContent>
@@ -65,7 +74,11 @@ const StepThree: React.FC<StepTwoProps> = ({
                 <AccordionTrigger>Accordion Item 3</AccordionTrigger>
                 <AccordionContent
                   onClick={() => setSelectedItem("use client")}
-                  className={selectedItem === "item-3" ? "bg-primary text-background" : ""}
+                  className={
+                    selectedItem === "item-3"
+                      ? "bg-primary text-background"
+                      : ""
+                  }
                 >
                   Content for Accordion Item 3
                 </AccordionContent>

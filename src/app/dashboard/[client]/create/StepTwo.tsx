@@ -13,6 +13,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useFormStore } from "@/store";
+import {
+  beats,
+  DigitalMedia,
+  mediaFormats,
+  Objective,
+  TraditionalMedia,
+} from "@/lib/dropdown";
 
 interface StepTwoProps {
   onPrevious: () => void;
@@ -30,7 +37,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
         <div>
           <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label htmlFor="email">Media format</Label>
+              <Label>Media format</Label>
               <Select
                 onValueChange={(e) => {
                   updateFormData({
@@ -44,51 +51,98 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Media Details</SelectLabel>
-                    <SelectItem value="apple">Apple</SelectItem>
-                    <SelectItem value="banana">Banana</SelectItem>
-                    <SelectItem value="blueberry">Blueberry</SelectItem>
-                    <SelectItem value="grapes">Grapes</SelectItem>
-                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                    <SelectLabel>Media Formats</SelectLabel>
+                    {mediaFormats.map((mediaFormat) => (
+                      <SelectItem key={mediaFormat} value={mediaFormat}>
+                        {mediaFormat}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label>Beat</Label>
-              <Input
-                onChange={(e) => {
+              <Label >Beat</Label>
+              <Select
+                onValueChange={(e) => {
                   updateFormData({
-                    beat: e.target.value,
+                    beat: e,
                   });
                 }}
                 value={formData.beat}
-                placeholder="Beat"
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Beat" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Beat</SelectLabel>
+                    {beats.map((beat) => (
+                      <SelectItem key={beat} value={beat}>
+                        {beat}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label>Outlet</Label>
-              <Input
-                placeholder="Outlet"
-                onChange={(e) => {
+              <Label >Outlet</Label>
+              <Select
+                onValueChange={(e) => {
                   updateFormData({
-                    outlet: e.target.value,
+                    outlet: e,
                   });
                 }}
                 value={formData.outlet}
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Outlet" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Traditional media</SelectLabel>
+                    {TraditionalMedia.map((mediaFormat) => (
+                      <SelectItem key={mediaFormat} value={mediaFormat}>
+                        {mediaFormat}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Digital Media</SelectLabel>
+                    {DigitalMedia.map((mediaFormat) => (
+                      <SelectItem key={mediaFormat} value={mediaFormat}>
+                        {mediaFormat}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Label>Objective</Label>
-              <Input
-                placeholder="Objective"
-                onChange={(e) => {
+              <Label htmlFor="email">Objective</Label>
+              <Select
+                onValueChange={(e) => {
                   updateFormData({
-                    objective: e.target.value,
+                    objective: e,
                   });
                 }}
                 value={formData.objective}
-              />
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Objective" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Objective</SelectLabel>
+                    {Objective.map((objective) => (
+                      <SelectItem key={objective} value={objective}>
+                        {objective}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="mt-4 sm:mx-2">

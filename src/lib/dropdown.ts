@@ -1,0 +1,151 @@
+const Demographics = [
+    "United Kingdom (UK)",
+    "United States of America (USA)",
+    "Canada",
+    "Australia",
+    "New Zealand",
+    "Ireland",
+    "South Africa",
+    "India",
+    "Singapore",
+    "Malaysia",
+    "Philippines",
+    "Nigeria",
+    "Kenya",
+    "Ghana",
+    "UAE (United Arab Emirates)",
+    "Saudi Arabia",
+    "Qatar",
+    "Bahrain",
+    "Kuwait",
+    "Oman"
+];
+
+const mediaFormats = [
+    "Press Release",
+    "Media Alert",
+    "Blog Post",
+    "Interview (Print)",
+    "Interview (Broadcast)",
+    "Interview (Online)",
+    "Byline Article",
+    "Op-Ed Piece",
+    "Feature Article",
+    "News Article",
+    "Fact Sheet",
+    "Case Study",
+    "White Paper",
+    "Infographic",
+    "Podcast",
+    "Webinar",
+    "Social Media Post",
+    "Press Conference",
+    "Media Briefing",
+    "Letter to the Editor",
+    "Editorial",
+    "Video News Release (VNR)",
+    "Radio News Release (RNR)",
+    "Speech",
+    "Company Newsletter",
+    "Email Newsletter",
+    "Annual Report",
+    "Corporate Brochure",
+    "Corporate Social Responsibility (CSR) Report",
+    "Crisis Communication Plan",
+    "Media Training Materials",
+    "Executive Biographies",
+    "Sponsorship Materials",
+    "Product Launch Materials",
+    "Community Relations Materials",
+    "Event Press Release",
+    "Thought Leadership Piece",
+    "Panel Discussion",
+    "Roundtable Discussion",
+    "Media Interview Briefing",
+    "Background Briefing",
+    "Press Junket",
+    "Media Tour",
+    "Press Scrums",
+    "Media Panel",
+    "Investigative Report",
+    "News Feature",
+    "Column",
+    "Broadcast Segment",
+    "Documentary Collaboration",
+    "Profile Piece",
+    "Podcast Interview"
+];
+
+const beats = [
+    "Business",
+    "Finance",
+    "Fintech",
+    "Sustainability",
+    "Technology",
+    "Health and Medicine",
+    "Science",
+    "Education",
+    "Environment and Climate Change",
+    "Entertainment and Culture",
+    "Sports",
+    "Crime and Justice",
+    "Lifestyle",
+    "Travel and Tourism",
+    "Food and Drink",
+    "Religion and Spirituality",
+    "Hospitality"
+]
+
+
+const TraditionalMedia = [
+    "Newspapers",
+    "Magazines"
+]
+
+const DigitalMedia = [
+    "Websites",
+    "Blogs",
+    "Social media platforms (Facebook, Twitter, Instagram, LinkedIn, etc.)",
+    "Online news sites",
+    "Online forums and communities",
+    "Podcasts",
+    "Email newsletters",
+    "Online magazines"
+]
+
+
+const Objective = [
+    "Reputation management",
+    "Brand awareness",
+    "Crisis management",
+    "Stakeholder relations",
+    "Credibility",
+    "Perception shaping",
+    "Marketing/Sales",
+    "Community relations",
+    "Public opinion influence",
+    "Information dissemination",
+    "Communication facilitation",
+    "CSR promotion",
+    "Investor relations",
+    "Employee support",
+    "Advocacy",
+    "Online reputation monitoring",
+    "Strategic contribution",
+    "Government relations",
+    "Industry leadership positioning",
+    "Partnership and collaboration promotion",
+    "Event management and promotion",
+    "Education and awareness campaigns",
+    "Brand Positioning",
+    "Cultural and diversity awareness promotion",
+    "Thought leadership establishment",
+    "Change management communication",
+    "Innovation promotion",
+    "Legal compliance communication"
+]
+
+
+
+
+export { Demographics, mediaFormats, beats, TraditionalMedia, DigitalMedia, Objective };
