@@ -2,7 +2,7 @@
   "cleanUrls": true,
   "rewrites": [
     {
-        "source": "/",
+        "source": "/website",
         "destination": "https://overtly.framer.website/"
     }
   ]
