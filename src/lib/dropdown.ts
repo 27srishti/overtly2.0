@@ -1,4 +1,5 @@
 const Demographics = [
+    "Any",
     "United Kingdom (UK)",
     "United States of America (USA)",
     "Canada",
@@ -147,5 +148,41 @@ const Objective = [
 
 
 
+const Industry = [
+    "Any",
+    "Healthcare & Pharma",
+    "Biotechnology",
+    "Medtech (Medical Technology)",
+    "Technology",
+    "Finance",
+    "Entertainment",
+    "Fashion",
+    "Automotive",
+    "Food and Beverage",
+    "Travel and Tourism",
+    "Real Estate",
+    "Education",
+    "Non-profit/NGOs",
+    "Government and Public Sector",
+    "Energy",
+    "Environmental",
+    "Sports",
+    "Retail",
+    "Hospitality",
+    "Agriculture",
+    "Telecommunications",
+    "Construction and Infrastructure",
+    "Manufacturing",
+    "Logistics and Supply Chain",
+    "Legal Services",
+    "Cybersecurity",
+    "Mining and Natural Resources",
+    "Publishing and Media",
+    "Aerospace and Defense",
+    "Oil & gas",
+    "Celebrity PR"
+]
 
-export { Demographics, mediaFormats, beats, TraditionalMedia, DigitalMedia, Objective };
+
+
+export { Demographics, mediaFormats, beats, TraditionalMedia, DigitalMedia, Objective ,Industry };

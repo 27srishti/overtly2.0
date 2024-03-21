@@ -14,7 +14,8 @@ export default function AuthenticationPage() {
       >
         <div className="relative  h-full flex-col  p-10  flex bold">
           <div className="relative z-20 flex items-center text-lg font-medium">
-            <svg
+            <img src="fullimage.png" alt="logo" className="w-24" />
+            {/* <svg
               width="47"
               height="47"
               viewBox="0 0 47 47"
@@ -36,8 +37,8 @@ export default function AuthenticationPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-            </svg>
-            <div>Public relation</div>
+            </svg> */}
+            {/* <div>Public relation</div> */}
           </div>
         </div>
       </div>
@@ -56,7 +57,7 @@ export default function AuthenticationPage() {
         >
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Log in to Public relation
+              Log in to Overtly
             </h1>
             <p className="text-sm text-muted-foreground">
               Choose any of the auth providers

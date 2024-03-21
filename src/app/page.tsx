@@ -1,13 +1,10 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import React from "react";
 
-export default function Home() {
-  return (
-    <>
-      <Link href="/login"><Button>Login</Button></Link>
-      <Link href="/signup">
-        <Button>Sign up</Button>
-      </Link>
-    </>
-  );
-}
+const HtmlComponent = () => {
+  // Import the HTML file
+  const htmlContent = require("../../public/gg.html");
+
+  return <div dangerouslySetInnerHTML={{ __html: htmlContent.default }} />;
+};
+
+export default HtmlComponent;

@@ -2,7 +2,7 @@ export interface client {
     id?: any;
     name: string;
     industry: string;
-    domain: string;
+    // domain: string;
     demographics: string;
     createdAt: number;
 }

@@ -42,8 +42,9 @@ const Navbar = () => {
           <div
             className="flex items-center justify-center text-lg cursor-pointer"
             onClick={() => router.push("/dashboard")}
-          >
-            <svg
+          ><img src="/images.png" className="w-8 ml-3" alt="Logo" />
+            
+            {/* <svg
               width="47"
               height="47"
               viewBox="0 0 47 47"
@@ -65,10 +66,10 @@ const Navbar = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-            </svg>
+            </svg> */}
 
             {/* <img src="/images.png" className="w-12" alt="Logo" /> */}
-            <div className="ml-2">Public relation</div>
+            <div className="ml-2">Overtly</div>
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={() => router.push("/dashboard")}>

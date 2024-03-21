@@ -23,7 +23,7 @@ export default function AuthenticationPage() {
         >
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              Welcome to Public relation
+              Welcome to Overtly
             </h1>
             <p className="text-sm text-muted-foreground">
               Choose any of the auth providers
@@ -53,30 +53,7 @@ export default function AuthenticationPage() {
       >
         <div className="relative  h-full flex-col  p-10  flex  bold ml-auto">
           <div className="relative z-20 flex items-center text-lg font-medium">
-            <svg
-              width="47"
-              height="47"
-              viewBox="0 0 47 47"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-12"
-            >
-              <path
-                d="M10 15L24 33"
-                stroke="black"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M20 18L33 35"
-                stroke="black"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <div>Public relation</div>
+          <img src="fullimage.png" alt="logo" className="w-24" />
           </div>
         </div>
       </div>

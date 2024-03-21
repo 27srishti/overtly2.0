@@ -47,7 +47,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {Demographics} from "@/lib/dropdown";
+import { Demographics, Industry } from "@/lib/dropdown";
 
 const formSchema = z.object({
   name: z
@@ -58,25 +58,20 @@ const formSchema = z.object({
     .max(15, {
       message: "Classname must be at most 15 characters.",
     }),
-  industry: z
-    .string()
-    .min(1, {
-      message: "Section must be at least 1 characters.",
-    })
-    .max(15, {
-      message: "Section must be at most 15 characters.",
-    }),
-  domain: z
-    .string()
-    .min(1, {
-      message: "Subject must be at least 1 characters.",
-    })
-    .max(15, {
-      message: "Subject must be at most 15 characters.",
-    }),
-  subDomain: z.string({
+  industry: z.string({
     required_error: "Please select an Subdomain to display.",
   }),
+  // domain: z
+  //   .string()
+  //   .min(1, {
+  //     message: "Subject must be at least 1 characters.",
+  //   })
+  //   .max(15, {
+  //     message: "Subject must be at most 15 characters.",
+  //   }),
+  // subDomain: z.string({
+  //   required_error: "Please select an Subdomain to display.",
+  // }),
   demographics: z.string({
     required_error: "Please select an Subdomain to display.",
   }),
@@ -94,7 +89,6 @@ const Page = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      industry: "",
     },
   });
 
@@ -141,7 +135,7 @@ const Page = () => {
     const clientData: client = {
       name: values.name,
       industry: values.industry,
-      domain: values.domain,
+      // domain: values.domain,
       demographics: values.demographics,
       createdAt: Date.now(),
     };
@@ -225,14 +219,46 @@ const Page = () => {
                     <FormItem>
                       <FormLabel>Industry</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ex: Ecommerce" {...field} />
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a Industry" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Industry</SelectLabel>
+                              {Industry.map((demographic) => (
+                                <SelectItem
+                                  key={demographic}
+                                  value={demographic}
+                                >
+                                  {demographic}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                <FormField
+                {/* <FormField
+                  control={form.control}
+                  name="industry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Industry</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Ecommerce" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
+                {/* <FormField
                   control={form.control}
                   name="domain"
                   render={({ field }) => (
@@ -257,25 +283,17 @@ const Page = () => {
                                   {demographic}
                                 </SelectItem>
                               ))}
-                              {/* <SelectItem value="apple">Apple</SelectItem>
-                              <SelectItem value="banana">Banana</SelectItem>
-                              <SelectItem value="blueberry">
-                                Blueberry
-                              </SelectItem>
-                              <SelectItem value="grapes">Grapes</SelectItem>
-                              <SelectItem value="pineapple">
-                                Pineapple
-                              </SelectItem> */}
+                
                             </SelectGroup>
                           </SelectContent>
                         </Select>
-                        {/* <Input placeholder="Ex: India"  /> */}
+                       
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-                            <FormField
+                /> */}
+                {/* <FormField
                   control={form.control}
                   name="subDomain"
                   render={({ field }) => (
@@ -308,16 +326,16 @@ const Page = () => {
                               <SelectItem value="grapes">Grapes</SelectItem>
                               <SelectItem value="pineapple">
                                 Pineapple
-                              </SelectItem> */}
+                              </SelectItem>
                             </SelectGroup>
                           </SelectContent>
                         </Select>
-                        {/* <Input placeholder="Ex: India"  /> */}
+                        <Input placeholder="Ex: India"  />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 <FormField
                   control={form.control}
                   name="demographics"
@@ -410,8 +428,8 @@ const Page = () => {
                 <div>
                   {`Industry : ${client.industry}`}
                   <br />
-                  {`Domain : ${client.domain}`}
-                  <br />
+                  {/* {`Domain : ${client.domain}`} */}
+                  {/* <br /> */}
                   {`Demographics : ${client.demographics}`}
                   <br />
                 </div>
