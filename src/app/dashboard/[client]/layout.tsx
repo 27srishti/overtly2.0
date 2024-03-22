@@ -92,6 +92,33 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* <img src="/images.png" className="w-12" alt="Logo" /> */}
             <div className="ml-2">Overtly</div>
           </div>
+          <div>
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbLink href={`/dashboard/${client?.id}`}>
+                      {client?.name ? (
+                        client.name
+                      ) : (
+                        <Skeleton className="h-4 w-[20px]" />
+                      )}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>
+                      {pathname.endsWith(`${client?.id}`) ? "Home" : ""}
+                      {pathname.endsWith("/datalibrary") ? "Data Library" : ""}
+                      {pathname.endsWith("/create") ? "Create" : ""}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={() => router.push("/dashboard")}>
               Go to Dashboard

@@ -57,7 +57,10 @@ const Page = () => {
         const uniqueId = uuidv4();
         const newFileName = `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`;
 
-        const storageRef = ref(storage, `${authUser?.uid}/${newFileName}`);
+        const storageRef = ref(
+          storage,
+          `users/${authUser?.uid}/${client?.id}/${newFileName}`
+        );
         uploadPromises.push(
           uploadBytes(storageRef, file)
             .then((snapshot) => getDownloadURL(snapshot.ref))
@@ -99,7 +102,7 @@ const Page = () => {
     }
 
     try {
-      const storageRef = ref(storage, `${authUser?.uid}`);
+      const storageRef = ref(storage, `users/${authUser?.uid}/${client?.id}`);
       const res = await listAll(storageRef);
       const files = res.items.map((item) => item.name);
       console.log("Fetch successful:", files);
