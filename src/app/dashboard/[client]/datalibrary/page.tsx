@@ -17,6 +17,7 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
+import { useParams } from 'next/navigation'
 
 const FILES_PER_PAGE = 10;
 
@@ -27,7 +28,7 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const { client } = useClientStore();
   const authUser = auth.currentUser;
-
+  const params = useParams<{ client: string; }>()
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +60,7 @@ const Page = () => {
 
         const storageRef = ref(
           storage,
-          `users/${authUser?.uid}/${client?.id}/${newFileName}`
+          `users/${authUser?.uid}/${params.client}/${newFileName}`
         );
         uploadPromises.push(
           uploadBytes(storageRef, file)
@@ -86,6 +87,7 @@ const Page = () => {
     }
   };
 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
@@ -94,7 +96,7 @@ const Page = () => {
       }
     });
     return () => unsubscribe();
-  }, [authUser, currentPage]); // Include currentPage in dependency array
+  }, [authUser, currentPage,params.client]);
 
   const fetchData = async () => {
     if (!authUser?.uid) {
@@ -102,7 +104,7 @@ const Page = () => {
     }
 
     try {
-      const storageRef = ref(storage, `users/${authUser?.uid}/${client?.id}`);
+      const storageRef = ref(storage, `users/${authUser?.uid}/${params.client}`);
       const res = await listAll(storageRef);
       const files = res.items.map((item) => item.name);
       console.log("Fetch successful:", files);

@@ -45,11 +45,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
     },
   ]);
   const { formData, updateFormData } = useFormStore();
-  const handleSelect = (value: string) => {
-    setSelectedItem(value);
-    console.log(value);
-  };
-  console.log(formData);
+
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
@@ -59,19 +55,13 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
           <ScrollArea className="border rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh]">
             <Accordion type="multiple">
               {accordionValue.map((item, index) => (
-                <AccordionItem
-                  key={index}
-                  value={`item-${index}`}
-                  onSelect={handleSelect}
-                >
+                <AccordionItem key={index} value={`item-${index}`}>
                   <AccordionTrigger>{item.idea}</AccordionTrigger>
                   <AccordionContent
                     onClick={() => setSelectedItem(`item-${index}`)}
-                    className={
-                      selectedItem === `item-${index}`
-                        ? "bg-primary text-background"
-                        : ""
-                    }
+                    className={`${
+                      selectedItem === `item-${index}` ? "bg-secondary" : ""
+                    }`}
                   >
                     {item.story}
                   </AccordionContent>
