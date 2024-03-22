@@ -10,7 +10,6 @@ export interface client {
 export interface project {
     id?: string;
     name: string;
-    company: string;
-    service: string;
+    description: string;
     createdAt: number;
 }

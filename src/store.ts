@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { client } from './lib/firebase/types';
+import { client, project } from './lib/firebase/types';
 
 interface ClientStore {
     client: client | null;
@@ -62,3 +62,23 @@ export const useFormStore = create<FormState>((set) => ({
             },
         })),
 }));
+
+
+interface projectStore {
+    project: project | null;
+    setproject: (project: project) => void;
+}
+
+export const useProjectStore = create<projectStore>()(
+    devtools(
+        persist(
+            (set) => ({
+                project: null,
+                setproject: (project: project | null) => set({ project }),
+            }),
+            {
+                name: 'current-project',
+            },
+        ),
+    ),
+);

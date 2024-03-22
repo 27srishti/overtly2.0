@@ -396,7 +396,7 @@ const Page = () => {
           </DialogContent>
         </Dialog>
         {loading ? (
-          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2  lg:grid-cols-4">
             <Skeleton className="h-[125px] w-full rounded-xl" />
             <Skeleton className="h-[125px] w-full rounded-xl" />
             <Skeleton className="h-[125px] w-full rounded-xl" />
@@ -411,7 +411,7 @@ const Page = () => {
             No Clients found! Start by creating a client now
           </div>
         ) : (
-          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2  lg:grid-cols-4">
             {clients.map((client, index) => (
               <div
                 key={index}

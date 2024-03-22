@@ -55,8 +55,9 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
           <ScrollArea className="border rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh]">
             <Accordion type="multiple">
               {accordionValue.map((item, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger>{item.idea}</AccordionTrigger>
+                <AccordionItem key={index} value={`item-${index}`}
+                className="shadow-md border">
+                  <AccordionTrigger className="ml-4">{item.idea}</AccordionTrigger>
                   <AccordionContent
                     onClick={() => setSelectedItem(`item-${index}`)}
                     className={`${

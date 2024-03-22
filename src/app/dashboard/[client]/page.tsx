@@ -37,8 +37,9 @@ import { toast } from "@/components/ui/use-toast";
 import { auth, db } from "@/lib/firebase/firebase";
 import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { useClientStore } from "@/store";
+import { useClientStore ,  useProjectStore} from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
   name: z
@@ -49,11 +50,20 @@ const formSchema = z.object({
     .max(15, {
       message: "Classname must be at most 15 characters.",
     }),
+  description: z
+    .string()
+    .min(1, {
+      message: "Classname must be at least 1 characters.",
+    })
+    .max(200, {
+      message: "Classname must be at most 15 characters.",
+    }),
 });
 
 const Page = () => {
   const [projects, setProjects] = useState<project[]>([]);
   const { client, setClient } = useClientStore();
+  const { project, setproject } = useProjectStore();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -64,6 +74,7 @@ const Page = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      description: "",
     },
   });
 
@@ -107,8 +118,9 @@ const Page = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setSubmitting(true);
-    const clientData = {
+    const projectData : project = {
       name: values.name,
+      description: values.description,
       createdAt: Date.now(),
     };
 
@@ -118,14 +130,14 @@ const Page = () => {
           db,
           `users/${auth.currentUser?.uid}/clients/${clientid}/projects`
         ),
-        clientData
+        projectData
       );
 
       toast({
         title: "Created a project",
         description: `Project created with name ${values.name}!`,
       });
-
+      setproject(projectData);
       router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
       setOpen(false);
     } catch (error) {
@@ -183,6 +195,19 @@ const Page = () => {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Enter Description" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button type="submit" className="ml-full" disabled={submitting}>
                 {submitting ? (
                   <>
@@ -201,7 +226,7 @@ const Page = () => {
       </Dialog>
 
       {loading ? (
-        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2  lg:grid-cols-4">
           <Skeleton className="h-[125px] w-full rounded-xl" />
           <Skeleton className="h-[125px] w-full rounded-xl" />
           <Skeleton className="h-[125px] w-full rounded-xl" />
@@ -216,7 +241,7 @@ const Page = () => {
           No Projects found! Start by creating a project now
         </div>
       ) : (
-        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {projects.map((project, index) => (
             <div
               key={index}

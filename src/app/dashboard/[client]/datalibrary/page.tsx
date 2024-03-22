@@ -90,7 +90,7 @@ const Page = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
+      if (authUser && params.client) {
         const projectsData = await fetchData();
         setFetchedFiles(projectsData);
       }
@@ -186,7 +186,7 @@ const Page = () => {
             {currentFiles.map((file, index) => (
               <div
                 key={index}
-                className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center align-middle ${
+                className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center  ${
                   index !== currentFiles.length - 1 ? "border-b" : ""
                 }`}
               >

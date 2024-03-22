@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, KeyboardEvent, ChangeEvent } from "react";
 import { Icons } from "@/components/ui/Icons";
-import { useFormStore } from "@/store";
+import { useFormStore, useProjectStore } from "@/store";
 
 interface StepOneProps {
   onNext: () => void;
@@ -15,22 +15,24 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   const { formData, updateFormData } = useFormStore();
   const [chips, setChips] = useState<string[]>(formData.Ideas);
   const [ideahint, setIdeaHint] = useState<string>(formData.ideaHint);
-
+  const { project, setproject } = useProjectStore();
   const [inputValue, setInputValue] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
+
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === " " && inputValue.trim() !== "") {
+    if (e.key === "Enter" && inputValue.trim() !== "") { // Listen for the Enter key
       setChips([...chips, inputValue.trim()]);
       setInputValue("");
     } else if (e.key === "Backspace" && inputValue === "" && chips.length > 0) {
       setChips(chips.slice(0, -1));
     }
   };
+  
 
   const handleChipDelete = (chipToDelete: string) => {
     setChips(chips.filter((chip) => chip !== chipToDelete));
@@ -71,7 +73,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
     <div className="w-full mt-4 xl:px-52">
       <div className="">
         <div className="text-3xl font-bold mt-4 ml-2">Create a project</div>
-        <div className="ml-2">Client Name - Apple</div>
+        <div className="ml-2">Description : {project?.description}</div>
         <div>
           <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
             <div className="grid w-full max-w-lg items-center gap-1.5">
