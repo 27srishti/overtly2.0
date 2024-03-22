@@ -96,12 +96,12 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
               <div>
                 <div
                   id="ideas"
-                  className="flex flex-wrap flex w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex flex-wrap w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {chips.map((chip, index) => (
                     <div
                       key={index}
-                      className="border bg-secondary p-1 pl-2 rounded-lg flex justify-center items-center gap-2 text-sm gap-2 flex ml-2 mb-1"
+                      className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex ml-2 mb-1"
                     >
                       <div>{chip}</div>
                       <button
@@ -119,7 +119,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                     onChange={handleInputChange}
                     onKeyDown={handleInputKeyDown}
                     placeholder={"Enter Keywords..."}
-                    className="border-none outline-none bg-transparent flex-grow file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground ml-2 mt-2 ml-2 mb-1"
+                    className="border-none outline-none bg-transparent flex-grow file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground ml-2 mt-2  mb-1"
                   />
                 </div>
               </div>
