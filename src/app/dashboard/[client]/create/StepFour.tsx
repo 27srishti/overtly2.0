@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/playgrounddialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useProjectStore } from "@/store";
 
 interface StepTwoProps {
   onPrevious: () => void;
@@ -29,12 +30,13 @@ interface StepTwoProps {
 const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const [openemail, setOpenemail] = useState(false);
   const [opencontent, setOpencontent] = useState(false);
-
+  const { project, setproject } = useProjectStore();
+  
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
         <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
-        <div className="ml-2">Client Name - Apple</div>
+        <div className="ml-2">Description : {project?.description}</div>
         <div>
           <div className="flex items-center justify-center gap-10">
             <Dialog open={openemail} onOpenChange={setOpenemail}>

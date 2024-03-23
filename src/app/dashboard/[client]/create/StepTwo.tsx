@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFormStore } from "@/store";
+import { useFormStore, useProjectStore } from "@/store";
 import {
   beats,
   DigitalMedia,
@@ -29,11 +29,12 @@ interface StepTwoProps {
 const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const { formData, updateFormData } = useFormStore();
   console.log(formData);
+  const { project, setproject } = useProjectStore();
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
         <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
-        <div className="ml-2">Client Name - Apple</div>
+        <div className="ml-2">Description : {project?.description}</div>
         <div>
           <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
             <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
