@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Overtly",
-  description: "Use Overtly to enhance your PR workflow, elevate content appeal, overcome writer’s block, research better and engage with communities seamlessly.",
+  title: "Your AI Publist",
+  description: "Next gen PR automation platform",
 };
 
 export default function RootLayout({
