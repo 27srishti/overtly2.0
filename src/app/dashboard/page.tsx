@@ -26,9 +26,12 @@ import Navbar from "@/components/Customcomponent/Navbar";
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
+  updateDoc,
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
@@ -48,6 +51,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Demographics, Industry } from "@/lib/dropdown";
+import { Trash2 } from "lucide-react";
+import { Pencil2Icon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   name: z
@@ -55,26 +60,17 @@ const formSchema = z.object({
     .min(1, {
       message: "Classname must be at least 1 characters.",
     })
-    .max(15, {
+    .max(25, {
       message: "Classname must be at most 15 characters.",
     }),
-  industry: z.string({
-    required_error: "Please select an Subdomain to display.",
-  }),
-  // domain: z
-  //   .string()
-  //   .min(1, {
-  //     message: "Subject must be at least 1 characters.",
-  //   })
-  //   .max(15, {
-  //     message: "Subject must be at most 15 characters.",
-  //   }),
-  // subDomain: z.string({
-  //   required_error: "Please select an Subdomain to display.",
-  // }),
-  demographics: z.string({
-    required_error: "Please select an Subdomain to display.",
-  }),
+  industry: z.string()
+    .min(1, {
+      message: "Please select Industry.",
+    }),
+  demographics: z.string()
+    .min(1, {
+      message: "Please select Demographics.",
+    }),
 });
 
 const Page = () => {
@@ -83,6 +79,8 @@ const Page = () => {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [editedClientId, setEditedClientId] = useState("");
   const router = useRouter();
   const authUser = auth.currentUser;
   const form = useForm<z.infer<typeof formSchema>>({
@@ -94,7 +92,6 @@ const Page = () => {
 
   const fetchData = async () => {
     if (!authUser) return [];
-    setLoading(true);
     try {
       const querySnapshot = await getDocs(
         query(
@@ -118,6 +115,7 @@ const Page = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
+        setLoading(true);
         const clientData = await fetchData();
         setClients(clientData);
         setLoading(false);
@@ -125,9 +123,6 @@ const Page = () => {
     });
     return () => unsubscribe();
   }, [authUser]);
-
-  // console.log(clients);
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
 
@@ -135,39 +130,108 @@ const Page = () => {
     const clientData: client = {
       name: values.name,
       industry: values.industry,
-      // domain: values.domain,
       demographics: values.demographics,
       createdAt: Date.now(),
     };
 
     try {
-      const docRef = await addDoc(
-        collection(db, `users/${auth.currentUser?.uid}/clients`),
-        clientData
-      );
-      setOpen(false);
-      // const updatedClientData = await fetchData();
-      // setClients(updatedClientData);
+      if (editMode) {
+        try {
+          const updatedClientData = { ...clientData, id: editedClientId };
+          await updateDoc(
+            doc(db, `users/${auth.currentUser?.uid}/clients`, editedClientId),
+            updatedClientData
+          );
+          setOpen(false);
 
-      toast({
-        title: "Create Client",
-        description: `Client created with name ${values.name}!`,
-      });
+          toast({
+            title: "Updated Client",
+            description: `Client updated with name ${values.name}!`,
+          });
 
-      setClient(clientData);
-      router.push(`dashboard/${docRef.id}`);
+          setClient(clientData);
+          setClients(await fetchData());
+          setLoading(false);
+        } catch (error) {
+          console.error("Error adding client: ", error);
+        } finally {
+          setSubmitting(false);
+        }
+      } else {
+        try {
+          const docRef = await addDoc(
+            collection(db, `users/${auth.currentUser?.uid}/clients`),
+            clientData
+          );
+          setOpen(false);
+
+          toast({
+            title: "Create Client",
+            description: `Client created with name ${values.name}!`,
+          });
+
+          setClient(clientData);
+          router.push(`dashboard/${docRef.id}`);
+        } catch (error) {
+          console.error("Error adding client: ", error);
+        } finally {
+          setSubmitting(false);
+        }
+      }
     } catch (error) {
-      console.error("Error adding client: ", error);
+      console.error("Error:", error);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const handleEditClient = (client: client) => {
+    setEditMode(true);
+    setEditedClientId(client.id);
+    form.setValue("name", client.name);
+    form.setValue("industry", client.industry);
+    form.setValue("demographics", client.demographics);
+    setOpen(true);
+  };
+
+  const handleDeleteClient = async (clientId: string) => {
+    if (window.confirm("Are you sure you want to delete this client?")) {
+      try {
+        await deleteDoc(
+          doc(db, `users/${auth.currentUser?.uid}/clients`, clientId)
+        );
+        const updatedClients = await fetchData();
+        setClients(updatedClients);
+        setLoading(false);
+        toast({
+          title: "Client Deleted",
+          description: "Client has been successfully deleted.",
+        });
+      } catch (error) {
+        console.error("Error deleting client:", error);
+        toast({
+          title: "Error",
+          description: "An error occurred while deleting the client.",
+        });
+      }
+    }
+  };
+
   return (
     <div>
       <Navbar />
       <div className="container px-5">
         <div className="text-3xl font-bold mt-4 ml-2">Dashboard</div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+          open={open}
+          onOpenChange={(open) => {
+            form.setValue("name", "");
+            form.setValue("industry", "");
+            form.setValue("demographics", "");
+            setEditMode(false);
+            setOpen(open);
+          }}
+        >
           <DialogTrigger asChild>
             <Button variant={"outline"} className="mt-3">
               <svg
@@ -245,97 +309,6 @@ const Page = () => {
                     </FormItem>
                   )}
                 />
-                {/* <FormField
-                  control={form.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Industry</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ex: Ecommerce" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-                {/* <FormField
-                  control={form.control}
-                  name="domain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Domain</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Domain" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Demographics</SelectLabel>
-                              {Demographics.map((demographic) => (
-                                <SelectItem
-                                  key={demographic}
-                                  value={demographic}
-                                >
-                                  {demographic}
-                                </SelectItem>
-                              ))}
-                
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                       
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-                {/* <FormField
-                  control={form.control}
-                  name="subDomain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Domain</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Sub Domain" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Demographics</SelectLabel>
-                              {Demographics.map((demographic) => (
-                                <SelectItem
-                                  key={demographic}
-                                  value={demographic}
-                                >
-                                  {demographic}
-                                </SelectItem>
-                              ))}
-                              {/* <SelectItem value="apple">Apple</SelectItem>
-                              <SelectItem value="banana">Banana</SelectItem>
-                              <SelectItem value="blueberry">
-                                Blueberry
-                              </SelectItem>
-                              <SelectItem value="grapes">Grapes</SelectItem>
-                              <SelectItem value="pineapple">
-                                Pineapple
-                              </SelectItem>
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                        <Input placeholder="Ex: India"  />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <FormField
                   control={form.control}
                   name="demographics"
@@ -361,19 +334,9 @@ const Page = () => {
                                   {demographic}
                                 </SelectItem>
                               ))}
-                              {/* <SelectItem value="apple">Apple</SelectItem>
-                              <SelectItem value="banana">Banana</SelectItem>
-                              <SelectItem value="blueberry">
-                                Blueberry
-                              </SelectItem>
-                              <SelectItem value="grapes">Grapes</SelectItem>
-                              <SelectItem value="pineapple">
-                                Pineapple
-                              </SelectItem> */}
                             </SelectGroup>
                           </SelectContent>
                         </Select>
-                        {/* <Input placeholder="Ex: India"  /> */}
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -415,21 +378,33 @@ const Page = () => {
             {clients.map((client, index) => (
               <div
                 key={index}
-                className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition"
-                onClick={() => {
-                  setClient(client);
-                  router.push(`/dashboard/${client.id}`);
-                }}
+                className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
               >
-                <div className="flex gap-2 items-center">
-                  <Icons.Person />{" "}
-                  <div className="font-bold capitalize">{client.name}</div>
+                <div className="flex gap-2 items-center justify-between">
+                  <div className="flex gap-2 items-center">
+                    <Icons.Person />
+                    <div className="font-bold capitalize">{client.name}</div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div
+                      className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
+                      onClick={() => handleEditClient(client)}
+                    >
+                      <Pencil2Icon className="h-4 w-4" />
+                      <div>Edit</div>
+                    </div>
+                    <div
+                      className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
+                      onClick={() => handleDeleteClient(client.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      <div>Delete</div>
+                    </div>
+                  </div>
                 </div>
                 <div>
                   {`Industry : ${client.industry}`}
                   <br />
-                  {/* {`Domain : ${client.domain}`} */}
-                  {/* <br /> */}
                   {`Demographics : ${client.demographics}`}
                   <br />
                 </div>
