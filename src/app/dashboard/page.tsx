@@ -63,14 +63,12 @@ const formSchema = z.object({
     .max(25, {
       message: "Classname must be at most 15 characters.",
     }),
-  industry: z.string()
-    .min(1, {
-      message: "Please select Industry.",
-    }),
-  demographics: z.string()
-    .min(1, {
-      message: "Please select Demographics.",
-    }),
+  industry: z.string().min(1, {
+    message: "Please select Industry.",
+  }),
+  demographics: z.string().min(1, {
+    message: "Please select Demographics.",
+  }),
 });
 
 const Page = () => {
@@ -379,6 +377,10 @@ const Page = () => {
               <div
                 key={index}
                 className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
+                onClick={() => {
+                  setClient(client);
+                  router.push(`/dashboard/${client.id}`);
+                }}
               >
                 <div className="flex gap-2 items-center justify-between">
                   <div className="flex gap-2 items-center">

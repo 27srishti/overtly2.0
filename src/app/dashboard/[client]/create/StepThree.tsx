@@ -7,44 +7,48 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useFormStore } from "@/store";
+
+interface Idea {
+  idea: string;
+  story: string;
+}
 
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
 }
+
 const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [accordionValue, setaccordionValue] = useState([
-    {
-      idea: "AI-driven personalization for mental health exercises",
-      story:
-        "Explore how MindEase uses AI to tailor mental health exercises for each user's unique needs, leading to more effective outcomes and improved well-being.",
-    },
-    {
-      idea: "Real-time adjustments based on user feedback",
-      story:
-        "Discover how MindEase adapts therapy sessions in real-time based on user feedback and mood tracking, providing a personalized and responsive mental health experience.",
-    },
-    {
-      idea: "Privacy-focused approach to mental wellness",
-      story:
-        "Highlight how MindEase prioritizes user privacy and confidentiality, offering a secure platform for individuals to improve their mental health in a safe and trusted environment.",
-    },
-    {
-      idea: "Targeting tech-savvy individuals aged 18-35",
-      story:
-        "Showcase how MindEase caters to a young, tech-savvy demographic who values privacy and proactive mental health management, making it the ideal app for the digital generation.",
-    },
-    {
-      idea: "Differentiating from competitors with AI-driven personalization",
-      story:
-        "Illustrate how MindEase stands out in the crowded mental health app market by offering AI-driven personalization and access to licensed therapists, setting a new standard for digital mental wellness solutions.",
-    },
-  ]);
+  const [accordionValue, setAccordionValue] = useState<Idea[]>([]);
   const { formData, updateFormData } = useFormStore();
+
+  useEffect(() => {
+    const fetchIdeas = async () => {
+      try {
+        const response = await fetch("https://pr-ai-99.uc.r.appspot.com/ideas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch ideas");
+        }
+        const data = await response.json();
+        console.log("Ideas:", data);
+        setAccordionValue(data);
+      } catch (error) {
+        console.error("Error fetching ideas:", error);
+      }
+    };
+
+    fetchIdeas();
+  }, [formData]);
 
   return (
     <div className="w-full mt-4 xl:px-52">
