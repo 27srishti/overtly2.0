@@ -168,7 +168,10 @@ const Page = () => {
             description: `Client created with name ${values.name}!`,
           });
 
-          setClient(clientData);
+          setClient({
+            id: docRef.id,
+            ...clientData,
+          });
           router.push(`dashboard/${docRef.id}`);
         } catch (error) {
           console.error("Error adding client: ", error);
@@ -251,9 +254,13 @@ const Page = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create a Client</DialogTitle>
+              <DialogTitle>
+                {editMode ? "Update Client" : "Create Client"}
+              </DialogTitle>
               <DialogDescription>
-                Create a client. Click save when done.
+                {editMode
+                  ? "Update a client. Click save when done."
+                  : "Create a client. Click save when done."}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -344,12 +351,14 @@ const Page = () => {
                   {submitting ? (
                     <>
                       <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                      <div>Creating..</div>
+                      {editMode ? (
+                        <div>Updating...</div>
+                      ) : (
+                        <div>Creating..</div>
+                      )}
                     </>
                   ) : (
-                    <>
-                      <div>Create</div>
-                    </>
+                    <>{editMode ? <div>Update</div> : <div>Create</div>}</>
                   )}
                 </Button>
               </form>
@@ -377,15 +386,19 @@ const Page = () => {
               <div
                 key={index}
                 className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
-                onClick={() => {
-                  setClient(client);
-                  router.push(`/dashboard/${client.id}`);
-                }}
               >
                 <div className="flex gap-2 items-center justify-between">
-                  <div className="flex gap-2 items-center">
+                  <div
+                    className="flex gap-2 items-center"
+                    onClick={() => {
+                      setClient(client);
+                      router.push(`/dashboard/${client.id}`);
+                    }}
+                  >
                     <Icons.Person />
-                    <div className="font-bold capitalize">{client.name}</div>
+                    <div className="font-bold capitalize hover:underline">
+                      {client.name}
+                    </div>
                   </div>
                   <div className="flex gap-3">
                     <div

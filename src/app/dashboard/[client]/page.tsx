@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,17 +28,22 @@ import { project } from "@/lib/firebase/types";
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
+  updateDoc,
 } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 import { auth, db } from "@/lib/firebase/firebase";
 import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { useClientStore ,  useProjectStore} from "@/store";
+import { useClientStore, useProjectStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { Trash2 } from "lucide-react";
+import { Pencil2Icon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   name: z
@@ -62,12 +66,14 @@ const formSchema = z.object({
 
 const Page = () => {
   const [projects, setProjects] = useState<project[]>([]);
-  const { client, setClient } = useClientStore();
+  const { client } = useClientStore();
   const { project, setproject } = useProjectStore();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const params = useParams();
+  const [projecteditid, setEditedProjectId] = useState<string>("");
+  const [editMode, setEditMode] = useState(false);
   const clientid = params.client;
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -81,7 +87,6 @@ const Page = () => {
   const fetchData = async () => {
     const authUser = auth.currentUser;
     if (!authUser) return [];
-    setLoading(true);
     try {
       const querySnapshot = await getDocs(
         query(
@@ -108,6 +113,7 @@ const Page = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
+        setLoading(true);
         const projectsData = await fetchData();
         setProjects(projectsData);
         setLoading(false);
@@ -118,32 +124,99 @@ const Page = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setSubmitting(true);
-    const projectData : project = {
+    const projectData: project = {
       name: values.name,
       description: values.description,
       createdAt: Date.now(),
     };
 
     try {
-      const docRef = await addDoc(
-        collection(
-          db,
-          `users/${auth.currentUser?.uid}/clients/${clientid}/projects`
-        ),
-        projectData
-      );
+      if (editMode) {
+        try {
+          const updatedClientData = { ...projectData, id: projecteditid };
+          await updateDoc(
+            doc(
+              db,
+              `users/${auth.currentUser?.uid}/clients/${clientid}/projects`,
+              projecteditid
+            ),
+            updatedClientData
+          );
+          setOpen(false);
 
-      toast({
-        title: "Created a project",
-        description: `Project created with name ${values.name}!`,
-      });
-      setproject(projectData);
-      router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
-      setOpen(false);
+          toast({
+            title: "Updated Client",
+            description: `Client updated with name ${values.name}!`,
+          });
+
+          setProjects(await fetchData());
+          setLoading(false);
+        } catch (error) {
+          console.error("Error adding client: ", error);
+        } finally {
+          setSubmitting(false);
+        }
+      } else {
+        try {
+          const docRef = await addDoc(
+            collection(
+              db,
+              `users/${auth.currentUser?.uid}/clients/${clientid}/projects`
+            ),
+            projectData
+          );
+
+          toast({
+            title: "Created a project",
+            description: `Project created with name ${values.name}!`,
+          });
+          setproject(projectData);
+          router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
+          setOpen(false);
+        } catch (error) {
+          console.error("Error adding Project: ", error);
+        } finally {
+          setSubmitting(false);
+        }
+      }
     } catch (error) {
-      console.error("Error adding Project: ", error);
+      console.error("Error:", error);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleEditProject = (Project: project) => {
+    setEditMode(true);
+    setEditedProjectId(Project.id);
+    form.setValue("name", Project.name);
+    form.setValue("description", Project.description);
+    setOpen(true);
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    console.log(projectId);
+    if (window.confirm("Are you sure you want to delete this Project?")) {
+      try {
+        await deleteDoc(
+          doc(
+            db,
+            `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${projectId}`
+          )
+        );
+        toast({
+          title: "Project Deleted",
+          description: "Project has been successfully deleted.",
+        });
+        const projectsData = await fetchData();
+        setProjects(projectsData);
+      } catch (error) {
+        console.error("Error deleting project:", error);
+        toast({
+          title: "Error",
+          description: "An error occurred while deleting the project.",
+        });
+      }
     }
   };
 
@@ -153,7 +226,15 @@ const Page = () => {
         {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
       </div>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog
+        open={open}
+        onOpenChange={(open) => {
+          form.setValue("name", "");
+          form.setValue("description", "");
+          setEditMode(false);
+          setOpen(open);
+        }}
+      >
         <DialogTrigger asChild>
           <Button variant={"outline"} className="mt-5">
             <svg
@@ -175,9 +256,13 @@ const Page = () => {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Create Project</DialogTitle>
+            <DialogTitle>
+              {editMode ? "Edit Project" : "Create Project"}
+            </DialogTitle>
             <DialogDescription>
-              Create a Project By entering the name
+              {editMode
+                ? "Update your project by entering the name"
+                : "Create your project by entering the name"}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
@@ -212,11 +297,23 @@ const Page = () => {
                 {submitting ? (
                   <>
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    <div>Creating..</div>
+                    {editMode ? (
+                      <>
+                        <div>Updating..</div>
+                      </>
+                    ) : (
+                      <div>Creating..</div>
+                    )}
                   </>
                 ) : (
                   <>
-                    <div>Create</div>
+                    {editMode ? (
+                      <>
+                        <div>Update</div>
+                      </>
+                    ) : (
+                      <div>Create</div>
+                    )}
                   </>
                 )}
               </Button>
@@ -242,13 +339,34 @@ const Page = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {projects.map((project, index) => (
+          {projects.map((document, index) => (
             <div
               key={index}
-              className="border rounded-sm p-4 flex gap-2 flex-col hover:bg-secondary transition cursor-pointer"
+              className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition"
             >
-              <div className="flex  gap-2 items-center">
-                <Icons.Person /> <div className="">{project.name}</div>
+              <div className="flex gap-2 items-center justify-between">
+                <div className="flex gap-2 items-center">
+                  <Icons.Person />
+                  <div className="font-bold capitalize hover:underline">
+                    {document.name}
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <div
+                    className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
+                    onClick={() => handleEditProject(document)}
+                  >
+                    <Pencil2Icon className="h-4 w-4" />
+                    <div>Edit</div>
+                  </div>
+                  <div
+                    className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
+                    onClick={() => handleDeleteProject(document.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <div>Delete</div>
+                  </div>
+                </div>
               </div>
               <div>
                 The ultimate app for your Apple Watch. Enhance your experience

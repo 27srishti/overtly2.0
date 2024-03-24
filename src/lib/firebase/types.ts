@@ -8,7 +8,7 @@ export interface client {
 }
 
 export interface project {
-    id?: string;
+    id?: any;
     name: string;
     description: string;
     createdAt: number;
