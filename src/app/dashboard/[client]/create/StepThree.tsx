@@ -23,7 +23,10 @@ interface StepTwoProps {
 }
 
 const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<{
+    idea: string;
+    story: string;
+  } | null>(null);
   const [accordionValue, setAccordionValue] = useState<Idea[]>([]);
   const { formData, updateFormData } = useFormStore();
   const [loading, setLoading] = useState(false);
@@ -59,6 +62,8 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
     fetchIdeas();
   }, [formData]);
 
+  console.log(selectedItem);
+
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
@@ -75,20 +80,25 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                 <Skeleton className="h-16 w-full mb-3" />
               </>
             ) : (
-              <Accordion type="multiple">
+              <Accordion
+                type="multiple"
+                value={accordionValue.map((item) => `item-${item.idea}`)}
+              >
                 {accordionValue.map((item, index) => (
                   <AccordionItem
                     key={index}
-                    value={`item-${index}`}
+                    value={`item-${item.idea}`}
                     className="shadow-md border"
                   >
                     <AccordionTrigger className="ml-4">
                       {item.idea}
                     </AccordionTrigger>
                     <AccordionContent
-                      onClick={() => setSelectedItem(`item-${index}`)}
+                      onClick={() => setSelectedItem(item)}
                       className={`${
-                        selectedItem === `item-${index}` ? "bg-secondary" : ""
+                        selectedItem?.idea === `${item.idea}`
+                          ? "bg-secondary"
+                          : ""
                       }`}
                     >
                       {item.story}
