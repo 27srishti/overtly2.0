@@ -9,8 +9,15 @@ import {
 } from "@/components/ui/accordion";
 import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useFormStore, useProjectStore } from "@/store";
+import {
+  useClientStore,
+  useFormStore,
+  useProjectStore,
+  useTopicStore,
+} from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase/firebase";
 
 interface Idea {
   idea: string;
@@ -23,35 +30,52 @@ interface StepTwoProps {
 }
 
 const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
-  const [selectedItem, setSelectedItem] = useState<{
-    idea: string;
-    story: string;
-  } | null>(null);
   const [accordionValue, setAccordionValue] = useState<Idea[]>([]);
   const { formData, updateFormData } = useFormStore();
   const [loading, setLoading] = useState(false);
   const { project, setproject } = useProjectStore();
+  const { topic, setTopic } = useTopicStore();
+  const { client, setClient } = useClientStore();
 
   useEffect(() => {
     const fetchIdeas = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          "https://pr-ai-99.uc.r.appspot.com/ideas",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          }
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch ideas");
+        if (topic && topic.length > 0) {
+          setAccordionValue(topic);
+          setLoading(false);
+          return;
         }
-        const data = await response.json();
-        console.log("Ideas:", data);
-        setAccordionValue(data);
+        const user = auth.currentUser;
+        if (user) {
+          const response = await fetch(
+            "https://pr-ai-99.uc.r.appspot.com/ideas",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                user_id: user.uid,
+                client_id: client?.id,
+                idea_hint: formData.ideaHint,
+                keywords: formData.Ideas,
+                generatebyai: formData.generatebyai,
+                media_format: formData.mediaFormat,
+                beat: formData.beat,
+                outlet: formData.outlet,
+                objective: formData.objective,
+              }),
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch ideas");
+          }
+          const data = await response.json();
+          console.log("Ideas:", data);
+          setTopic(data);
+          setAccordionValue(data);
+        }
       } catch (error) {
         console.error("Error fetching ideas:", error);
       } finally {
@@ -59,10 +83,12 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
       }
     };
 
-    fetchIdeas();
-  }, [formData]);
+    const unsubscribe = onAuthStateChanged(auth, fetchIdeas);
 
-  console.log(selectedItem);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="w-full mt-4 xl:px-52">
@@ -94,9 +120,16 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       {item.idea}
                     </AccordionTrigger>
                     <AccordionContent
-                      onClick={() => setSelectedItem(item)}
+                      onClick={() => {
+                        updateFormData({
+                          topic: {
+                            idea: `${item.idea}`,
+                            story: `${item.story}`,
+                          },
+                        });
+                      }}
                       className={`${
-                        selectedItem?.idea === `${item.idea}`
+                        formData.topic?.idea === `${item.idea}`
                           ? "bg-secondary"
                           : ""
                       }`}

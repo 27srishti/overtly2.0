@@ -30,6 +30,10 @@ interface FormState {
         beat: string;
         outlet: string;
         objective: string;
+        topic: {
+            idea: string,
+            story: string,
+        }
     };
     updateFormData: (data: Partial<FormState['formData']>) => void;
     resetFormData: () => void;
@@ -43,7 +47,11 @@ export const useFormStore = create<FormState>((set) => ({
         mediaFormat: '',
         beat: '',
         outlet: '',
-        objective: ''
+        objective: '',
+        topic: {
+            idea: ``,
+            story: ``,
+        }
     },
     updateFormData: (data) =>
         set((state) => ({
@@ -58,7 +66,11 @@ export const useFormStore = create<FormState>((set) => ({
                 mediaFormat: '',
                 beat: '',
                 outlet: '',
-                objective: ''
+                objective: '',
+                topic: {
+                    idea: ``,
+                    story: ``,
+                },
             },
         })),
 }));
@@ -82,3 +94,16 @@ export const useProjectStore = create<projectStore>()(
         ),
     ),
 );
+
+interface TopicStore {
+    topic: {
+        idea: string;
+        story: string;
+    }[];
+    setTopic: (topic: TopicStore['topic']) => void;
+}
+
+export const useTopicStore = create<TopicStore>((set) => ({
+    topic: [],
+    setTopic: (topic) => set({ topic }),
+}));
