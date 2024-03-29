@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
 import StepEnd from "./StepEnd";
 import StepFour from "./StepFour";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const Page = () => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const searchParams = useSearchParams();
+  const currentStep = parseInt(searchParams.get("step") ?? "0");
+  const project = searchParams.get("projectid");
+  const pathname = usePathname();
+  const router = useRouter();
 
+  console.log(pathname);
   const onNext = () => {
-    setCurrentStep((prevStep) => prevStep + 1);
+    router.push(`${pathname}?projectid=${project}&step=${currentStep + 1}`);
   };
 
   const onPrevious = () => {
-    setCurrentStep((prevStep) => prevStep - 1);
+    router.push(`${pathname}?projectid=${project}&step=${currentStep - 1}`);
   };
 
   const renderStep = () => {

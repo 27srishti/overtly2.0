@@ -171,7 +171,9 @@ const Page = () => {
             description: `Project created with name ${values.name}!`,
           });
           setproject(projectData);
-          router.push(`/dashboard/${clientid}/create?projectid=${docRef.id}`);
+          router.push(
+            `/dashboard/${clientid}/create?projectid=${docRef.id}&step=1`
+          );
           setOpen(false);
         } catch (error) {
           console.error("Error adding Project: ", error);
@@ -218,6 +220,12 @@ const Page = () => {
         });
       }
     }
+  };
+
+  const handleProjectClick = (project: project) => {
+    console.log(project);
+    setproject(project);
+    router.push(`/dashboard/${clientid}/create?projectid=${project.id}&step=1`);
   };
 
   return (
@@ -343,6 +351,7 @@ const Page = () => {
             <div
               key={index}
               className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition"
+              onClick={() => handleProjectClick(document)}
             >
               <div className="flex gap-2 items-center justify-between">
                 <div className="flex gap-2 items-center">
