@@ -13,11 +13,12 @@ import {
   useClientStore,
   useFormStore,
   useProjectStore,
-  useTopicStore,
+  IdeasandMailStore,
 } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase/firebase";
+import { toast } from "@/components/ui/use-toast";
 
 interface Idea {
   idea: string;
@@ -34,7 +35,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const { formData, updateFormData } = useFormStore();
   const [loading, setLoading] = useState(false);
   const { project, setproject } = useProjectStore();
-  const { topic, setTopic } = useTopicStore();
+  const { topic, setTopic } = IdeasandMailStore();
   const { client, setClient } = useClientStore();
 
   useEffect(() => {
@@ -68,9 +69,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
               }),
             }
           );
-          if (!response.ok) {
-            throw new Error("Failed to fetch ideas");
-          }
+          console.log(response);
           const data = await response.json();
           console.log("Ideas:", data);
           setTopic(data);
@@ -78,6 +77,12 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
         }
       } catch (error) {
         console.error("Error fetching ideas:", error);
+        setTopic([
+          {
+            idea: "Error fetching data. Please try again later.",
+            story: "Error fetching data. Please try again later.",
+          },
+        ]);
       } finally {
         setLoading(false);
       }
@@ -146,7 +151,17 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
               <Button className="items-center" onClick={onPrevious}>
                 Previous
               </Button>
-              <Button className="items-center" onClick={onNext}>
+              <Button className="items-center" onClick={()=>{
+                if (formData.topic?.idea && formData.topic?.story) {
+                  onNext();
+                }else{
+                  toast({
+                    title: "Error",
+                    description: "Please select a topic",
+                    variant: "destructive",
+                  });
+                }
+              }}>
                 Next
               </Button>
             </div>

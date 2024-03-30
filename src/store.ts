@@ -33,7 +33,11 @@ interface FormState {
         topic: {
             idea: string,
             story: string,
-        }
+        };
+        mail: {
+            content: string;
+            email: string;
+        };
     };
     updateFormData: (data: Partial<FormState['formData']>) => void;
     resetFormData: () => void;
@@ -51,6 +55,10 @@ export const useFormStore = create<FormState>((set) => ({
         topic: {
             idea: ``,
             story: ``,
+        },
+        mail: {
+            content: '',
+            email: '',
         }
     },
     updateFormData: (data) =>
@@ -71,6 +79,10 @@ export const useFormStore = create<FormState>((set) => ({
                     idea: ``,
                     story: ``,
                 },
+                mail: {
+                    content: '',
+                    email: '',
+                }
             },
         })),
 }));
@@ -95,15 +107,28 @@ export const useProjectStore = create<projectStore>()(
     ),
 );
 
-interface TopicStore {
+
+export interface IdeasandMailStore {
     topic: {
         idea: string;
         story: string;
     }[];
-    setTopic: (topic: TopicStore['topic']) => void;
+    setTopic: (topic: IdeasandMailStore['topic']) => void;
+    mail: {
+        content: string;
+        email: string;
+    };
+    setMail: (mail: IdeasandMailStore['mail']) => void;
 }
 
-export const useTopicStore = create<TopicStore>((set) => ({
+
+export const IdeasandMailStore = create<IdeasandMailStore>((set) => ({
     topic: [],
     setTopic: (topic) => set({ topic }),
+    mail: {
+        content: '',
+        email: '',
+    },
+    setMail: (newMail) => set((prev) => ({ ...prev, mail: newMail })),
 }));
+
