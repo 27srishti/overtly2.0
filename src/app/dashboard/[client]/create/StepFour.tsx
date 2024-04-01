@@ -109,8 +109,6 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   generatedContent: data.content,
                   generatedMail: data.email,
                 });
-                editorRef1.current.setContent(data.email);
-                editorRef2.current.setContent(data.content);
               }
             }
             setLoading(false);
@@ -314,7 +312,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   <Button variant={"outline"} className="w-[10rem]">
                     {loading ? (
                       <>
-                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                        <Icons.spinner className="mr-2 h-4 min-w-4 animate-spin" />
                         Loading Content...
                       </>
                     ) : (
@@ -439,9 +437,9 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
               <Button className="items-center" onClick={onPrevious}>
                 Previous
               </Button>
-              {/* <Button className="items-center" onClick={Savetodb} disabled>
+              <Button className="items-center" disabled>
                 End
-              </Button> */}
+              </Button>
               {/* <Button className="items-center" onClick={onNext} disabled>
                 Next
               </Button> */}

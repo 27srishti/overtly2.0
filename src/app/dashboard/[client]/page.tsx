@@ -30,6 +30,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -222,12 +223,31 @@ const Page = () => {
     }
   };
 
-  const handleProjectClick = (project: project) => {
+  const handleProjectClick = async (project: project) => {
     console.log(project);
     setproject(project);
-    router.push(`/dashboard/${clientid}/create?projectid=${project.id}&step=1`);
-  };
+console.log(auth.currentUser?.uid);
+    try {
+      // Fetch the current step from the database
+      const projectDocRef = doc(
+        db,
+        `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${project.id}`
+      );
+      const projectDocSnap = await getDoc(projectDocRef);
+      if (projectDocSnap.exists()) {
+        const currentStep = projectDocSnap.data().currentStep;
 
+        // Redirect to the appropriate URL based on the current step
+        router.push(
+          `/dashboard/${clientid}/create?projectid=${project.id}&step=${currentStep}`
+        );
+      } else {
+        console.error("Project document does not exist");
+      }
+    } catch (error) {
+      console.error("Error fetching project data:", error);
+    }
+  };
   return (
     <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
       <div className="text-3xl font-bold mt-4 ml-2">
