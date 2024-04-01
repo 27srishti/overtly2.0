@@ -21,6 +21,28 @@ export const useClientStore = create<ClientStore>()(
     ),
 );
 
+interface projectStore {
+    project: project | null;
+    setproject: (project: project) => void;
+}
+
+export const useProjectStore = create<projectStore>()(
+    devtools(
+        persist(
+            (set) => ({
+                project: null,
+                setproject: (project: project | null) => set({ project }),
+            }),
+            {
+                name: 'current-project',
+            },
+        ),
+    ),
+);
+
+
+
+
 interface FormState {
     formData: {
         ideaHint: string;
@@ -40,7 +62,6 @@ interface FormState {
         };
     };
     updateFormData: (data: Partial<FormState['formData']>) => void;
-    resetFormData: () => void;
 }
 
 export const useFormStore = create<FormState>((set) => ({
@@ -65,47 +86,7 @@ export const useFormStore = create<FormState>((set) => ({
         set((state) => ({
             formData: { ...state.formData, ...data },
         })),
-    resetFormData: () =>
-        set(() => ({
-            formData: {
-                ideaHint: '',
-                Ideas: [],
-                generatebyai: false,
-                mediaFormat: '',
-                beat: '',
-                outlet: '',
-                objective: '',
-                topic: {
-                    idea: ``,
-                    story: ``,
-                },
-                mail: {
-                    content: '',
-                    email: '',
-                }
-            },
-        })),
 }));
-
-
-interface projectStore {
-    project: project | null;
-    setproject: (project: project) => void;
-}
-
-export const useProjectStore = create<projectStore>()(
-    devtools(
-        persist(
-            (set) => ({
-                project: null,
-                setproject: (project: project | null) => set({ project }),
-            }),
-            {
-                name: 'current-project',
-            },
-        ),
-    ),
-);
 
 
 export interface IdeasandMailStore {

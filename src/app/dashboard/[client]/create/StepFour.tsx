@@ -27,11 +27,13 @@ import {
   useProjectStore,
 } from "@/store";
 import { auth, db } from "@/lib/firebase/firebase";
+import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { Editor } from "@tinymce/tinymce-react";
 import { Icons } from "@/components/ui/Icons";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
+import { toast } from "@/components/ui/use-toast";
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
@@ -41,141 +43,135 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const [opencontent, setOpencontent] = useState(false);
   const { project, setproject } = useProjectStore();
   const [loading, setLoading] = useState(false);
-  const { formData, updateFormData } = useFormStore();
-  const { mail, setMail } = IdeasandMailStore();
   const editorRef1 = useRef<any>(null);
   const editorRef2 = useRef<any>(null);
-  const { client, setClient } = useClientStore();
   const searchParams = useSearchParams();
   const projectDocId = searchParams.get("projectid");
+  const params = useParams();
+  const clientid = params.client;
+  const [fetchedValues, setFetchedValues] = useState<{
+    generatedMail: string;
+    generatedContent: string;
+  }>({
+    generatedMail: "",
+    generatedContent: "",
+  });
 
   useEffect(() => {
-    const fetchIdeas = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const user = auth.currentUser;
-        if (!user) {
-          setLoading(false);
-          return;
-        }
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            const docRef = doc(
+              db,
+              `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
+            );
+            const docSnap = await getDoc(docRef);
+            console.log(docSnap.exists());
+            if (docSnap.exists()) {
+              const firebasedata = docSnap.data();
+              if (firebasedata.generatedContent && firebasedata.generatedMail) {
+                setFetchedValues({
+                  generatedContent: firebasedata.generatedContent,
+                  generatedMail: firebasedata.generatedMail,
+                });
+              } else {
+                const response = await fetch(
+                  "https://pr-ai-99.uc.r.appspot.com/pitch",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      user_id: user.uid,
+                      client_id: clientid,
+                      topic: {
+                        idea: firebasedata.selectedGeneratedIdea.idea,
+                        story: firebasedata.selectedGeneratedIdea.story,
+                      },
+                    }),
+                  }
+                );
 
-        if (mail.content !== "" && mail.email !== "") {
-          setLoading(false);
-          return;
-        }
+                if (!response.ok) {
+                  toast({
+                    title: "Error",
+                    description: "Something went wrong",
+                    variant: "destructive",
+                  });
+                }
 
-        const response = await fetch(
-          "https://pr-ai-99.uc.r.appspot.com/pitch",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              user_id: user.uid,
-              client_id: client?.id,
-              topic: {
-                idea: formData.topic.idea,
-                story: formData.topic.story,
-              },
-            }),
+                const data = await response.json();
+                console.log(data);
+                setFetchedValues({
+                  generatedContent: data.content,
+                  generatedMail: data.email,
+                });
+                editorRef1.current.setContent(data.email);
+                editorRef2.current.setContent(data.content);
+              }
+            }
+            setLoading(false);
           }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-
-        const data = await response.json();
-        console.log(data);
-        setMail({
-          content: data.content,
-          email: data.email,
         });
+
+        return () => unsubscribe();
       } catch (error) {
-        console.error("Error fetching email:", error);
-        setMail({
-          content: "Error fetching data. Please try again later.",
-          email: "Error fetching data. Please try again later.",
-        });
-      } finally {
+        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
+    fetchData();
+  }, [clientid, projectDocId]);
 
-    fetchIdeas();
-
-    const unsubscribe = onAuthStateChanged(auth, fetchIdeas);
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
-  async function Savetodb() {
+  const updateDatatodb = async (formData: {
+    generatedMail: string;
+    generatedContent: string;
+    currentStep: number;
+  }) => {
     try {
-      const user = auth.currentUser;
-      if (user && client) {
-        try {
-          const projectDocRef = doc(
-            db,
-            `users/${user.uid}/clients/${client.id}/projects/${projectDocId}`
-          );
-
-          // Update the document with the new project data
-          await updateDoc(projectDocRef, {
-            formData,
-          });
-
-          console.log("Document updated successfully");
-        } catch (error) {
-          console.error("Error updating document: ", error);
-        }
-      } else {
-        throw new Error("User or client not available");
-      }
+      const docRef = doc(
+        db,
+        `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${projectDocId}`
+      );
+      await updateDoc(docRef, formData);
+      console.log("Form data updated successfully in the database");
     } catch (error) {
-      console.error("Error adding document: ", error);
+      console.error("Error updating form data:", error);
     }
-  }
+  };
 
   const log = () => {
-    const emailContent = editorRef1.current.getContent();
-
-    setMail({
-      content: mail.content,
-      email: emailContent,
+    const emailChanges = editorRef1.current.getContent();
+    setFetchedValues({
+      generatedContent: fetchedValues.generatedContent,
+      generatedMail: emailChanges,
     });
-    updateFormData({
-      mail: {
-        content: emailContent,
-        email: mail.email,
-      },
+    updateDatatodb({
+      generatedContent: fetchedValues.generatedContent,
+      generatedMail: emailChanges,
+      currentStep: 4,
     });
-    Savetodb();
     setOpenemail(false);
     setOpencontent(false);
   };
 
   const log2 = () => {
-    const emailContent = editorRef2.current.getContent();
-
-    setMail({
-      content: emailContent,
-      email: mail.email,
+    const contentChanges = editorRef2.current.getContent();
+    setFetchedValues({
+      generatedContent: contentChanges,
+      generatedMail: fetchedValues.generatedMail,
     });
-
-    updateFormData({
-      mail: {
-        content: emailContent,
-        email: mail.email,
-      },
+    updateDatatodb({
+      generatedContent: contentChanges,
+      generatedMail: fetchedValues.generatedMail,
+      currentStep: 4,
     });
     setOpenemail(false);
     setOpencontent(false);
   };
-
-  console.log(formData);
 
   return (
     <div className="w-full mt-4 xl:px-52">
@@ -219,7 +215,10 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       <Editor
                         apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
                         onInit={(evt, editor) => (editorRef1.current = editor)}
-                        initialValue={mail.email.replace(/\n/g, "<br>")}
+                        initialValue={fetchedValues.generatedMail.replace(
+                          /\n/g,
+                          "<br>"
+                        )}
                         init={{
                           height: 500,
                           menubar: false,
@@ -345,7 +344,10 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       <Editor
                         apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
                         onInit={(evt, editor) => (editorRef2.current = editor)}
-                        initialValue={mail.content.replace(/\n/g, "<br>")}
+                        initialValue={fetchedValues.generatedContent.replace(
+                          /\n/g,
+                          "<br>"
+                        )}
                         init={{
                           height: 500,
                           menubar: false,
@@ -437,9 +439,9 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
               <Button className="items-center" onClick={onPrevious}>
                 Previous
               </Button>
-              <Button className="items-center" onClick={Savetodb} disabled>
+              {/* <Button className="items-center" onClick={Savetodb} disabled>
                 End
-              </Button>
+              </Button> */}
               {/* <Button className="items-center" onClick={onNext} disabled>
                 Next
               </Button> */}

@@ -1,25 +1,10 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useFormStore, useProjectStore } from "@/store";
-import {
-  beats,
-  DigitalMedia,
-  mediaFormats,
-  Objective,
-  TraditionalMedia,
-} from "@/lib/dropdown";
+import { useEffect, useState } from "react";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/firebase";
+import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   Form,
   FormControl,
@@ -30,7 +15,25 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import {
+  beats,
+  DigitalMedia,
+  mediaFormats,
+  Objective,
+  TraditionalMedia,
+} from "@/lib/dropdown";
 import { useForm } from "react-hook-form";
+import { useProjectStore } from "@/store";
 
 interface StepTwoProps {
   onPrevious: () => void;
@@ -38,36 +41,99 @@ interface StepTwoProps {
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
-  const { formData, updateFormData } = useFormStore();
-  console.log(formData);
-
+  const params = useParams();
+  const clientid = params.client;
+  const searchParams = useSearchParams();
+  const projectDocId = searchParams.get("projectid");
   const { project, setproject } = useProjectStore();
 
   const formSchema = z.object({
     mediaFormat: z.string().min(1, {
-      message: "Please select Demographics.",
+      message: "Please select Media Formats.",
     }),
     beat: z.string().min(1, {
-      message: "Please select Demographics.",
+      message: "Please select Beat.",
     }),
     outlet: z.string().min(1, {
-      message: "Please select Demographics.",
+      message: "Please select Outlet.",
     }),
     objective: z.string().min(1, {
-      message: "Please select Demographics.",
+      message: "Please select Objective.",
     }),
+  });
+
+  const [fetchedValues, setFetchedValues] = useState<{
+    mediaFormat: string;
+    beat: string;
+    outlet: string;
+    objective: string;
+  }>({
+    mediaFormat: "",
+    beat: "",
+    outlet: "",
+    objective: "",
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      mediaFormat: formData.mediaFormat,
-      beat: formData.beat,
-      outlet: formData.outlet,
-      objective: formData.objective,
-    },
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          const docRef = doc(
+            db,
+            `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
+          );
+          const docSnap = await getDoc(docRef);
+          console.log(docSnap.exists());
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            console.log(data);
+
+            setFetchedValues({
+              mediaFormat: data.mediaFormat,
+              beat: data.beat,
+              outlet: data.outlet,
+              objective: data.objective,
+            });
+
+            // Set form values here
+            form.setValue("mediaFormat", data.mediaFormat);
+            form.setValue("beat", data.beat);
+            form.setValue("outlet", data.outlet);
+            form.setValue("objective", data.objective);
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchData();
+  }, [clientid, projectDocId]);
+
+  const updateFormData = async (formData: {
+    mediaFormat: string;
+    beat: string;
+    outlet: string;
+    objective: string;
+    currentStep: number;
+  }) => {
+    try {
+      const docRef = doc(
+        db,
+        `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${projectDocId}`
+      );
+      await updateDoc(docRef, formData);
+      console.log("Form data updated successfully in the database");
+    } catch (error) {
+      console.error("Error updating form data:", error);
+    }
+  };
+  console.log("fetchedValues:", fetchedValues);
+  console.log("defaultValues:", form.getValues());
   return (
     <div className="w-full mt-4 xl:px-52">
       <div className="">
@@ -86,8 +152,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                         <FormLabel>Media Formats</FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              form.setValue("mediaFormat", value);
+                            }}
+                            value={field.value}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Media Details" />
@@ -119,8 +188,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                         <FormLabel>Beat</FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              form.setValue("beat", value);
+                            }}
+                            value={field.value}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a Beat" />
@@ -149,8 +221,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                         <FormLabel>Outlet</FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              form.setValue("outlet", value);
+                            }}
+                            value={field.value}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a Outlet" />
@@ -193,8 +268,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                         <FormLabel>Objective </FormLabel>
                         <FormControl>
                           <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              form.setValue("objective", value);
+                            }}
+                            value={field.value}
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select a Objective" />
@@ -230,7 +308,10 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   const isValid = await form.trigger();
 
                   if (isValid) {
-                    updateFormData(form.getValues());
+                    updateFormData({
+                      ...form.getValues(),
+                      currentStep: 2,
+                    });
                     onNext();
                   }
                 }}

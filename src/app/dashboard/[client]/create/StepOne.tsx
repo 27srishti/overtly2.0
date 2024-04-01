@@ -3,71 +3,123 @@
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import React, { useState, KeyboardEvent, ChangeEvent } from "react";
+import React, { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { Icons } from "@/components/ui/Icons";
 import { useFormStore, useProjectStore } from "@/store";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/firebase";
+import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface StepOneProps {
   onNext: () => void;
 }
 
 const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
-  const { formData, updateFormData } = useFormStore();
-  const [chips, setChips] = useState<string[]>(formData.Ideas);
-  const [ideahint, setIdeaHint] = useState<string>(formData.ideaHint);
+  const [chips, setChips] = useState<string[]>([]);
+  const [ideahint, setIdeaHint] = useState<string>("");
   const { project, setproject } = useProjectStore();
   const [inputValue, setInputValue] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
-
+  const params = useParams();
+  const clientid = params.client;
+  const searchParams = useSearchParams();
+  const projectDocId = searchParams.get("projectid");
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          const docRef = doc(
+            db,
+            `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
+          );
+          const docSnap = await getDoc(docRef);
+          console.log(docSnap.exists());
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.Ideas && data.ideaHint) {
+              setChips(data.Ideas);
+              setIdeaHint(data.ideaHint);
+            }
+          }
+        }
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchData();
+  }, [clientid, projectDocId]);
+
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue.trim() !== "") { // Listen for the Enter key
+    if (e.key === "Enter" && inputValue.trim() !== "") {
       setChips([...chips, inputValue.trim()]);
       setInputValue("");
     } else if (e.key === "Backspace" && inputValue === "" && chips.length > 0) {
       setChips(chips.slice(0, -1));
     }
   };
-  
 
   const handleChipDelete = (chipToDelete: string) => {
     setChips(chips.filter((chip) => chip !== chipToDelete));
   };
 
   function clickNext() {
-
     if (inputValue.trim() !== "") {
       setChips([...chips, inputValue.trim()]);
       setInputValue("");
-      return
+      return;
     }
-  
-    // Validate the form
+
     if (ideahint.trim() === "" || chips.length === 0) {
       setError(true);
     } else {
       setError(false);
-      updateFormData({
+      const formData = {
         Ideas: chips,
         ideaHint: ideahint,
-      });
+        currentStep: 1,
+        generatebyai: false,
+      };
+      updateFormDataInDB(formData);
       onNext();
     }
   }
-  
-  
-  
+
   function handleGenerateUsingAI() {
     setError(false);
-    updateFormData({
+    const formData = {
       generatebyai: true,
-    });
+      currentStep: 1,
+      Ideas: [],
+      ideaHint: "",
+    };
+    updateFormDataInDB(formData);
     onNext();
   }
+
+  const updateFormDataInDB = async (formData: {
+    Ideas?: string[];
+    ideaHint?: string;
+    generatebyai?: boolean;
+    currentStep?: number;
+  }) => {
+    try {
+      const docRef = doc(
+        db,
+        `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${projectDocId}`
+      );
+      await updateDoc(docRef, formData);
+      console.log("Form data updated successfully in the database");
+    } catch (error) {
+      console.error("Error updating form data:", error);
+    }
+  };
 
   return (
     <div className="w-full mt-4 xl:px-52">
@@ -85,6 +137,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                   setIdeaHint(e.target.value);
                 }}
               />
+
               {error && (
                 <div className="text-destructive text-sm">
                   Please enter an idea hint
@@ -98,7 +151,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                   id="ideas"
                   className="flex flex-wrap w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  {chips.map((chip, index) => (
+                  {chips?.map((chip, index) => (
                     <div
                       key={index}
                       className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex ml-2 mb-1"

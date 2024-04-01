@@ -16,14 +16,12 @@ import {
   IdeasandMailStore,
 } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase/firebase";
+import { auth, db } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
-
-interface Idea {
-  idea: string;
-  story: string;
-}
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useSearchParams } from "next/navigation";
 
 interface StepTwoProps {
   onPrevious: () => void;
@@ -31,69 +29,100 @@ interface StepTwoProps {
 }
 
 const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
-  const [accordionValue, setAccordionValue] = useState<Idea[]>([]);
-  const { formData, updateFormData } = useFormStore();
   const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const clientid = params.client;
+  const searchParams = useSearchParams();
+  const projectDocId = searchParams.get("projectid");
   const { project, setproject } = useProjectStore();
-  const { topic, setTopic } = IdeasandMailStore();
-  const { client, setClient } = useClientStore();
+  const [fetchedValues, setFetchedValues] = useState<{
+    generatedIdeas: { idea: string; story: string }[];
+    selectedGeneratedIdea: { idea: string; story: string };
+  }>({
+    generatedIdeas: [],
+    selectedGeneratedIdea: { idea: "", story: "" },
+  });
 
   useEffect(() => {
-    const fetchIdeas = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        if (topic && topic.length > 0) {
-          setAccordionValue(topic);
-          setLoading(false);
-          return;
-        }
-        const user = auth.currentUser;
-        if (user) {
-          const response = await fetch(
-            "https://pr-ai-99.uc.r.appspot.com/ideas",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                user_id: user.uid,
-                client_id: client?.id,
-                idea_hint: formData.ideaHint,
-                keywords: formData.Ideas,
-                generatebyai: formData.generatebyai,
-                media_format: formData.mediaFormat,
-                beat: formData.beat,
-                outlet: formData.outlet,
-                objective: formData.objective,
-              }),
+        const unsubscribe = auth.onAuthStateChanged(async (user) => {
+          if (user) {
+            const docRef = doc(
+              db,
+              `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
+            );
+            const docSnap = await getDoc(docRef);
+            console.log(docSnap.exists());
+            if (docSnap.exists()) {
+              const firebasedata = docSnap.data();
+              if (
+                firebasedata.generatedIdeas &&
+                firebasedata.selectedGeneratedIdea
+              ) {
+                setFetchedValues({
+                  generatedIdeas: firebasedata.generatedIdeas,
+                  selectedGeneratedIdea: firebasedata.selectedGeneratedIdea,
+                });
+              } else {
+                const response = await fetch(
+                  "https://pr-ai-99.uc.r.appspot.com/ideas",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      user_id: user.uid,
+                      client_id: clientid,
+                      idea_hint: firebasedata.ideaHint,
+                      keywords: firebasedata.Ideas,
+                      generatebyai: firebasedata.generatebyai,
+                      media_format: firebasedata.mediaFormat,
+                      beat: firebasedata.beat,
+                      outlet: firebasedata.outlet,
+                      objective: firebasedata.objective,
+                    }),
+                  }
+                );
+                const data = await response.json();
+                console.log(data);
+                setFetchedValues({
+                  generatedIdeas: data,
+                  selectedGeneratedIdea: { idea: "", story: "" },
+                });
+              }
             }
-          );
-          console.log(response);
-          const data = await response.json();
-          console.log("Ideas:", data);
-          setTopic(data);
-          setAccordionValue(data);
-        }
+            setLoading(false);
+          }
+        });
+
+        return () => unsubscribe();
       } catch (error) {
-        console.error("Error fetching ideas:", error);
-        setTopic([
-          {
-            idea: "Error fetching data. Please try again later.",
-            story: "Error fetching data. Please try again later.",
-          },
-        ]);
-      } finally {
+        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
+    fetchData();
+  }, [clientid, projectDocId]);
 
-    const unsubscribe = onAuthStateChanged(auth, fetchIdeas);
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  const updateFormData = async (formData: {
+    generatedIdeas: { idea: string; story: string }[];
+    selectedGeneratedIdea: { idea: string; story: string };
+    currentStep: number;
+  }) => {
+    try {
+      const docRef = doc(
+        db,
+        `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${projectDocId}`
+      );
+      await updateDoc(docRef, formData);
+      console.log("Form data updated successfully in the database");
+    } catch (error) {
+      console.error("Error updating form data:", error);
+    }
+  };
 
   return (
     <div className="w-full mt-4 xl:px-52">
@@ -113,9 +142,11 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
             ) : (
               <Accordion
                 type="multiple"
-                value={accordionValue.map((item) => `item-${item.idea}`)}
+                value={fetchedValues.generatedIdeas.map(
+                  (item) => `item-${item.idea}`
+                )}
               >
-                {accordionValue.map((item, index) => (
+                {fetchedValues.generatedIdeas.map((item, index) => (
                   <AccordionItem
                     key={index}
                     value={`item-${item.idea}`}
@@ -126,15 +157,14 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     </AccordionTrigger>
                     <AccordionContent
                       onClick={() => {
-                        updateFormData({
-                          topic: {
-                            idea: `${item.idea}`,
-                            story: `${item.story}`,
-                          },
+                        setFetchedValues({
+                          ...fetchedValues,
+                          selectedGeneratedIdea: item,
                         });
                       }}
                       className={`${
-                        formData.topic?.idea === `${item.idea}`
+                        fetchedValues.selectedGeneratedIdea.idea ===
+                        `${item.idea}`
                           ? "bg-secondary"
                           : ""
                       }`}
@@ -151,17 +181,29 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
               <Button className="items-center" onClick={onPrevious}>
                 Previous
               </Button>
-              <Button className="items-center" onClick={()=>{
-                if (formData.topic?.idea && formData.topic?.story) {
-                  onNext();
-                }else{
-                  toast({
-                    title: "Error",
-                    description: "Please select a topic",
-                    variant: "destructive",
-                  });
-                }
-              }}>
+              <Button
+                className="items-center"
+                onClick={() => {
+                  if (
+                    fetchedValues.selectedGeneratedIdea.idea !== "" &&
+                    fetchedValues.selectedGeneratedIdea.story !== ""
+                  ) {
+                    updateFormData({
+                      generatedIdeas: fetchedValues.generatedIdeas,
+                      selectedGeneratedIdea:
+                        fetchedValues.selectedGeneratedIdea,
+                      currentStep: 3,
+                    });
+                    onNext();
+                  } else {
+                    toast({
+                      title: "Error",
+                      description: "Please select a topic",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
                 Next
               </Button>
             </div>
