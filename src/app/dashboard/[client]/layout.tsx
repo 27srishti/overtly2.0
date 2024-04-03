@@ -29,6 +29,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);
@@ -168,25 +169,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             onMouseOver={toggleSidebar}
             onMouseOut={toggleSidebar}
           >
-            <div
-              className={`flex items-center py-2 px-4 mt-6 gap-2 
+            <Link href={`/dashboard/${params.client}`}>
+              <div
+                className={`flex items-center py-2 px-4 mt-6 gap-2 
               ${
                 pathname.endsWith(`${client?.id}`)
                   ? "bg-[#c1c1c1]"
                   : "hover:bg-[#EFEFEF]"
               } 
              `}
-              onClick={() => {
-                router.push(`/dashboard/${params.client}`);
-              }}
-            >
-              <div>
-                <Icons.Home />
+                // onClick={() => {
+                //   router.push(`/dashboard/${params.client}`);
+                // }}
+              >
+                <div>
+                  <Icons.Home />
+                </div>
+                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
+                  Home
+                </span>
               </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Home
-              </span>
-            </div>
+            </Link>
 
             <div
               className={`flex items-center py-2 px-4 gap-2 
