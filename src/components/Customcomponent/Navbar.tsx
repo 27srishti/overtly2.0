@@ -16,6 +16,7 @@ import { auth } from "@/lib/firebase/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Navbar = () => {
   const user = auth.currentUser;
@@ -39,13 +40,14 @@ const Navbar = () => {
     <div className="sticky top-0 z-50 bg-secondary">
       <div className="border-b bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
         <div className="container flex justify-between px-2 items-center">
-          <div
-            className="flex items-center justify-center text-lg cursor-pointer"
-            onClick={() => router.push("/dashboard")}
-          >
-            <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
+          <Link href="/dashboard">
+            <div
+              className="flex items-center justify-center text-lg cursor-pointer"
+              // onClick={() => router.push("/dashboard")}
+            >
+              <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
 
-            {/* <svg
+              {/* <svg
               width="47"
               height="47"
               viewBox="0 0 47 47"
@@ -69,9 +71,11 @@ const Navbar = () => {
               />
             </svg> */}
 
-            {/* <img src="/images.png" className="w-12" alt="Logo" /> */}
-            {/* <div className="ml-2">Overtly</div> */}
-          </div>
+              {/* <img src="/images.png" className="w-12" alt="Logo" /> */}
+              {/* <div className="ml-2">Overtly</div> */}
+            </div>
+          </Link>
+
           <div className="flex items-center gap-3">
             <Button variant="outline" onClick={() => router.push("/dashboard")}>
               Go to Dashboard

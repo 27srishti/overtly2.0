@@ -226,7 +226,7 @@ const Page = () => {
   const handleProjectClick = async (project: project) => {
     console.log(project);
     setproject(project);
-console.log(auth.currentUser?.uid);
+    console.log(auth.currentUser?.uid);
     try {
       // Fetch the current step from the database
       const projectDocRef = doc(
