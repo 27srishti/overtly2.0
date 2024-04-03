@@ -53,6 +53,7 @@ import {
 import { Demographics, Industry } from "@/lib/dropdown";
 import { Trash2 } from "lucide-react";
 import { Pencil2Icon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 const formSchema = z.object({
   name: z
@@ -388,18 +389,19 @@ const Page = () => {
                 className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
               >
                 <div className="flex gap-2 items-center justify-between">
-                  <div
-                    className="flex gap-2 items-center"
-                    onClick={() => {
-                      setClient(client);
-                      router.push(`/dashboard/${client.id}`);
-                    }}
-                  >
-                    <Icons.Person />
-                    <div className="font-bold capitalize hover:underline">
-                      {client.name}
+                  <Link href={`/dashboard/${client.id}`}>
+                    <div
+                      className="flex gap-2 items-center"
+                      onClick={() => {
+                        setClient(client);
+                        // router.prefetch(`/dashboard/${client.id}`);
+                      }}
+                    >
+                      <div className="font-bold capitalize hover:underline">
+                        {client.name}
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                   <div className="flex gap-3">
                     <div
                       className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
