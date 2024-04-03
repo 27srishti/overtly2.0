@@ -190,26 +190,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               </div>
             </Link>
-
-            <div
-              className={`flex items-center py-2 px-4 gap-2 
+            <Link href={`/dashboard/${params.client}/datalibrary`}>
+              <div
+                className={`flex items-center py-2 px-4 gap-2 
               ${
                 pathname.endsWith("/datalibrary")
                   ? "bg-[#c1c1c1]"
                   : "hover:bg-[#EFEFEF]"
               } 
              `}
-              onClick={() => {
-                router.push(`/dashboard/${params.client}/datalibrary`);
-              }}
-            >
-              <div>
-                <Icons.Files />
+                // onClick={() => {
+                //   router.push();
+                // }}
+              >
+                <div>
+                  <Icons.Files />
+                </div>
+                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
+                  Data&nbsp;Library
+                </span>
               </div>
-              <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Data&nbsp;Library
-              </span>
-            </div>
+            </Link>
 
             <div
               className={`flex items-center py-2 px-4 gap-2 
