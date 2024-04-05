@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { MoreHorizontal } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -23,6 +24,13 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Navbar from "@/components/Customcomponent/Navbar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   addDoc,
   collection,
@@ -47,6 +55,7 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -54,6 +63,7 @@ import { Demographics, Industry } from "@/lib/dropdown";
 import { Trash2 } from "lucide-react";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 import Link from "next/link";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 const formSchema = z.object({
   name: z
@@ -220,152 +230,155 @@ const Page = () => {
   };
 
   return (
-    <div>
+    <div className="gradientbg">
       <Navbar />
-      <div className="container px-5">
-        <div className="text-3xl font-bold mt-4 ml-2">Dashboard</div>
-        <Dialog
-          open={open}
-          onOpenChange={(open) => {
-            form.setValue("name", "");
-            form.setValue("industry", "");
-            form.setValue("demographics", "");
-            setEditMode(false);
-            setOpen(open);
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button variant={"outline"} className="mt-3">
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 15 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M8 2.75C8 2.47386 7.77614 2.25 7.5 2.25C7.22386 2.25 7 2.47386 7 2.75V7H2.75C2.47386 7 2.25 7.22386 2.25 7.5C2.25 7.77614 2.47386 8 2.75 8H7V12.25C7 12.5261 7.22386 12.75 7.5 12.75C7.77614 12.75 8 12.5261 8 12.25V8H12.25C12.5261 8 12.75 7.77614 12.75 7.5C12.75 7.22386 12.5261 7 12.25 7H8V2.75Z"
-                  fill="currentColor"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                ></path>
-              </svg>
-              <div className="ml-1">Create Client</div>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editMode ? "Update Client" : "Create Client"}
-              </DialogTitle>
-              <DialogDescription>
-                {editMode
-                  ? "Update a client. Click save when done."
-                  : "Create a client. Click save when done."}
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-3"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ex: Amazon" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="industry"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Industry</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Industry" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Industry</SelectLabel>
-                              {Industry.map((demographic) => (
-                                <SelectItem
-                                  key={demographic}
-                                  value={demographic}
-                                >
-                                  {demographic}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="demographics"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Demographics</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Demography" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Demographics</SelectLabel>
-                              {Demographics.map((demographic) => (
-                                <SelectItem
-                                  key={demographic}
-                                  value={demographic}
-                                >
-                                  {demographic}
-                                </SelectItem>
-                              ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="ml-full" disabled={submitting}>
-                  {submitting ? (
-                    <>
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                      {editMode ? (
-                        <div>Updating...</div>
-                      ) : (
-                        <div>Creating..</div>
-                      )}
-                    </>
-                  ) : (
-                    <>{editMode ? <div>Update</div> : <div>Create</div>}</>
-                  )}
-                </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+      <div className="container px-7">
+        <div className="flex gap-8">
+          <div className="text-3xl mt-4 ml-2 font-montserrat">Dashboard</div>
+          <Dialog
+            open={open}
+            onOpenChange={(open) => {
+              form.setValue("name", "");
+              form.setValue("industry", "");
+              form.setValue("demographics", "");
+              setEditMode(false);
+              setOpen(open);
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button className="mt-3 gap-2 b-0 shadow-none outline-none hover:bg-[#D5D5D5] p-5  rounded-2xl grey">
+                <div className="ml-1 font-montserrat text-[#545454]">
+                  New Client
+                </div>
+                <img src="/plus.png" alt="plus" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] ">
+              <DialogHeader>
+                <DialogTitle>
+                  {editMode ? "Update Client" : "Add new Client"}
+                </DialogTitle>
+                {/* <DialogDescription>
+                  {editMode
+                    ? "Update a client. Click save when done."
+                    : "Add new Client"}
+                </DialogDescription> */}
+              </DialogHeader>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Ex: Amazon"
+                            {...field}
+                            className="grey shadow-none outline-none border-0 rounded-lg"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="industry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Industry</FormLabel>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-lg ">
+                              <SelectValue
+                                placeholder="Select a Industry"
+                                
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Industry</SelectLabel>
+                                {Industry.map((demographic) => (
+                                  <SelectItem
+                                    key={demographic}
+                                    value={demographic}
+                                  >
+                                    {demographic}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="demographics"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Demographics</FormLabel>
+                        <FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-lg">
+                              <SelectValue placeholder="Select a Demography" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Demographics</SelectLabel>
+                                {Demographics.map((demographic) => (
+                                  <SelectItem
+                                    key={demographic}
+                                    value={demographic}
+                                  >
+                                    {demographic}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    className="rounded-2xl bg-[#545454] p-3 text-white font-montserrat px-10 ml-60"
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                        {editMode ? (
+                          <div>Updating...</div>
+                        ) : (
+                          <div>Creating..</div>
+                        )}
+                      </>
+                    ) : (
+                      <>{editMode ? <div>Update</div> : <div>Create</div>}</>
+                    )}
+                  </Button>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
         {loading ? (
           <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2  lg:grid-cols-4">
             <Skeleton className="h-[125px] w-full rounded-xl" />
@@ -382,11 +395,11 @@ const Page = () => {
             No Clients found! Start by creating a client now
           </div>
         ) : (
-          <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2  lg:grid-cols-4">
+          <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-3  lg:grid-cols-5">
             {clients.map((client, index) => (
               <div
                 key={index}
-                className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
+                className="grey rounded-2xl p-5 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
               >
                 <div className="flex gap-2 items-center justify-between">
                   <Link href={`/dashboard/${client.id}`}>
@@ -397,32 +410,47 @@ const Page = () => {
                         // router.prefetch(`/dashboard/${client.id}`);
                       }}
                     >
-                      <div className="font-bold capitalize hover:underline">
+                      <div className=" capitalize hover:underline font-montserrat flex  gap-4 text-xl">
+                        <img src="/company.png" alt="company"></img>
                         {client.name}
                       </div>
                     </div>
                   </Link>
                   <div className="flex gap-3">
-                    <div
-                      className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
-                      onClick={() => handleEditClient(client)}
-                    >
-                      <Pencil2Icon className="h-4 w-4" />
-                      <div>Edit</div>
-                    </div>
-                    <div
-                      className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
-                      onClick={() => handleDeleteClient(client.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      <div>Delete</div>
+                    <div className="text-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="center"
+                          className="rounded-2xl font-montserrat"
+                        >
+                          {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
+                          <DropdownMenuItem
+                            onClick={() => handleEditClient(client)}
+                            className="text-center items-center flex justify-center p-2 font-normal"
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <SelectSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteClient(client.id)}
+                            className="text-center items-center flex justify-center p-2 font-normal"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
-                <div>
-                  {`Industry : ${client.industry}`}
+                <div className="font-montserrat">
+                  {`${client.industry}`}
                   <br />
-                  {`Demographics : ${client.demographics}`}
+                  {`${client.demographics}`}
                   <br />
                 </div>
               </div>

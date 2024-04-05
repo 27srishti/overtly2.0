@@ -7,7 +7,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -19,6 +19,7 @@ const config = {
     },
     extend: {
       colors: {
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -27,6 +28,10 @@ const config = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+        },
+        gradientbg: {
+          DEFAULT: "var(--gradientbg)",
+          foreground: "linear-gradient(134.2deg, rgba(213, 230, 255, 0.2) 20.86%, rgba(255, 252, 169, 0.128) 85.59%), #FFFFFF",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -71,6 +76,9 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      fontFamily: {
+        montserrat: ["var(--font-montserrat)"],
       },
     },
   },

@@ -17,6 +17,7 @@ import { signOut } from "firebase/auth";
 import { toast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { BellIcon } from "@radix-ui/react-icons";
 
 const Navbar = () => {
   const user = auth.currentUser;
@@ -37,56 +38,30 @@ const Navbar = () => {
   }
 
   return (
-    <div className="sticky top-0 z-50 bg-secondary">
-      <div className="border-b bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
+    <div className="sticky top-0 z-50 pt-3 px-4">
+      <div className=" bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
         <div className="container flex justify-between px-2 items-center">
           <Link href="/dashboard">
-            <div
-              className="flex items-center justify-center text-lg cursor-pointer"
-              // onClick={() => router.push("/dashboard")}
-            >
+            <div className="flex items-center justify-center text-lg cursor-pointer">
               <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
-
-              {/* <svg
-              width="47"
-              height="47"
-              viewBox="0 0 47 47"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-12"
-            >
-              <path
-                d="M10 15L24 33"
-                stroke="black"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M20 18L33 35"
-                stroke="black"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg> */}
-
-              {/* <img src="/images.png" className="w-12" alt="Logo" /> */}
-              {/* <div className="ml-2">Overtly</div> */}
             </div>
           </Link>
 
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => router.push("/dashboard")}>
+          <div className="flex items-center gap-5">
+            {/* <Button variant="outline" onClick={() => router.push("/dashboard")}>
               Go to Dashboard
-            </Button>
+            </Button> */}
+            <div className=" bg-secondary p-3 rounded-full">
+              <img src="/bell.png" alt="bell" />
+              {/* <BellIcon className="w-5 h-5" /> */}
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   className="relative h-8 w-8 rounded-full"
                 >
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={
                         user?.photoURL ??
