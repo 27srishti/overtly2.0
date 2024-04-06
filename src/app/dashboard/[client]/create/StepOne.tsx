@@ -10,6 +10,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/firebase";
 import { useParams } from "next/navigation";
 import { useSearchParams } from "next/navigation";
+import { ArrowLeftIcon } from "lucide-react";
 
 interface StepOneProps {
   onNext: () => void;
@@ -122,84 +123,83 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   };
 
   return (
-    <div className="w-full mt-4 xl:px-52">
-      <div className="">
-        <div className="text-3xl font-bold mt-4 ml-2">Create a project</div>
-        <div className="ml-2">Description : {project?.description}</div>
-        <div>
-          <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
-            <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="email">Idea hint</Label>
-              <Input
-                placeholder="Idea hint"
-                value={ideahint}
-                onChange={(e) => {
-                  setIdeaHint(e.target.value);
-                }}
-              />
+    <div className="w-full mt-4 xl:px-52 font-montserrat">
+      <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
+        <div className="grid w-full max-w-lg items-center gap-3">
+          <div className="text-2xl  my-7 text-[#545454]">Pitch Info</div>
+          <Label htmlFor="email">Idea hint</Label>
+          <Input
+            placeholder="Idea hint"
+            value={ideahint}
+            onChange={(e) => {
+              setIdeaHint(e.target.value);
+            }}
+            className="grey shadow-none outline-none border-0 rounded-lg  h-11"
+          />
 
-              {error && (
-                <div className="text-destructive text-sm">
-                  Please enter an idea hint
-                </div>
-              )}
+          {error && (
+            <div className="text-destructive text-sm">
+              Please enter an idea hint
             </div>
-            <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="ideas">Keywords</Label>
-              <div>
+          )}
+        </div>
+        <div className="grid w-full max-w-lg items-center gap-1.5">
+          <Label htmlFor="ideas">Keywords</Label>
+          <div>
+            <div
+              id="ideas"
+              className="flex flex-wrap w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg  min-h-11"
+            >
+              {chips?.map((chip, index) => (
                 <div
-                  id="ideas"
-                  className="flex flex-wrap w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  key={index}
+                  className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex ml-2 mb-1"
                 >
-                  {chips?.map((chip, index) => (
-                    <div
-                      key={index}
-                      className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex ml-2 mb-1"
-                    >
-                      <div>{chip}</div>
-                      <button
-                        onClick={() => handleChipDelete(chip)}
-                        className="text-red-500"
-                      >
-                        <Icons.Cross />
-                      </button>
-                    </div>
-                  ))}
+                  <div>{chip}</div>
+                  <button
+                    onClick={() => handleChipDelete(chip)}
+                    className="text-red-500"
+                  >
+                    <Icons.Cross />
+                  </button>
+                </div>
+              ))}
 
-                  <input
-                    type="text"
-                    value={inputValue}
-                    onChange={handleInputChange}
-                    onKeyDown={handleInputKeyDown}
-                    placeholder={"Enter Keywords..."}
-                    className="border-none outline-none bg-transparent flex-grow file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground ml-2 mt-2  mb-1"
-                  />
-                </div>
-              </div>
-              {error && (
-                <div className="text-destructive text-sm">
-                  Please enter an ideas
-                </div>
-              )}
-            </div>
-            <div className="flex justify-center items-center">or</div>
-            <div className="flex justify-center items-center">
-              <Button className="items-center" onClick={handleGenerateUsingAI}>
-                Generate using ai
-              </Button>
+              <input
+                type="text"
+                value={inputValue}
+                onChange={handleInputChange}
+                onKeyDown={handleInputKeyDown}
+                placeholder={"Enter Keywords..."}
+                className="border-none outline-none bg-transparent flex-grow file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground ml-2 mt-2  mb-1"
+              />
             </div>
           </div>
-          <div className="mt-4 sm:mx-2">
+          {error && (
+            <div className="text-destructive text-sm">
+              Please enter an ideas
+            </div>
+          )}
+          <div className="mt-16">
             <div className="flex items-center justify-between">
-              <Button className="items-center" disabled>
-                Previous
+              <Button className="items-center rounded-full px-6" disabled>
+                <ArrowLeftIcon />
               </Button>
-              <Button className="items-center" onClick={clickNext}>
+              <Button
+                className="items-center rounded-full px-14 bg-[#5C5C5C]"
+                onClick={clickNext}
+              >
                 Next
               </Button>
             </div>
           </div>
         </div>
+        {/* <div className="flex justify-center items-center">or</div>
+            <div className="flex justify-center items-center">
+              <Button className="items-center" onClick={handleGenerateUsingAI}>
+                Generate using ai
+              </Button>
+            </div> */}
       </div>
     </div>
   );

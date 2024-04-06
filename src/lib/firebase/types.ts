@@ -10,6 +10,7 @@ export interface client {
 export interface project {
     id?: any;
     name: string;
+    currentStep: number;
     description: string;
     createdAt: number;
 }

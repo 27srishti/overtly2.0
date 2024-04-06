@@ -34,6 +34,7 @@ import {
 } from "@/lib/dropdown";
 import { useForm } from "react-hook-form";
 import { useProjectStore } from "@/store";
+import { ArrowLeftIcon } from "lucide-react";
 
 interface StepTwoProps {
   onPrevious: () => void;
@@ -135,175 +136,164 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   console.log("fetchedValues:", fetchedValues);
   console.log("defaultValues:", form.getValues());
   return (
-    <div className="w-full mt-4 xl:px-52">
-      <div className="">
-        <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
-        <div className="ml-2">Description : {project?.description}</div>
-        <div>
-          <div className="border p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
-            <div className="grid w-full xl:w-[40vw] items-center gap-1.5">
-              <Form {...form}>
-                <form className="space-y-3">
-                  <FormField
-                    control={form.control}
-                    name="mediaFormat"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Media Formats</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                              form.setValue("mediaFormat", value);
-                            }}
-                            value={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Media Details" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Media Formats</SelectLabel>
-                                {mediaFormats.map((mediaFormat) => (
-                                  <SelectItem
-                                    key={mediaFormat}
-                                    value={mediaFormat}
-                                  >
-                                    {mediaFormat}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="beat"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Beat</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                              form.setValue("beat", value);
-                            }}
-                            value={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a Beat" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Beat</SelectLabel>
-                                {beats.map((beat) => (
-                                  <SelectItem key={beat} value={beat}>
-                                    {beat}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="outlet"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Outlet</FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                              form.setValue("outlet", value);
-                            }}
-                            value={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a Outlet" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Traditional media</SelectLabel>
-                                {TraditionalMedia.map((mediaFormat) => (
-                                  <SelectItem
-                                    key={mediaFormat}
-                                    value={mediaFormat}
-                                  >
-                                    {mediaFormat}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                              <SelectGroup>
-                                <SelectLabel>Digital Media</SelectLabel>
-                                {DigitalMedia.map((mediaFormat) => (
-                                  <SelectItem
-                                    key={mediaFormat}
-                                    value={mediaFormat}
-                                  >
-                                    {mediaFormat}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="objective"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Objective </FormLabel>
-                        <FormControl>
-                          <Select
-                            onValueChange={(value) => {
-                              field.onChange(value);
-                              form.setValue("objective", value);
-                            }}
-                            value={field.value}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select a Objective" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectGroup>
-                                <SelectLabel>Objective</SelectLabel>
-                                {Objective.map((objective) => (
-                                  <SelectItem key={objective} value={objective}>
-                                    {objective}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </form>
-              </Form>
-            </div>
-          </div>
+    <div className="w-full mt-4 xl:px-52 font-montserrat">
+      <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
+        <div className="grid w-full xl:w-[40vw] items-center gap-2">
+          <div className="text-2xl  my-7 text-[#545454]">Pitch options</div>
+          <Form {...form}>
+            <form className="space-y-3">
+              <FormField
+                control={form.control}
+                name="mediaFormat"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Media Formats</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("mediaFormat", value);
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-xl  h-11">
+                          <SelectValue placeholder="Media Details" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Media Formats</SelectLabel>
+                            {mediaFormats.map((mediaFormat) => (
+                              <SelectItem key={mediaFormat} value={mediaFormat}>
+                                {mediaFormat}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="beat"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Beat</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("beat", value);
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-xl  h-11">
+                          <SelectValue placeholder="Select a Beat" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Beat</SelectLabel>
+                            {beats.map((beat) => (
+                              <SelectItem key={beat} value={beat}>
+                                {beat}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="outlet"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Outlet</FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("outlet", value);
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-xl  h-11">
+                          <SelectValue placeholder="Select a Outlet" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Traditional media</SelectLabel>
+                            {TraditionalMedia.map((mediaFormat) => (
+                              <SelectItem key={mediaFormat} value={mediaFormat}>
+                                {mediaFormat}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                          <SelectGroup>
+                            <SelectLabel>Digital Media</SelectLabel>
+                            {DigitalMedia.map((mediaFormat) => (
+                              <SelectItem key={mediaFormat} value={mediaFormat}>
+                                {mediaFormat}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="objective"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Objective </FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          form.setValue("objective", value);
+                        }}
+                        value={field.value}
+                      >
+                        <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-xl  h-11">
+                          <SelectValue placeholder="Select a Objective" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Objective</SelectLabel>
+                            {Objective.map((objective) => (
+                              <SelectItem key={objective} value={objective}>
+                                {objective}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
           <div className="mt-4 sm:mx-2">
             <div className="flex items-center justify-between">
-              <Button className="items-center" onClick={onPrevious}>
-                Previous
+              <Button
+                className="items-center rounded-full px-6 bg-[#5C5C5C]"
+                onClick={onPrevious}
+              >
+                <ArrowLeftIcon />
               </Button>
               <Button
-                className="items-center"
+                className="items-center rounded-full px-14 bg-[#5C5C5C]"
                 onClick={async () => {
                   const isValid = await form.trigger();
 

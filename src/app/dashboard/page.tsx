@@ -233,7 +233,7 @@ const Page = () => {
     <div className="gradientbg">
       <Navbar />
       <div className="container px-7">
-        <div className="flex gap-8">
+        <div className="flex gap-8 mt-5 mb-14">
           <div className="text-3xl mt-4 ml-2 font-montserrat">Dashboard</div>
           <Dialog
             open={open}
@@ -253,9 +253,9 @@ const Page = () => {
                 <img src="/plus.png" alt="plus" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] ">
+            <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[25vw]">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-xl mt-3 ml-1">
                   {editMode ? "Update Client" : "Add new Client"}
                 </DialogTitle>
                 {/* <DialogDescription>
@@ -267,7 +267,7 @@ const Page = () => {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="space-y-4"
+                  className="space-y-7"
                 >
                   <FormField
                     control={form.control}
@@ -279,7 +279,7 @@ const Page = () => {
                           <Input
                             placeholder="Ex: Amazon"
                             {...field}
-                            className="grey shadow-none outline-none border-0 rounded-lg"
+                            className="grey shadow-none outline-none border-0 rounded-lg h-11"
                           />
                         </FormControl>
                         <FormMessage />
@@ -297,11 +297,8 @@ const Page = () => {
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
-                            <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-lg ">
-                              <SelectValue
-                                placeholder="Select a Industry"
-                                
-                              />
+                            <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11">
+                              <SelectValue placeholder="Select a Industry" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
@@ -333,7 +330,7 @@ const Page = () => {
                             onValueChange={field.onChange}
                             defaultValue={field.value}
                           >
-                            <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-lg">
+                            <SelectTrigger className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11">
                               <SelectValue placeholder="Select a Demography" />
                             </SelectTrigger>
                             <SelectContent>
@@ -355,26 +352,29 @@ const Page = () => {
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="submit"
-                    className="rounded-2xl bg-[#545454] p-3 text-white font-montserrat px-10 ml-60"
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        {editMode ? (
-                          <div>Updating...</div>
-                        ) : (
-                          <div>Creating..</div>
-                        )}
-                      </>
-                    ) : (
-                      <>{editMode ? <div>Update</div> : <div>Create</div>}</>
-                    )}
-                  </Button>
                 </form>
               </Form>
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  className="rounded-2xl bg-[#545454] p-4 text-white font-montserrat px-11 mr-1"
+                  disabled={submitting}
+                  onClick={form.handleSubmit(onSubmit)}
+                >
+                  {submitting ? (
+                    <>
+                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      {editMode ? (
+                        <div>Updating...</div>
+                      ) : (
+                        <div>Creating..</div>
+                      )}
+                    </>
+                  ) : (
+                    <>{editMode ? <div>Update</div> : <div>Create</div>}</>
+                  )}
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         </div>

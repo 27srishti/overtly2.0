@@ -6,21 +6,36 @@ import StepThree from "./StepThree";
 import StepEnd from "./StepEnd";
 import StepFour from "./StepFour";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { useClientStore, useProjectStore } from "@/store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Page = () => {
   const searchParams = useSearchParams();
   const currentStep = parseInt(searchParams.get("step") ?? "0");
-  const project = searchParams.get("projectid");
+  const projectIdParamas = searchParams.get("projectid");
   const pathname = usePathname();
   const router = useRouter();
-
+  const { client } = useClientStore();
+  const { project } = useProjectStore();
   console.log(pathname);
   const onNext = () => {
-    router.push(`${pathname}?projectid=${project}&step=${currentStep + 1}`);
+    router.push(
+      `${pathname}?projectid=${projectIdParamas}&step=${currentStep + 1}`
+    );
   };
 
   const onPrevious = () => {
-    router.push(`${pathname}?projectid=${project}&step=${currentStep - 1}`);
+    router.push(
+      `${pathname}?projectid=${projectIdParamas}&step=${currentStep - 1}`
+    );
   };
 
   const renderStep = () => {
@@ -41,7 +56,37 @@ const Page = () => {
   };
 
   return (
-    <div className="w-full px-5 mt-4 ml-16 sm:ml-44 lg:px-10 xl:py-10">
+    <div className="w-full px-16 mt-8">
+      <Breadcrumb className="font-montserrat capitalize mb-4">
+        <BreadcrumbList className="text-lg">
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/dashboard/${client?.id}`}>
+              {client?.name}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href={`/dashboard/${project?.id}`}>
+              {project?.name ? (
+                project?.name
+              ) : (
+                <Skeleton className="h-4 w-[20px]" />
+              )}
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="flex flex-col">
+        <div className="w-full bg-[#E8E8E8]  rounded-full">
+          <div className="progressbar max-w-[40%] rounded-full  p-[0.15rem]"></div>
+        </div>
+        <div className="flex justify-between mt-2 px-1">
+          <div className="bg-[#E8E8E8]  rounded-full p-1"></div>
+          <div className="bg-[#E8E8E8]  rounded-full p-1"></div>
+          <div className="bg-[#E8E8E8]  rounded-full p-1"></div>
+          <div className="bg-[#E8E8E8]  rounded-full p-1"></div>
+        </div>
+      </div>
       {renderStep()}
     </div>
   );

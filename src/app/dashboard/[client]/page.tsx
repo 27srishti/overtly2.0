@@ -13,6 +13,23 @@ import {
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Form,
   FormControl,
   FormField,
@@ -43,7 +60,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useClientStore, useProjectStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
@@ -128,6 +145,7 @@ const Page = () => {
     const projectData: project = {
       name: values.name,
       description: values.description,
+      currentStep: 1,
       createdAt: Date.now(),
     };
 
@@ -249,79 +267,89 @@ const Page = () => {
     }
   };
   return (
-    <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
-      <div className="text-3xl font-bold mt-4 ml-2">
-        {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
-      </div>
+    // <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
+    <div className="w-full px-7 mt-4 font-montserrat ">
+      <div className="flex gap-8 mt-5 mb-14 ">
+        <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">
+          {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
+        </div>
 
-      <Dialog
-        open={open}
-        onOpenChange={(open) => {
-          form.setValue("name", "");
-          form.setValue("description", "");
-          setEditMode(false);
-          setOpen(open);
-        }}
-      >
-        <DialogTrigger asChild>
-          <Button variant={"outline"} className="mt-5">
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 15 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M8 2.75C8 2.47386 7.77614 2.25 7.5 2.25C7.22386 2.25 7 2.47386 7 2.75V7H2.75C2.47386 7 2.25 7.22386 2.25 7.5C2.25 7.77614 2.47386 8 2.75 8H7V12.25C7 12.5261 7.22386 12.75 7.5 12.75C7.77614 12.75 8 12.5261 8 12.25V8H12.25C12.5261 8 12.75 7.77614 12.75 7.5C12.75 7.22386 12.5261 7 12.25 7H8V2.75Z"
-                fill="currentColor"
-                fillRule="evenodd"
-                clipRule="evenodd"
-              ></path>
-            </svg>
-            <div className="ml-1">Create Project</div>
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
-              {editMode ? "Edit Project" : "Create Project"}
-            </DialogTitle>
-            <DialogDescription>
-              {editMode
-                ? "Update your project by entering the name"
-                : "Create your project by entering the name"}
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Amazon" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Enter Description" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="ml-full" disabled={submitting}>
+        <Dialog
+          open={open}
+          onOpenChange={(open) => {
+            form.setValue("name", "");
+            form.setValue("description", "");
+            setEditMode(false);
+            setOpen(open);
+          }}
+        >
+          <DialogTrigger asChild>
+            <Button className="mt-3 gap-2 b-0 shadow-none outline-none hover:bg-[#D5D5D5] p-5  rounded-2xl grey">
+              <div className="ml-1 font-montserrat text-[#545454]">
+                Create Project
+              </div>
+              <img src="/plus.png" alt="plus" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw]">
+            <DialogHeader className="text-xl mt-3 ml-1">
+              <DialogTitle>
+                {editMode ? "Edit Project" : "Create Project"}
+              </DialogTitle>
+              {/* <DialogDescription>
+                {editMode
+                  ? "Update your project by entering the name"
+                  : "Create your project by entering the name"}
+              </DialogDescription> */}
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-7"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Ex: Amazon"
+                          {...field}
+                          className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter Description"
+                          {...field}
+                          className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                className="rounded-2xl bg-[#545454] p-4 text-white font-montserrat px-11 mr-1"
+                disabled={submitting}
+                onClick={form.handleSubmit(onSubmit)}
+              >
                 {submitting ? (
                   <>
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -345,10 +373,10 @@ const Page = () => {
                   </>
                 )}
               </Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       {loading ? (
         <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2  lg:grid-cols-4">
@@ -366,40 +394,56 @@ const Page = () => {
           No Projects found! Start by creating a project now
         </div>
       ) : (
-        <div className="grid grid-cols-1 mt-5 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-3  lg:grid-cols-4">
           {projects.map((document, index) => (
             <div
               key={index}
-              className="border rounded-sm p-4 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition"
-              onClick={() => handleProjectClick(document)}
+              className="grey rounded-2xl p-5 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
             >
               <div className="flex gap-2 items-center justify-between">
-                <div className="flex gap-2 items-center">
-                  <Icons.Person />
-                  <div className="font-bold capitalize hover:underline">
-                    {document.name}
-                  </div>
+                <div
+                  className=" capitalize hover:underline font-montserrat flex  gap-4 text-xl"
+                  onClick={() => handleProjectClick(document)}
+                >
+                  <img src="/company.png" alt="company"></img>
+                  {document.name}
                 </div>
                 <div className="flex gap-3">
-                  <div
-                    className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
-                    onClick={() => handleEditProject(document)}
-                  >
-                    <Pencil2Icon className="h-4 w-4" />
-                    <div>Edit</div>
-                  </div>
-                  <div
-                    className=" flex items-center gap-1 cursor-pointer text-center align-center hover:underline"
-                    onClick={() => handleDeleteProject(document.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <div>Delete</div>
+                  <div className="text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent
+                        align="center"
+                        className="rounded-2xl font-montserrat"
+                      >
+                        {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
+                        <DropdownMenuItem
+                          onClick={() => handleEditProject(document)}
+                          className="text-center items-center flex justify-center p-2 font-normal"
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <SelectSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteProject(document.id)}
+                          className="text-center items-center flex justify-center p-2 font-normal"
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </div>
-              <div>
-                The ultimate app for your Apple Watch. Enhance your experience
-                with custom watch faces, health tracking, and more.
+              <div className="font-montserrat">
+                {`${document.description}`}
+                <br />
+                {`E-commerce`}
+                <br />
               </div>
             </div>
           ))}

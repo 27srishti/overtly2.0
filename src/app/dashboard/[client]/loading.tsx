@@ -3,7 +3,7 @@ import React from "react";
 
 const loading = () => {
   return (
-    <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
+    <div className="w-full px-5 mt-4">
       <div className="text-3xl font-bold mt-4 ml-2">
         <Skeleton className="h-10 w-[100px]" />
       </div>

@@ -14,7 +14,14 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { User, LifeBuoy, CreditCard, Settings, LogOut } from "lucide-react";
+import {
+  User,
+  LifeBuoy,
+  CreditCard,
+  Settings,
+  LogOut,
+  HomeIcon,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase/firebase";
@@ -30,6 +37,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { CubeIcon } from "@radix-ui/react-icons";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);
@@ -57,18 +65,41 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
-      <div className="sticky top-0 z-50 bg-secondary">
-        <div className="border-b bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
+    <div className="gradientbg">
+      <div className="sticky top-0 z-50 pt-3 px-4 font-montserrat">
+        <div className=" bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
           <div className="container flex justify-between px-2 items-center">
-            <div
-              className="flex items-center justify-center text-lg cursor-pointer"
-              onClick={() => router.push("/dashboard")}
-            >
-              <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
-            </div>
-            <div>
-              <Breadcrumb>
+            <Link href={`/dashboard`}>
+              <div className="flex items-center justify-center text-lg cursor-pointer">
+                <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
+              </div>
+            </Link>
+
+            <div className="flex gap-3">
+              <Link href={`/dashboard`}>
+                <div className="rounded-full p-3 bg-[#E8E8E8]">
+                  <HomeIcon className="w-5 h-5" />
+                </div>
+              </Link>
+              <div className="flex gap-4 rounded-full items-center bg-[#E8E8E8]  py-1 px-1">
+                <div className="rounded-full items-center bg-[#BDF294] p-2 px-5">
+                  Pitch gen
+                </div>
+                <div className="rounded-full items-center  p-2 px-5">
+                  Research
+                </div>
+                <div className="rounded-full items-center  p-2 px-5">
+                  Analytics
+                </div>
+              </div>
+              <Link href={`/dashboard/${params.client}/datalibrary`}>
+                <div className="rounded-full p-2 yellowbtn text-center flex justify-center items-center px-3 gap-2">
+                  <CubeIcon className="w-5 h-5" />
+                  Data Library
+                </div>
+              </Link>
+
+              {/* <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
                     <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
@@ -92,15 +123,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
-              </Breadcrumb>
+              </Breadcrumb> */}
             </div>
             <div className="flex items-center gap-3">
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={() => router.push("/dashboard")}
               >
                 Go to Dashboard
-              </Button>
+              </Button> */}
+              <div className=" bg-secondary p-3 rounded-full">
+                <img src="/bell.png" alt="bell" />
+                {/* <BellIcon className="w-5 h-5" /> */}
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -160,7 +195,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-      <div className="container px-0 relative ">
+      {/* <div className="container px-0 relative ">
         <div className="flex transition  duration-1000 ease-in-out">
           <div
             className={`${
@@ -231,7 +266,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           {children}
         </div>
-      </div>
-    </>
+      </div> */}
+      {children}
+    </div>
   );
 }

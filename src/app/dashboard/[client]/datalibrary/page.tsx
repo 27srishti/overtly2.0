@@ -124,7 +124,7 @@ const Page = () => {
   const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
 
   return (
-    <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
+    <div className="w-full px-5 mt-4">
       <div>
         <div className="text-3xl font-bold mt-4 lg:ml-32">Upload files</div>
         <div className="ml-2 lg:ml-32">

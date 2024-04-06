@@ -91,6 +91,24 @@
       #ffffff;
     min-height: 100vh;
   }
+  .yellowbtn {
+    background: linear-gradient(
+        0deg,
+        rgba(255, 250, 221, 0.71),
+        rgba(255, 250, 221, 0.71)
+      ),
+      #fff3c9;
+    border: 1px solid #ffb82d;
+  }
+  .progressbar {
+
+    background: linear-gradient(
+      90deg,
+      rgba(127, 186, 255, 0.8) 0%,
+      rgba(176, 255, 75, 0.8) 100%
+    );
+    opacity: 0.8;
+  }
   .grey {
     background: rgba(213, 213, 213, 0.25);
   }

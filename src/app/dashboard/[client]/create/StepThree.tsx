@@ -22,6 +22,7 @@ import { auth, db } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
+import { ArrowLeftIcon } from "lucide-react";
 
 interface StepTwoProps {
   onPrevious: () => void;
@@ -123,91 +124,107 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
       console.error("Error updating form data:", error);
     }
   };
-
   return (
-    <div className="w-full mt-4 xl:px-52">
-      <div className="">
-        <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
-        <div className="ml-2">Description : {project?.description}</div>
-        <div>
-          <ScrollArea className="border rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh]">
-            {loading ? (
-              <>
-                <Skeleton className="h-16 w-full mb-3" />
-                <Skeleton className="h-16 w-full mb-3" />
-                <Skeleton className="h-16 w-full mb-3" />
-                <Skeleton className="h-16 w-full mb-3" />
-                <Skeleton className="h-16 w-full mb-3" />
-              </>
-            ) : (
-              <Accordion
-                type="multiple"
-                value={fetchedValues.generatedIdeas.map(
-                  (item) => `item-${item.idea}`
-                )}
-              >
-                {fetchedValues.generatedIdeas.map((item, index) => (
-                  <AccordionItem
-                    key={index}
-                    value={`item-${item.idea}`}
-                    className="shadow-md border"
-                  >
-                    <AccordionTrigger className="ml-4">
-                      {item.idea}
-                    </AccordionTrigger>
-                    <AccordionContent
-                      onClick={() => {
-                        setFetchedValues({
-                          ...fetchedValues,
-                          selectedGeneratedIdea: item,
-                        });
-                      }}
-                      className={`${
-                        fetchedValues.selectedGeneratedIdea.idea ===
-                        `${item.idea}`
-                          ? "bg-secondary"
-                          : ""
-                      }`}
-                    >
-                      {item.story}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
-          </ScrollArea>
-          <div className="mt-4 sm:mx-2">
-            <div className="flex items-center justify-between">
-              <Button className="items-center" onClick={onPrevious}>
-                Previous
-              </Button>
-              <Button
-                className="items-center"
+    <div className="w-full mt-4 xl:px-52 font-montserrat">
+      <div className="text-2xl  my-7 text-[#545454]">Idea Selection</div>
+      <ScrollArea className=" rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh] bg-white rounded-2xl">
+        {loading ? (
+          <>
+            <Skeleton className="h-16 w-full mb-3" />
+            <Skeleton className="h-16 w-full mb-3" />
+            <Skeleton className="h-16 w-full mb-3" />
+            <Skeleton className="h-16 w-full mb-3" />
+            <Skeleton className="h-16 w-full mb-3" />
+          </>
+        ) : (
+          // <Accordion
+          //   type="multiple"
+          //   value={fetchedValues.generatedIdeas.map(
+          //     (item) => `item-${item.idea}`
+          //   )}
+          // >
+          //   {fetchedValues.generatedIdeas.map((item, index) => (
+          //     <AccordionItem
+          //       key={index}
+          //       value={`item-${item.idea}`}
+          //       className="shadow-md border"
+          //     >
+          //       <AccordionTrigger className="ml-4">
+          //         {item.idea}
+          //       </AccordionTrigger>
+          //       <AccordionContent
+          //         onClick={() => {
+          //           setFetchedValues({
+          //             ...fetchedValues,
+          //             selectedGeneratedIdea: item,
+          //           });
+          //         }}
+          //         className={`${
+          //           fetchedValues.selectedGeneratedIdea.idea === `${item.idea}`
+          //             ? "bg-secondary"
+          //             : ""
+          //         }`}
+          //       >
+          //         {item.story}
+          //       </AccordionContent>
+          //     </AccordionItem>
+          //   ))}
+          // </Accordion>
+          <div>
+            {fetchedValues?.generatedIdeas?.map((item, index) => (
+              <div
+                key={index}
+                className={`${
+                  fetchedValues.selectedGeneratedIdea.idea === `${item.idea}`
+                    ? "border-[#5992FF] border "
+                    : ""
+                } rounded-3xl border-[#B0B0B0] border bg-[#FBFBFB] mb-3 p-3 text-[#545454] cursor-pointer`}
                 onClick={() => {
-                  if (
-                    fetchedValues.selectedGeneratedIdea.idea !== "" &&
-                    fetchedValues.selectedGeneratedIdea.story !== ""
-                  ) {
-                    updateFormData({
-                      generatedIdeas: fetchedValues.generatedIdeas,
-                      selectedGeneratedIdea:
-                        fetchedValues.selectedGeneratedIdea,
-                      currentStep: 3,
-                    });
-                    onNext();
-                  } else {
-                    toast({
-                      title: "Error",
-                      description: "Please select a topic",
-                      variant: "destructive",
-                    });
-                  }
+                  setFetchedValues({
+                    ...fetchedValues,
+                    selectedGeneratedIdea: item,
+                  });
                 }}
               >
-                Next
-              </Button>
-            </div>
+                <div className="font-semibold mb-2">{item.idea}</div>
+                <div className={`text-sm`}>{item.story}</div>
+              </div>
+            ))}
           </div>
+        )}
+      </ScrollArea>
+      <div className="mt-4 sm:mx-2">
+        <div className="flex items-center justify-between">
+          <Button
+            className="items-center rounded-full px-6 bg-[#5C5C5C]"
+            onClick={onPrevious}
+          >
+            <ArrowLeftIcon />
+          </Button>
+          <Button
+           className="items-center rounded-full px-14 bg-[#5C5C5C]"
+            onClick={() => {
+              if (
+                fetchedValues.selectedGeneratedIdea.idea !== "" &&
+                fetchedValues.selectedGeneratedIdea.story !== ""
+              ) {
+                updateFormData({
+                  generatedIdeas: fetchedValues.generatedIdeas,
+                  selectedGeneratedIdea: fetchedValues.selectedGeneratedIdea,
+                  currentStep: 3,
+                });
+                onNext();
+              } else {
+                toast({
+                  title: "Error",
+                  description: "Please select a topic",
+                  variant: "destructive",
+                });
+              }
+            }}
+          >
+            Next
+          </Button>
         </div>
       </div>
     </div>
