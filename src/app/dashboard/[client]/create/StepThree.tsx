@@ -125,106 +125,114 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
     }
   };
   return (
-    <div className="w-full mt-4 xl:px-52 font-montserrat">
-      <div className="text-2xl  my-7 text-[#545454]">Idea Selection</div>
-      <ScrollArea className=" rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh] bg-white rounded-2xl">
-        {loading ? (
-          <>
-            <Skeleton className="h-16 w-full mb-3" />
-            <Skeleton className="h-16 w-full mb-3" />
-            <Skeleton className="h-16 w-full mb-3" />
-            <Skeleton className="h-16 w-full mb-3" />
-            <Skeleton className="h-16 w-full mb-3" />
-          </>
-        ) : (
-          // <Accordion
-          //   type="multiple"
-          //   value={fetchedValues.generatedIdeas.map(
-          //     (item) => `item-${item.idea}`
-          //   )}
-          // >
-          //   {fetchedValues.generatedIdeas.map((item, index) => (
-          //     <AccordionItem
-          //       key={index}
-          //       value={`item-${item.idea}`}
-          //       className="shadow-md border"
-          //     >
-          //       <AccordionTrigger className="ml-4">
-          //         {item.idea}
-          //       </AccordionTrigger>
-          //       <AccordionContent
-          //         onClick={() => {
-          //           setFetchedValues({
-          //             ...fetchedValues,
-          //             selectedGeneratedIdea: item,
-          //           });
-          //         }}
-          //         className={`${
-          //           fetchedValues.selectedGeneratedIdea.idea === `${item.idea}`
-          //             ? "bg-secondary"
-          //             : ""
-          //         }`}
-          //       >
-          //         {item.story}
-          //       </AccordionContent>
-          //     </AccordionItem>
-          //   ))}
-          // </Accordion>
-          <div>
-            {fetchedValues?.generatedIdeas?.map((item, index) => (
-              <div
-                key={index}
-                className={`${
-                  fetchedValues.selectedGeneratedIdea.idea === `${item.idea}`
-                    ? "border-[#5992FF] border "
-                    : ""
-                } rounded-3xl border-[#B0B0B0] border bg-[#FBFBFB] mb-3 p-3 text-[#545454] cursor-pointer`}
-                onClick={() => {
-                  setFetchedValues({
-                    ...fetchedValues,
-                    selectedGeneratedIdea: item,
+    <div className="w-full mt-4 xl:px-52 font-montserrat flex justify-between flex-col items-center">
+      <div>
+        <div className="text-2xl  my-7 text-[#545454]">Idea Selection</div>
+        <ScrollArea className=" rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh] bg-white rounded-2xl w-[50vw]">
+          {loading ? (
+            <>
+              <Skeleton className="h-16 w-full mb-3" />
+              <Skeleton className="h-16 w-full mb-3" />
+              <Skeleton className="h-16 w-full mb-3" />
+              <Skeleton className="h-16 w-full mb-3" />
+              <Skeleton className="h-16 w-full mb-3" />
+            </>
+          ) : (
+            <Accordion
+              type="single"
+              // value={fetchedValues.selectedGeneratedIdea.idea}
+              // value={fetchedValues.generatedIdeas.map(
+              //   (item) => `item-${item.idea}`
+              // )}
+            >
+              {Array.isArray(fetchedValues?.generatedIdeas) &&
+                fetchedValues.generatedIdeas.map((item, index) => (
+                  <AccordionItem
+                    key={index}
+                    value={`item-${item.idea}`}
+                    className={`${
+                      fetchedValues.selectedGeneratedIdea.idea ===
+                      `${item.idea}`
+                        ? "border-[#5992FF] border rounded-3xl"
+                        : ""
+                    } p-0`}
+                  >
+                    <AccordionTrigger
+                      className={`${
+                        fetchedValues.selectedGeneratedIdea.idea ===
+                        `${item.idea}`
+                          ? "border-[#5992FF] border-b"
+                          : "border-[#B0B0B0] border bg-[#FBFBFB]"
+                      } rounded-3xl p-4 text-[#545454] cursor-pointer text-justify px-7`}
+                      onClick={() => {
+                        setFetchedValues({
+                          ...fetchedValues,
+                          selectedGeneratedIdea: item,
+                        });
+                      }}
+                    >
+                      {item.idea}
+                    </AccordionTrigger>
+                    <AccordionContent className="px-7">{item.story}</AccordionContent>
+                  </AccordionItem>
+                ))}
+            </Accordion>
+            // <div>
+            //   {fetchedValues?.generatedIdeas?.map((item, index) => (
+            //     <div
+            //       key={index}
+            //       className={`${
+            //         fetchedValues.selectedGeneratedIdea.idea === `${item.idea}`
+            //           ? "border-[#5992FF] border "
+            //           : ""
+            //       } rounded-3xl border-[#B0B0B0] border bg-[#FBFBFB] mb-3 p-3 text-[#545454] cursor-pointer`}
+            //       onClick={() => {
+            //         setFetchedValues({
+            //           ...fetchedValues,
+            //           selectedGeneratedIdea: item,
+            //         });
+            //       }}
+            //     >
+            //       <div className="font-semibold mb-2">{item.idea}</div>
+            //       <div className={`text-sm`}>{item.story}</div>
+            //     </div>
+            //   ))}
+            // </div>
+          )}
+        </ScrollArea>
+        <div className="mt-4 sm:mx-2">
+          <div className="flex items-center justify-between">
+            <Button
+              className="items-center rounded-full px-6 bg-[#5C5C5C]"
+              onClick={onPrevious}
+            >
+              <ArrowLeftIcon />
+            </Button>
+            <Button
+              className="items-center rounded-full px-14 bg-[#5C5C5C]"
+              onClick={() => {
+                if (
+                  fetchedValues.selectedGeneratedIdea.idea !== "" &&
+                  fetchedValues.selectedGeneratedIdea.story !== ""
+                ) {
+                  updateFormData({
+                    generatedIdeas: fetchedValues.generatedIdeas,
+                    selectedGeneratedIdea: fetchedValues.selectedGeneratedIdea,
+                    currentStep: 3,
                   });
-                }}
-              >
-                <div className="font-semibold mb-2">{item.idea}</div>
-                <div className={`text-sm`}>{item.story}</div>
-              </div>
-            ))}
+                  onNext();
+                } else {
+                  toast({
+                    title: "Error",
+                    description: "Please select a topic",
+                    variant: "destructive",
+                  });
+                }
+              }}
+            >
+              Next
+            </Button>
           </div>
-        )}
-      </ScrollArea>
-      <div className="mt-4 sm:mx-2">
-        <div className="flex items-center justify-between">
-          <Button
-            className="items-center rounded-full px-6 bg-[#5C5C5C]"
-            onClick={onPrevious}
-          >
-            <ArrowLeftIcon />
-          </Button>
-          <Button
-           className="items-center rounded-full px-14 bg-[#5C5C5C]"
-            onClick={() => {
-              if (
-                fetchedValues.selectedGeneratedIdea.idea !== "" &&
-                fetchedValues.selectedGeneratedIdea.story !== ""
-              ) {
-                updateFormData({
-                  generatedIdeas: fetchedValues.generatedIdeas,
-                  selectedGeneratedIdea: fetchedValues.selectedGeneratedIdea,
-                  currentStep: 3,
-                });
-                onNext();
-              } else {
-                toast({
-                  title: "Error",
-                  description: "Please select a topic",
-                  variant: "destructive",
-                });
-              }
-            }}
-          >
-            Next
-          </Button>
         </div>
       </div>
     </div>

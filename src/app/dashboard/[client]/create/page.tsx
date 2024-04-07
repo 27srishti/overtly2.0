@@ -66,7 +66,7 @@ const Page = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/dashboard/${project?.id}`}>
+            <BreadcrumbLink >
               {project?.name ? (
                 project?.name
               ) : (

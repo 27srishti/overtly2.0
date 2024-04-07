@@ -34,6 +34,7 @@ import { Icons } from "@/components/ui/Icons";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
+import { ArrowLeftIcon } from "lucide-react";
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
@@ -172,278 +173,280 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   };
 
   return (
-    <div className="w-full mt-4 xl:px-52">
-      <div className="">
-        <div className="text-3xl font-bold mt-4 ml-2">Pitch options</div>
-        <div className="ml-2">Description : {project?.description}</div>
-        <div>
-          <div className="flex items-center justify-center gap-10">
-            <Dialog open={openemail} onOpenChange={setOpenemail} modal={false}>
-              <DialogTrigger asChild>
-                <div className="rounded-sm border  flex items-center justify-center p-10 h-52">
-                  <Button variant={"outline"} className="w-[10rem]">
-                    {loading ? (
-                      <>
-                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                        Loading Email...
-                      </>
-                    ) : (
-                      <div>Pitch Email</div>
-                    )}
-                  </Button>
-                </div>
-              </DialogTrigger>
-
-              <DialogContent
-                className="min-w-[90vw] max-h-[90vh] p-0"
-                onInteractOutside={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <div>
-                  <div className="border rounded-t-lg flex p-4 items-center justify-between">
-                    <div>Pitch Email</div>
-                    <div className="flex gap-2">
-                      <Button onClick={log}>Save</Button>
-                      <Button onClick={() => setOpenemail(false)}>Close</Button>
-                    </div>
+    <div className="w-full mt-4 xl:px-52 font-montserrat flex justify-between flex-col items-center">
+      <div className="flex flex-col gap-10">
+        <div className="text-2xl  my-7 text-[#545454]">Pitch options</div>
+        <div className="flex items-center justify-center gap-32">
+          <Dialog open={openemail} onOpenChange={setOpenemail} modal={false}>
+            <DialogTrigger asChild>
+              <div className="rounded-sm flex items-center justify-center p-10 bg-[#F5F4F4] w-[250px] rounded-xl h-44">
+                {loading ? (
+                  <div className="flex items-center">
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Loading Email...
                   </div>
-                  <div className="grid grid-cols-[1fr_230px]">
-                    <div className="flex flex-col space-y-4 p-5 border-r">
-                      <Editor
-                        apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
-                        onInit={(evt, editor) => (editorRef1.current = editor)}
-                        initialValue={fetchedValues.generatedMail.replace(
-                          /\n/g,
-                          "<br>"
-                        )}
-                        init={{
-                          height: 500,
-                          menubar: false,
-                          plugins: [
-                            "advlist",
-                            "autolink",
-                            "lists",
-                            "link",
-                            "image",
-                            "charmap",
-                            "preview",
-                            "anchor",
-                            "searchreplace",
-                            "visualblocks",
-                            "code",
-                            "fullscreen",
-                            "insertdatetime",
-                            "media",
-                            "table",
-                            "code",
-                            "help",
-                            "wordcount",
-                          ],
-                          toolbar:
-                            "undo redo | blocks | " +
-                            "bold italic forecolor | alignleft aligncenter " +
-                            "alignright alignjustify | bullist numlist outdent indent | " +
-                            "removeformat",
-                          content_style:
-                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px}",
-                        }}
-                      />
-                    </div>
+                ) : (
+                  <div>View Pitch Email</div>
+                )}
+              </div>
+            </DialogTrigger>
 
-                    <div className="p-5 flex flex-col gap-3">
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-            <Dialog
-              open={opencontent}
-              onOpenChange={setOpencontent}
-              modal={false}
+            <DialogContent
+              className="min-w-[90vw] max-h-[90vh] p-0"
+              onInteractOutside={(e) => {
+                e.preventDefault();
+              }}
             >
-              <DialogTrigger asChild>
-                <div className="rounded-sm border  flex items-center justify-center p-10 h-52">
-                  <Button variant={"outline"} className="w-[10rem]">
-                    {loading ? (
-                      <>
-                        <Icons.spinner className="mr-2 h-4 min-w-4 animate-spin" />
-                        Loading Content...
-                      </>
-                    ) : (
-                      <div>Pitch Content</div>
-                    )}
-                  </Button>
-                </div>
-              </DialogTrigger>
-              <DialogContent
-                className="min-w-[90vw] max-h-[90vh] p-0"
-                onInteractOutside={(e) => {
-                  e.preventDefault();
-                }}
-              >
-                <div>
-                  <div className="border rounded-t-lg flex p-4 items-center justify-between">
-                    <div>Pitch Content</div>{" "}
-                    <div className="flex gap-2">
-                      <Button onClick={log2}>Save</Button>
-                      <Button onClick={() => setOpencontent(false)}>
-                        Close
-                      </Button>
-                    </div>
+              <div>
+                <div className="border rounded-t-lg flex p-4 items-center justify-between">
+                  <div>Pitch Email</div>
+                  <div className="flex gap-2">
+                    <Button onClick={log}>Save</Button>
+                    <Button onClick={() => setOpenemail(false)}>Close</Button>
                   </div>
-                  <div className="grid grid-cols-[1fr_230px]">
-                    <div className="flex flex-col space-y-4 p-5 border-r">
-                      <Editor
-                        apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
-                        onInit={(evt, editor) => (editorRef2.current = editor)}
-                        initialValue={fetchedValues.generatedContent.replace(
-                          /\n/g,
-                          "<br>"
-                        )}
-                        init={{
-                          height: 500,
-                          menubar: false,
-                          plugins: [
-                            "advlist",
-                            "autolink",
-                            "lists",
-                            "link",
-                            "image",
-                            "charmap",
-                            "preview",
-                            "anchor",
-                            "searchreplace",
-                            "visualblocks",
-                            "code",
-                            "fullscreen",
-                            "insertdatetime",
-                            "media",
-                            "table",
-                            "code",
-                            "help",
-                            "wordcount",
-                          ],
-                          toolbar:
-                            "undo redo | blocks | " +
-                            "bold italic forecolor | alignleft aligncenter " +
-                            "alignright alignjustify | bullist numlist outdent indent | " +
-                            "removeformat",
-                          content_style:
-                            "body { font-family:Helvetica,Arial,sans-serif; font-size:14px}",
-                        }}
-                      />
-                    </div>
+                </div>
+                <div className="grid grid-cols-[1fr_230px]">
+                  <div className="flex flex-col space-y-4 p-5 border-r">
+                    <Editor
+                      apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
+                      onInit={(evt, editor) => (editorRef1.current = editor)}
+                      initialValue={
+                        fetchedValues.generatedMail
+                          ? fetchedValues.generatedMail.replace(/\n/g, "<br>")
+                          : ""
+                      }
+                      init={{
+                        height: 500,
+                        menubar: false,
+                        plugins: [
+                          "advlist",
+                          "autolink",
+                          "lists",
+                          "link",
+                          "image",
+                          "charmap",
+                          "preview",
+                          "anchor",
+                          "searchreplace",
+                          "visualblocks",
+                          "code",
+                          "fullscreen",
+                          "insertdatetime",
+                          "media",
+                          "table",
+                          "code",
+                          "help",
+                          "wordcount",
+                        ],
+                        toolbar:
+                          "undo redo | blocks | " +
+                          "bold italic forecolor | alignleft aligncenter " +
+                          "alignright alignjustify | bullist numlist outdent indent | " +
+                          "removeformat",
+                        content_style:
+                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px}",
+                      }}
+                    />
+                  </div>
 
-                    <div className="p-5 flex flex-col gap-3">
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="p-5 flex flex-col gap-3">
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Fruits</SelectLabel>
+                          <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Fruits</SelectLabel>
+                          <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Fruits</SelectLabel>
+                          <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
-              </DialogContent>
-            </Dialog>
-          </div>
-          <div className="mt-4 sm:mx-2">
-            <div className="flex items-center justify-between">
-              <Button className="items-center" onClick={onPrevious}>
-                Previous
-              </Button>
-              <Button className="items-center" disabled>
-                End
-              </Button>
-              {/* <Button className="items-center" onClick={onNext} disabled>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog
+            open={opencontent}
+            onOpenChange={setOpencontent}
+            modal={false}
+          >
+            <DialogTrigger asChild>
+              <div className="rounded-sm flex items-center justify-center p-10 h-44 bg-[#F5F4F4] min-w-[250px] rounded-xl">
+                {loading ? (
+                  <div className="flex items-center">
+                    <Icons.spinner className="mr-2 h-4 min-w-4 animate-spin" />
+                    Loading Content...
+                  </div>
+                ) : (
+                  <div>View Pitch Content</div>
+                )}
+              </div>
+            </DialogTrigger>
+            <DialogContent
+              className="min-w-[90vw] max-h-[90vh] p-0"
+              onInteractOutside={(e) => {
+                e.preventDefault();
+              }}
+            >
+              <div>
+                <div className="border rounded-t-lg flex p-4 items-center justify-between">
+                  <div>Pitch Content</div>{" "}
+                  <div className="flex gap-2">
+                    <Button onClick={log2}>Save</Button>
+                    <Button onClick={() => setOpencontent(false)}>Close</Button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-[1fr_230px]">
+                  <div className="flex flex-col space-y-4 p-5 border-r">
+                    <Editor
+                      apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
+                      onInit={(evt, editor) => (editorRef2.current = editor)}
+                      initialValue={
+                        fetchedValues.generatedContent
+                          ? fetchedValues.generatedContent.replace(
+                              /\n/g,
+                              "<br>"
+                            )
+                          : ""
+                      }
+                      init={{
+                        height: 500,
+                        menubar: false,
+                        plugins: [
+                          "advlist",
+                          "autolink",
+                          "lists",
+                          "link",
+                          "image",
+                          "charmap",
+                          "preview",
+                          "anchor",
+                          "searchreplace",
+                          "visualblocks",
+                          "code",
+                          "fullscreen",
+                          "insertdatetime",
+                          "media",
+                          "table",
+                          "code",
+                          "help",
+                          "wordcount",
+                        ],
+                        toolbar:
+                          "undo redo | blocks | " +
+                          "bold italic forecolor | alignleft aligncenter " +
+                          "alignright alignjustify | bullist numlist outdent indent | " +
+                          "removeformat",
+                        content_style:
+                          "body { font-family:Helvetica,Arial,sans-serif; font-size:14px}",
+                      }}
+                    />
+                  </div>
+
+                  <div className="p-5 flex flex-col gap-3">
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Fruits</SelectLabel>
+                          <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Fruits</SelectLabel>
+                          <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Select>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a fruit" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Fruits</SelectLabel>
+                          <SelectItem value="apple">Apple</SelectItem>
+                          <SelectItem value="banana">Banana</SelectItem>
+                          <SelectItem value="blueberry">Blueberry</SelectItem>
+                          <SelectItem value="grapes">Grapes</SelectItem>
+                          <SelectItem value="pineapple">Pineapple</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <div className="mt-24 sm:mx-2">
+          <div className="flex items-center justify-between">
+            <Button
+              className="items-center rounded-full px-6 bg-[#5C5C5C]"
+              onClick={onPrevious}
+            >
+              <ArrowLeftIcon />
+            </Button>
+            <Button
+              className="items-center rounded-full px-14 bg-[#5C5C5C]"
+              disabled
+            >
+              Next
+            </Button>
+            {/* <Button className="items-center" onClick={onNext} disabled>
                 Next
               </Button> */}
-            </div>
           </div>
         </div>
       </div>
