@@ -77,8 +77,8 @@ const formSchema = z.object({
     .min(1, {
       message: "Classname must be at least 1 characters.",
     })
-    .max(200, {
-      message: "Classname must be at most 15 characters.",
+    .max(30, {
+      message: "Classname must be at most 30 characters.",
     }),
 });
 

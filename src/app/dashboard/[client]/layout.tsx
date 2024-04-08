@@ -125,34 +125,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </BreadcrumbList>
               </Breadcrumb> */}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-5">
               {/* <Button
                 variant="outline"
                 onClick={() => router.push("/dashboard")}
               >
                 Go to Dashboard
               </Button> */}
-              <div className=" bg-secondary p-3 rounded-full">
-                <img src="/bell.png" alt="bell" />
-                {/* <BellIcon className="w-5 h-5" /> */}
-              </div>
+           <div className=" bg-secondary p-3 rounded-full">
+              <img src="/bell.png" alt="bell" />
+              {/* <BellIcon className="w-5 h-5" /> */}
+            </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    className="relative h-8 w-8 rounded-full"
-                  >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={
-                          user?.photoURL ??
-                          "https://avatars.githubusercontent.com/u/124599?v=4"
-                        }
-                        alt="profileimage"
-                      />
-                      <AvatarFallback>CH</AvatarFallback>
-                    </Avatar>
-                  </Button>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={
+                        user?.photoURL ??
+                        "https://avatars.githubusercontent.com/u/124599?v=4"
+                      }
+                      alt="profileimage"
+                    />
+                    <AvatarFallback>CH</AvatarFallback>
+                  </Avatar>
+                </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
