@@ -59,9 +59,9 @@ const Navbar = () => {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
+                  className="relative h-8 w-8 rounded-full mr-4"
                 >
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="h-10 w-10 ">
                     <AvatarImage
                       src={
                         user?.photoURL ??
