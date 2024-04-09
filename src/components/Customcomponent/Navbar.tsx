@@ -38,7 +38,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="sticky top-0 z-50 pt-3 px-4">
+    <div className="sticky top-0 z-50 pt-4 px-10">
       <div className=" bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
         <div className="container flex justify-between px-2 items-center">
           <Link href="/dashboard">

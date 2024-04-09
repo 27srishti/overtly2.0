@@ -64,7 +64,23 @@ const Page = () => {
         );
         uploadPromises.push(
           uploadBytes(storageRef, file)
-            .then((snapshot) => getDownloadURL(snapshot.ref))
+            .then((snapshot) => {
+              const filePath = snapshot.ref.fullPath;
+              const bucketName = storageRef.bucket;
+              console.log("File uploaded successfully:", filePath, bucketName);
+
+              const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file?bucket_name=${encodeURIComponent(
+                bucketName
+              )}&file_path=${encodeURIComponent(filePath)}`;
+
+              // Make the POST request
+              return fetch(url, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }).then((response) => response.json());
+            })
             .catch((error) => {
               console.error("Error uploading file:", error.message);
               return "";

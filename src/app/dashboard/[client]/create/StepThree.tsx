@@ -127,7 +127,9 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   return (
     <div className="w-full mt-4 xl:px-52 font-montserrat flex justify-between flex-col items-center">
       <div>
-        <div className="text-2xl  my-7 text-[#545454]">Idea Selection</div>
+        <div className="text-2xl  my-7 text-[#545454] font-medium">
+          Select an Idea
+        </div>
         <ScrollArea className=" rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh] bg-white rounded-2xl w-[50vw]">
           {loading ? (
             <>
@@ -153,7 +155,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     className={`${
                       fetchedValues.selectedGeneratedIdea.idea ===
                       `${item.idea}`
-                        ? "border-[#5992FF] border rounded-3xl"
+                        ? "border-[#9FD2FF] border rounded-3xl"
                         : ""
                     } p-0`}
                   >
@@ -161,7 +163,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       className={`${
                         fetchedValues.selectedGeneratedIdea.idea ===
                         `${item.idea}`
-                          ? "border-[#5992FF] border-b"
+                          ? "border-[#6EB9FF] border bg-[#FAFCFF]"
                           : "border-[#B0B0B0] border bg-[#FBFBFB]"
                       } rounded-3xl p-4 text-[#545454] cursor-pointer text-justify px-7`}
                       onClick={() => {
@@ -173,7 +175,9 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     >
                       {item.idea}
                     </AccordionTrigger>
-                    <AccordionContent className="px-7">{item.story}</AccordionContent>
+                    <AccordionContent className="px-7">
+                      {item.story}
+                    </AccordionContent>
                   </AccordionItem>
                 ))}
             </Accordion>
@@ -203,13 +207,13 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
         <div className="mt-4 sm:mx-2">
           <div className="flex items-center justify-between">
             <Button
-              className="items-center rounded-full px-6 bg-[#5C5C5C]"
+              className="flex rounded-full px-5 items-center justify-start pr-8 p-5 bg-[#5C5C5C]"
               onClick={onPrevious}
             >
-              <ArrowLeftIcon />
+              <ArrowLeftIcon className="mr-3" />
             </Button>
             <Button
-              className="items-center rounded-full px-14 bg-[#5C5C5C]"
+              className="items-center rounded-full px-14 bg-[#5C5C5C] py-5"
               onClick={() => {
                 if (
                   fetchedValues.selectedGeneratedIdea.idea !== "" &&

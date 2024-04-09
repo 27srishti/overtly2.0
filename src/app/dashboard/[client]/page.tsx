@@ -60,7 +60,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useClientStore, useProjectStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import { Pencil2Icon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
@@ -268,8 +268,8 @@ const Page = () => {
   };
   return (
     // <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
-    <div className="w-full px-7 mt-4 font-montserrat ">
-      <div className="flex gap-8 mt-5 mb-14 ">
+    <div className="w-full px-16 mt-4 font-montserrat ">
+      <div className="flex gap-16 mt-11 mb-14">
         <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
@@ -284,16 +284,16 @@ const Page = () => {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="mt-3 gap-2 b-0 shadow-none outline-none hover:bg-[#D5D5D5] p-5  rounded-2xl grey">
+            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#D5D5D5] p-6 rounded-2xl grey ">
               <div className="ml-1 font-montserrat text-[#545454]">
                 Create Project
               </div>
-              <img src="/plus.png" alt="plus" />
+              <PlusCircle className="w-6 h-6 stroke-[#545454] stroke-1" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw]">
-            <DialogHeader className="text-xl mt-3 ml-1">
-              <DialogTitle>
+          <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw] p-10">
+            <DialogHeader>
+              <DialogTitle className="text-xl mt-3 ml-1 mb-5 font-medium">
                 {editMode ? "Edit Project" : "Create Project"}
               </DialogTitle>
               {/* <DialogDescription>
@@ -346,7 +346,7 @@ const Page = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="rounded-2xl bg-[#545454] p-4 text-white font-montserrat px-11 mr-1"
+                className="rounded-full bg-[#545454] p-5 text-white font-montserrat px-11 mr-1 mt-7"
                 disabled={submitting}
                 onClick={form.handleSubmit(onSubmit)}
               >
@@ -394,56 +394,56 @@ const Page = () => {
           No Projects found! Start by creating a project now
         </div>
       ) : (
-        <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-3  lg:grid-cols-4">
+        <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-3  lg:grid-cols-5">
           {projects.map((document, index) => (
             <div
               key={index}
-              className="grey rounded-2xl p-5 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
+              className="grey rounded-2xl p-7 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
+              onClick={() => handleProjectClick(document)}
             >
-              <div className="flex gap-2 items-center justify-between">
-                <div
-                  className=" capitalize hover:underline font-montserrat flex  gap-4 text-xl"
-                  onClick={() => handleProjectClick(document)}
-                >
-                  <img src="/company.png" alt="company"></img>
-                  {document.name}
-                </div>
-                <div className="flex gap-3">
-                  <div className="text-center">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="center"
-                        className="rounded-2xl font-montserrat"
-                      >
-                        {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
-                        <DropdownMenuItem
-                          onClick={() => handleEditProject(document)}
-                          className="text-center items-center flex justify-center p-2 font-normal"
+              <div className="flex flex-col gap-7 justify-between">
+                <div className="flex gap-4 justify-between">
+                  <div className=" capitalize font-montserrat flex  gap-4 text-xl">
+                    <img src="/company.png" alt="company"></img>
+                    {document.name}
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="text-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="center"
+                          className="rounded-2xl font-montserrat"
                         >
-                          Edit
-                        </DropdownMenuItem>
-                        <SelectSeparator />
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteProject(document.id)}
-                          className="text-center items-center flex justify-center p-2 font-normal"
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
+                          <DropdownMenuItem
+                            onClick={() => handleEditProject(document)}
+                            className="text-center items-center flex justify-center p-2 font-normal"
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <SelectSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteProject(document.id)}
+                            className="text-center items-center flex justify-center p-2 font-normal"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="font-montserrat">
-                {`${document.description}`}
-                <br />
-                {`E-commerce`}
-                <br />
+                <div className="font-montserrat capitalize flex gap-1 flex-col text-wrap">
+                 <div className="break-all">
+                 {`${document.description} `}
+                 </div>
+                  {`E-commerce`}
+                </div>
               </div>
             </div>
           ))}

@@ -26,6 +26,15 @@ const Page = () => {
   const { client } = useClientStore();
   const { project } = useProjectStore();
   console.log(pathname);
+
+  const totalSteps = 3; // Total number of steps excluding the last step
+  const progressBarWidth = ((currentStep - 1) / totalSteps) * 100;
+
+  let transitionDuration = "0.3s";
+  if (currentStep === 3) {
+    transitionDuration = "5s";
+  }
+
   const onNext = () => {
     router.push(
       `${pathname}?projectid=${projectIdParamas}&step=${currentStep + 1}`
@@ -66,7 +75,7 @@ const Page = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink >
+            <BreadcrumbLink>
               {project?.name ? (
                 project?.name
               ) : (
@@ -78,7 +87,13 @@ const Page = () => {
       </Breadcrumb>
       <div className="flex flex-col">
         <div className="w-full bg-[#E8E8E8]  rounded-full">
-          <div className="progressbar max-w-[40%] rounded-full  p-[0.15rem]"></div>
+          <div
+            className="progressbar rounded-full  p-[0.15rem]"
+            style={{
+              width: `${progressBarWidth}%`,
+              transitionDuration: transitionDuration,
+            }}
+          ></div>
         </div>
         <div className="flex justify-between mt-2 px-1">
           <div className="bg-[#E8E8E8]  rounded-full p-1"></div>

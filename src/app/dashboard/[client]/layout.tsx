@@ -66,7 +66,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="gradientbg">
-      <div className="sticky top-0 z-50 pt-3 px-4 font-montserrat">
+      <div className="sticky top-0 z-50 pt-4 px-10 font-montserrat">
         <div className=" bg-opacity-20  backdrop-filter backdrop-blur-lg py-2">
           <div className="container flex justify-between px-2 items-center">
             <Link href={`/dashboard`}>
@@ -75,30 +75,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </div>
             </Link>
 
-            <div className="flex gap-3">
+            <div className="flex gap-5">
               <Link href={`/dashboard`}>
                 <div className="rounded-full p-3 bg-[#E8E8E8]">
-                  <HomeIcon className="w-5 h-5" />
+                  <HomeIcon className="w-5 h-5 stroke-[#6d6d6e]" />
                 </div>
               </Link>
-              <div className="flex gap-4 rounded-full items-center bg-[#E8E8E8]  py-1 px-1">
+              <div className="flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer">
                 <div className="rounded-full items-center bg-[#BDF294] p-2 px-5">
                   Pitch gen
                 </div>
-                <div className="rounded-full items-center  p-2 px-5">
+                <div className="rounded-full items-center  p-2 px-5 cursor-pointer">
                   Research
                 </div>
-                <div className="rounded-full items-center  p-2 px-5">
+                <div className="rounded-full items-center  p-2 px-5 cursor-pointer">
                   Analytics
                 </div>
               </div>
-              <Link href={`/dashboard/${params.client}/datalibrary`}>
-                <div className="rounded-full p-2 yellowbtn text-center flex justify-center items-center px-3 gap-2">
-                  <CubeIcon className="w-5 h-5" />
-                  Data Library
-                </div>
-              </Link>
-
+              <div
+                className={`${
+                  pathname.endsWith("/datalibrary") ? "bg-[#BDF294] " : ""
+                } flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer`}
+              >
+                <Link href={`/dashboard/${params.client}/datalibrary`}>
+                  <div
+                    className={`rounded-full items-center p-2 px-5 cursor-pointer flex gap-2`}
+                  >
+                    <CubeIcon className="w-5 h-5 stroke-[#6d6d6e] stroke-[.2px]" />
+                    Data Library
+                  </div>
+                </Link>
+              </div>
               {/* <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem>
@@ -132,27 +139,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               >
                 Go to Dashboard
               </Button> */}
-           <div className=" bg-secondary p-3 rounded-full">
-              <img src="/bell.png" alt="bell" />
-              {/* <BellIcon className="w-5 h-5" /> */}
-            </div>
+              <div className=" bg-secondary p-3 rounded-full">
+                <img src="/bell.png" alt="bell" />
+                {/* <BellIcon className="w-5 h-5" /> */}
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={
-                        user?.photoURL ??
-                        "https://avatars.githubusercontent.com/u/124599?v=4"
-                      }
-                      alt="profileimage"
-                    />
-                    <AvatarFallback>CH</AvatarFallback>
-                  </Avatar>
-                </Button>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={
+                          user?.photoURL ??
+                          "https://avatars.githubusercontent.com/u/124599?v=4"
+                        }
+                        alt="profileimage"
+                      />
+                      <AvatarFallback>CH</AvatarFallback>
+                    </Avatar>
+                  </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">

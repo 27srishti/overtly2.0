@@ -126,7 +126,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
     <div className="w-full mt-4 xl:px-52 font-montserrat">
       <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
         <div className="grid w-full max-w-lg items-center gap-3">
-          <div className="text-2xl  my-7 text-[#545454]">Pitch Info</div>
+          <div className="text-2xl  my-7 text-[#545454] font-medium">Pitch Info</div>
           <Label htmlFor="email">Idea hint</Label>
           <Input
             placeholder="Idea hint"
@@ -182,11 +182,11 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
           )}
           <div className="mt-16">
             <div className="flex items-center justify-between">
-              <Button className="items-center rounded-full px-6" disabled>
-                <ArrowLeftIcon />
+              <Button className="flex rounded-full px-5 items-center justify-start p-5" disabled>
+                <ArrowLeftIcon className="mr-3"/>
               </Button>
               <Button
-                className="items-center rounded-full px-14 bg-[#5C5C5C]"
+                className="items-center rounded-full px-14 bg-[#5C5C5C] py-5"
                 onClick={clickNext}
               >
                 Next

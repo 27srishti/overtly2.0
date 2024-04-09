@@ -139,7 +139,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
     <div className="w-full mt-4 xl:px-52 font-montserrat">
       <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
         <div className="grid w-full xl:w-[40vw] items-center gap-2">
-          <div className="text-2xl  my-7 text-[#545454]">Pitch options</div>
+          <div className="text-2xl  my-7 text-[#545454] font-medium">
+            Pitch options
+          </div>
           <Form {...form}>
             <form className="space-y-3">
               <FormField
@@ -284,16 +286,16 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
               />
             </form>
           </Form>
-          <div className="mt-4 sm:mx-2">
+          <div className="mt-8 sm:mx-2">
             <div className="flex items-center justify-between">
               <Button
-                className="items-center rounded-full px-6 bg-[#5C5C5C]"
+                className="flex rounded-full px-5 items-center justify-start pr-8 p-5 bg-[#5C5C5C]"
                 onClick={onPrevious}
               >
-                <ArrowLeftIcon />
+                <ArrowLeftIcon className="mr-3" />
               </Button>
               <Button
-                className="items-center rounded-full px-14 bg-[#5C5C5C]"
+                className="items-center rounded-full px-14 bg-[#5C5C5C] py-5"
                 onClick={async () => {
                   const isValid = await form.trigger();
 
