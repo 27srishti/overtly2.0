@@ -155,7 +155,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     className={`${
                       fetchedValues.selectedGeneratedIdea.idea ===
                       `${item.idea}`
-                        ? "border-[#9FD2FF] border rounded-3xl"
+                        ? "border-[#9FD2FF] border rounded-[2.1rem]"
                         : ""
                     } p-0`}
                   >
@@ -163,9 +163,9 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       className={`${
                         fetchedValues.selectedGeneratedIdea.idea ===
                         `${item.idea}`
-                          ? "border-[#6EB9FF] border bg-[#FAFCFF]"
-                          : "border-[#B0B0B0] border bg-[#FBFBFB]"
-                      } rounded-3xl p-4 text-[#545454] cursor-pointer text-justify px-7`}
+                          ? "border-[#6EB9FF] border bg-[#FAFCFF] text-opacity-70"
+                          : "border-[#B0B0B0] border bg-[#FBFBFB] text-opacity-40"
+                      } rounded-full p-4  cursor-pointer text-justify px-7 font-semibold text-black`}
                       onClick={() => {
                         setFetchedValues({
                           ...fetchedValues,
@@ -175,7 +175,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     >
                       {item.idea}
                     </AccordionTrigger>
-                    <AccordionContent className="px-7">
+                    <AccordionContent className="px-7 font-regular">
                       {item.story}
                     </AccordionContent>
                   </AccordionItem>

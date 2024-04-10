@@ -284,14 +284,14 @@ const Page = () => {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#D5D5D5] p-6 rounded-2xl grey ">
+            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#d6d6d6] transc p-6 rounded-2xl grey transition-all">
               <div className="ml-1 font-montserrat text-[#545454]">
                 Create Project
               </div>
               <PlusCircle className="w-6 h-6 stroke-[#545454] stroke-1" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw] p-10">
+          <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw] p-10 px-12">
             <DialogHeader>
               <DialogTitle className="text-xl mt-3 ml-1 mb-5 font-medium">
                 {editMode ? "Edit Project" : "Create Project"}
@@ -346,7 +346,7 @@ const Page = () => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="rounded-full bg-[#545454] p-5 text-white font-montserrat px-11 mr-1 mt-7"
+                className="rounded-full bg-[#545454] p-5 text-white font-montserrat px-11 mr-1 mt-10"
                 disabled={submitting}
                 onClick={form.handleSubmit(onSubmit)}
               >
@@ -394,11 +394,11 @@ const Page = () => {
           No Projects found! Start by creating a project now
         </div>
       ) : (
-        <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-3  lg:grid-cols-5">
+        <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {projects.map((document, index) => (
             <div
               key={index}
-              className="grey rounded-2xl p-7 flex gap-2 flex-col cursor-pointer hover:bg-secondary transition relative"
+              className="grey rounded-[24px] p-9 flex gap-2 flex-col cursor-pointer hover:bg-[#d6d6d6]  relative min-w-[320px] min-h-[180px] transition-all duration-300"
               onClick={() => handleProjectClick(document)}
             >
               <div className="flex flex-col gap-7 justify-between">
@@ -412,7 +412,7 @@ const Page = () => {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="h-5 w-5" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent

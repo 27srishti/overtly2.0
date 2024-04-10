@@ -81,25 +81,56 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <HomeIcon className="w-5 h-5 stroke-[#6d6d6e]" />
                 </div>
               </Link>
-              <div className="flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer">
-                <div className="rounded-full items-center bg-[#BDF294] p-2 px-5">
-                  Pitch gen
-                </div>
-                <div className="rounded-full items-center  p-2 px-5 cursor-pointer">
+              <div className="flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer bg-white">
+                <Link href={`/dashboard/${client?.id}`}>
+                  <div
+                    className={`
+ rounded-full items-center p-2 px-5 
+ ${
+   pathname.endsWith(params.client)
+     ? "bg-[#BDF294] hover:bg-[#d6d6d6]"
+     : "hover:bg-[#F5F4F4]"
+ }
+ transition-all
+`}
+                  >
+                    Pitch gen
+                  </div>
+                </Link>
+                <div
+                  className={`
+                  ${
+                    pathname.endsWith("/research")
+                      ? " bg-[#BDF294]"
+                      : "hover:bg-[#F5F4F4]"
+                  }
+                  
+                  rounded-full items-center  p-2 px-5 cursor-pointer hover:bg-[#d6d6d6] transition-all`}
+                >
                   Research
                 </div>
-                <div className="rounded-full items-center  p-2 px-5 cursor-pointer">
+                <div
+                  className={`
+                ${
+                  pathname.endsWith("/analytics")
+                    ? " bg-[#BDF294]"
+                    : "hover:bg-[#F5F4F4]"
+                }
+                rounded-full items-center  p-2 px-5 cursor-pointer hover:bg-[#d6d6d6] transition-all`}
+                >
                   Analytics
                 </div>
               </div>
               <div
                 className={`${
-                  pathname.endsWith("/datalibrary") ? "bg-[#BDF294] " : ""
-                } flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer`}
+                  pathname.endsWith("/datalibrary")
+                    ? "bg-[#BDF294] hover:bg-[#BDF294]"
+                    : "bg-white hover:bg-[#F5F4F4]"
+                } flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all`}
               >
                 <Link href={`/dashboard/${params.client}/datalibrary`}>
                   <div
-                    className={`rounded-full items-center p-2 px-5 cursor-pointer flex gap-2`}
+                    className={`rounded-full items-center p-2 px-5 cursor-pointer flex gap-2  `}
                   >
                     <CubeIcon className="w-5 h-5 stroke-[#6d6d6e] stroke-[.2px]" />
                     Data Library
@@ -153,7 +184,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <AvatarImage
                         src={
                           user?.photoURL ??
-                          "https://avatars.githubusercontent.com/u/124599?v=4"
+                          "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"
                         }
                         alt="profileimage"
                       />
