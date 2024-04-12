@@ -77,8 +77,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <div className="flex gap-5">
               <Link href={`/dashboard`}>
-                <div className="rounded-full p-3 bg-[#E8E8E8]">
-                  <HomeIcon className="w-5 h-5 stroke-[#6d6d6e]" />
+                <div className="rounded-full p-3 bg-[#E8E8E8] flex items-center">
+
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#6d6d6e"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" className="w-6 h-6"/></svg>
                 </div>
               </Link>
               <div className="flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer bg-white">
@@ -88,7 +89,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
  rounded-full items-center p-2 px-5 
  ${
    pathname.endsWith(params.client)
-     ? "bg-[#BDF294] hover:bg-[#d6d6d6]"
+     ? "bg-[#BDF294] hover:bg-[#b3f87d]"
      : "hover:bg-[#F5F4F4]"
  }
  transition-all
@@ -101,11 +102,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className={`
                   ${
                     pathname.endsWith("/research")
-                      ? " bg-[#BDF294]"
-                      : "hover:bg-[#F5F4F4]"
+                 ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                    : "bg-white hover:bg-[#F5F4F4]"
                   }
                   
-                  rounded-full items-center  p-2 px-5 cursor-pointer hover:bg-[#d6d6d6] transition-all`}
+                  rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
                 >
                   Research
                 </div>
@@ -113,10 +114,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className={`
                 ${
                   pathname.endsWith("/analytics")
-                    ? " bg-[#BDF294]"
-                    : "hover:bg-[#F5F4F4]"
+                  ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                  : "bg-white hover:bg-[#F5F4F4]"
                 }
-                rounded-full items-center  p-2 px-5 cursor-pointer hover:bg-[#d6d6d6] transition-all`}
+                rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
                 >
                   Analytics
                 </div>
@@ -124,7 +125,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div
                 className={`${
                   pathname.endsWith("/datalibrary")
-                    ? "bg-[#BDF294] hover:bg-[#BDF294]"
+                    ? "bg-[#BDF294] hover:bg-[#b3f87d]"
                     : "bg-white hover:bg-[#F5F4F4]"
                 } flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all`}
               >
@@ -132,7 +133,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div
                     className={`rounded-full items-center p-2 px-5 cursor-pointer flex gap-2  `}
                   >
-                    <CubeIcon className="w-5 h-5 stroke-[#6d6d6e] stroke-[.2px]" />
+
+<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#6d6d6e"><g><rect fill="none" height="24" width="24"/><path d="M20,6h-8l-2-2H4C2.9,4,2.01,4.9,2.01,6L2,18c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C22,6.9,21.1,6,20,6z M14,16H6v-2h8V16z M18,12H6v-2h12V12z" className="w-5 h-5 stroke-[#6d6d6e] stroke-[.2px]"/></g></svg>
+
                     Data Library
                   </div>
                 </Link>

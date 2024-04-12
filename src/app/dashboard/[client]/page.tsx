@@ -253,12 +253,20 @@ const Page = () => {
       );
       const projectDocSnap = await getDoc(projectDocRef);
       if (projectDocSnap.exists()) {
-        const currentStep = projectDocSnap.data().currentStep;
+        let currentStep = projectDocSnap.data().currentStep;
+
+        if (currentStep === 3 || currentStep === 4) {
+          currentStep = 4;
+          router.push(
+            `/dashboard/${clientid}/create?projectid=${project.id}&step=${currentStep}`
+          );
+        } else {
+          router.push(
+            `/dashboard/${clientid}/create?projectid=${project.id}&step=${currentStep}`
+          );
+        }
 
         // Redirect to the appropriate URL based on the current step
-        router.push(
-          `/dashboard/${clientid}/create?projectid=${project.id}&step=${currentStep}`
-        );
       } else {
         console.error("Project document does not exist");
       }
@@ -284,7 +292,7 @@ const Page = () => {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#d6d6d6] transc p-6 rounded-2xl grey transition-all">
+            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
               <div className="ml-1 font-montserrat text-[#545454]">
                 Create Project
               </div>
@@ -398,7 +406,7 @@ const Page = () => {
           {projects.map((document, index) => (
             <div
               key={index}
-              className="grey rounded-[24px] p-9 flex gap-2 flex-col cursor-pointer hover:bg-[#d6d6d6]  relative min-w-[320px] min-h-[180px] transition-all duration-300"
+              className="grey rounded-[24px] p-9 flex gap-2 flex-col cursor-pointer hover:bg-[#e8e8e8]  relative min-w-[320px] min-h-[180px] transition-all duration-300"
               onClick={() => handleProjectClick(document)}
             >
               <div className="flex flex-col gap-7 justify-between">
@@ -439,9 +447,7 @@ const Page = () => {
                   </div>
                 </div>
                 <div className="font-montserrat capitalize flex gap-1 flex-col text-wrap">
-                 <div className="break-all">
-                 {`${document.description} `}
-                 </div>
+                  <div className="break-all">{`${document.description} `}</div>
                   {`E-commerce`}
                 </div>
               </div>

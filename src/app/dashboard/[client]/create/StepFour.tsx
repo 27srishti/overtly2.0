@@ -208,7 +208,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                 <div className="grid grid-cols-[1fr_230px]">
                   <div className="flex flex-col space-y-4 p-5 border-r">
                     <Editor
-                      apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
+                      apiKey="aexcsvbulsalxg40tjwcyuxzdm6jokyk053gls77jawwdepg"
                       onInit={(evt, editor) => (editorRef1.current = editor)}
                       initialValue={
                         fetchedValues.generatedMail
@@ -334,7 +334,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                 <div className="grid grid-cols-[1fr_230px]">
                   <div className="flex flex-col space-y-4 p-5 border-r">
                     <Editor
-                      apiKey="rkeqnljxwoc8tnbbwrq8fpo4m07kjeuty8sxu6ygfh4pffay"
+                      apiKey="aexcsvbulsalxg40tjwcyuxzdm6jokyk053gls77jawwdepg"
                       onInit={(evt, editor) => (editorRef2.current = editor)}
                       initialValue={
                         fetchedValues.generatedContent

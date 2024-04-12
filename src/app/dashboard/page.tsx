@@ -246,7 +246,7 @@ const Page = () => {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#d6d6d6] transc p-6 rounded-2xl grey transition-all">
+              <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
                 <div className="ml-1 font-montserrat text-[#545454] ">
                   New Client
                 </div>
@@ -399,7 +399,7 @@ const Page = () => {
             {clients.map((client, index) => (
               <div
                 key={index}
-                className="grey p-7 flex gap-2 flex-col cursor-pointer hover:bg-[#d6d6d6]  relative min-w-[320px] min-h-[180px] transition-all duration-300 rounded-[24px]"
+                className="grey p-7 flex gap-2 flex-col cursor-pointer hover:bg-[#e8e8e8]  relative min-w-[320px] min-h-[180px] transition-all duration-300 rounded-[24px]"
                 onClick={() => {
                   setClient(client);
                 }}
