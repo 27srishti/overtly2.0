@@ -14,6 +14,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MoreHorizontal } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
@@ -134,126 +135,133 @@ const Page = () => {
       return [];
     }
   };
+////remove pr add to btn
+  useEffect(() => {
+    if (files.length > 0) {
+      uploadFilesToFirebase();
+    }
+  }, [files]);
 
-  // Pagination logic
   const totalPages = Math.ceil(fetchedFiles.length / FILES_PER_PAGE);
   const indexOfLastFile = currentPage * FILES_PER_PAGE;
   const indexOfFirstFile = indexOfLastFile - FILES_PER_PAGE;
   const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
 
   return (
-    <div className="w-full px-5 mt-4">
-      <div>
-        <div className="text-3xl font-bold mt-4 lg:ml-32">Upload files</div>
-        <div className="ml-2 lg:ml-32">
-          {client?.name ? (
-            `Client Name - ${client.name}`
-          ) : (
-            <Skeleton className="h-10 w-[100px]" />
-          )}
+    <div className="w-full px-16 mt-4 font-montserrat ">
+      <div className="flex gap-16 mt-11 mb-14">
+        <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">
+          {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
 
-        <div className="flex flex-col items-center">
-          <div className="flex justify-center mt-5 flex-col gap-4">
-            <div className="bg-secondary rounded-md p-5 relative">
-              <input
-                ref={fileInputRef}
-                className="absolute inset-0 z-50 w-full h-full p-0 m-0 cursor-pointer opacity-0"
-                type="file"
-                onChange={handleFileUpload}
-                multiple
-              />
-              <div className="p-10 border-dashed border">
-                {files.length > 0 ? (
-                  files.map((file, index) => <div key={index}>{file.name}</div>)
-                ) : (
-                  <div>Drop the files you want to upload</div>
+        <Button
+          className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <input
+            ref={fileInputRef}
+            className="absolute inset-0 z-[-1] opacity-0"
+            type="file"
+            onChange={handleFileUpload}
+            multiple
+          />
+          <div className="ml-1 font-montserrat text-[#545454]">
+            Upload files
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 0 24 24"
+            width="24px"
+            fill="#545454"
+          >
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path
+              d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
+              className="w-6 h-6"
+            />
+          </svg>
+        </Button>
+      </div>
+      <div className="px-[10vw]">
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList className="flex justify-start items-center ml-12">
+            <TabsTrigger value="account" className="px-20 pt-4 mr-5 pb-3">
+              Uploaded
+            </TabsTrigger>
+            <TabsTrigger value="password" className="px-20 pt-4 mr-5 pb-3">
+              Web Extracted
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="account">
+            <div className="mt-7">
+              <div className="mx-auto overflow-hidden max-w-[70vw]">
+                <div className="rounded-sm border">
+                  <div className="text-left align-middle font-sm text-muted-foreground grid grid-cols-4 self-center border-b p-4">
+                    <div className="col-span-3">File name</div>
+                    <div className="text-center">Actions</div>
+                  </div>
+
+                  {currentFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center  ${
+                        index !== currentFiles.length - 1 ? "border-b" : ""
+                      }`}
+                    >
+                      <div className="col-span-3 line-clamp-1 px-3 over">
+                        {file.Filename}
+                      </div>
+                      <div className="text-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem>Delete File</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-4">
+                    <span className="ml-10 text-sm">
+                      Page {currentPage} of {totalPages}
+                    </span>
+                    <div className="mr-10">
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          setCurrentPage((prevPage) => prevPage - 1)
+                        }
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          setCurrentPage((prevPage) => prevPage + 1)
+                        }
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
-
-            <Button
-              variant="outline"
-              className="flex gap-2"
-              onClick={uploadFilesToFirebase}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  <div>Uploading</div>
-                </>
-              ) : (
-                <>
-                  <Icons.Upload />
-                  <div>Upload the files</div>
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
-      <div className="mt-7">
-        <div className="mx-auto overflow-hidden max-w-[70vw]">
-          <div className="rounded-sm border">
-            <div className="text-left align-middle font-sm text-muted-foreground grid grid-cols-4 self-center border-b p-4">
-              <div className="col-span-3">File name</div>
-              <div className="text-center">Actions</div>
-            </div>
-            {/* Render current page of fetched files */}
-            {currentFiles.map((file, index) => (
-              <div
-                key={index}
-                className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center  ${
-                  index !== currentFiles.length - 1 ? "border-b" : ""
-                }`}
-              >
-                <div className="col-span-3 line-clamp-1 px-3 over">
-                  {file.Filename}
-                </div>
-                <div className="text-center">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Delete File</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Pagination controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <span className="ml-10 text-sm">
-                Page {currentPage} of {totalPages}
-              </span>
-              <div className="mr-10">
-                <Button
-                  variant="ghost"
-                  onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-
-                <Button
-                  variant="ghost"
-                  onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
+          </TabsContent>
+          <TabsContent value="password">Web extracted Stuff here</TabsContent>
+        </Tabs>
       </div>
     </div>
   );

@@ -1,27 +1,19 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const loading = () => {
+const Loading = () => {
   return (
-    <div className="">
-      <div>
-        <div className="text-3xl font-bold mt-4">
-          <Skeleton className="h-10 w-[100px]" />
-        </div>
-        <div className="ml-2 mt-4">
-          <Skeleton className="h-9 w-[100px] " />
-        </div>
-        <div className="flex flex-col items-center">
-          <Skeleton className="h-[125px] w-[250px] rounded-xl ml-auto mr-auto" />
-        </div>
+    <div className="w-full px-16 mt-4">
+      <div className="flex gap-16 mt-11 mb-14">
+        <Skeleton className="h-10 w-[100px]" />
+
+        <Skeleton className="h-10 w-[100px]" />
       </div>
-      <div className="mt-7">
-        <div className="mx-auto overflow-hidden max-w-[70vw]">
-          <Skeleton className="h-[125px] w-full rounded-xl" />
-        </div>
+      <div className="mt-7 max-w-[70vw]">
+        <Skeleton className="h-[30vh] w-full" />
       </div>
     </div>
   );
 };
 
-export default loading;
+export default Loading;
