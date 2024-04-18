@@ -402,11 +402,11 @@ const Page = () => {
           No Projects found! Start by creating a project now
         </div>
       ) : (
-        <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="flex mt-5 gap-10 flex-wrap">
           {projects.map((document, index) => (
             <div
               key={index}
-              className="grey rounded-[24px] p-9 flex gap-2 flex-col cursor-pointer hover:bg-[#e8e8e8]  relative min-w-[320px] min-h-[180px] transition-all duration-300"
+              className="grey rounded-[24px] p-9 flex gap-2 flex-col cursor-pointer hover:bg-[#e8e8e8] min-w-[320px] min-h-[180px] transition-all duration-300"
               onClick={() => handleProjectClick(document)}
             >
               <div className="flex flex-col gap-7 justify-between">

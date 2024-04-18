@@ -395,7 +395,7 @@ const Page = () => {
             No Clients found! Start by creating a client now
           </div>
         ) : (
-          <div className="grid grid-cols-1 mt-5 gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="flex mt-5 gap-10 flex-wrap">
             {clients.map((client, index) => (
               <div
                 key={index}

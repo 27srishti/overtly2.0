@@ -78,22 +78,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex gap-5">
               <Link href={`/dashboard`}>
                 <div className="rounded-full p-3 bg-[#E8E8E8] flex items-center">
-
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#6d6d6e"><path d="M0 0h24v24H0z" fill="none"/><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" className="w-6 h-6"/></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24px"
+                    viewBox="0 0 24 24"
+                    width="24px"
+                    fill="#6d6d6e"
+                  >
+                    <path d="M0 0h24v24H0V0z" fill="none" />
+                    <path
+                      d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"
+                      className="w-6 h-6"
+                    />
+                  </svg>
                 </div>
               </Link>
               <div className="flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer bg-white">
                 <Link href={`/dashboard/${client?.id}`}>
                   <div
-                    className={`
- rounded-full items-center p-2 px-5 
- ${
-   pathname.endsWith(params.client)
-     ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-     : "hover:bg-[#F5F4F4]"
- }
- transition-all
-`}
+                    className={`rounded-full items-center p-2 px-5 ${
+                      pathname.endsWith(params.client) ||
+                      pathname.endsWith("create")
+                        ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                        : "hover:bg-[#F5F4F4]"
+                    }transition-all`}
                   >
                     Pitch gen
                   </div>
@@ -102,8 +110,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className={`
                   ${
                     pathname.endsWith("/research")
-                 ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                    : "bg-white hover:bg-[#F5F4F4]"
+                      ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                      : "bg-white hover:bg-[#F5F4F4]"
                   }
                   
                   rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
@@ -114,8 +122,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   className={`
                 ${
                   pathname.endsWith("/analytics")
-                  ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                  : "bg-white hover:bg-[#F5F4F4]"
+                    ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                    : "bg-white hover:bg-[#F5F4F4]"
                 }
                 rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
                 >
@@ -133,9 +141,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <div
                     className={`rounded-full items-center p-2 px-5 cursor-pointer flex gap-2  `}
                   >
-
-<svg xmlns="http://www.w3.org/2000/svg" enableBackground="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#6d6d6e"><g><rect fill="none" height="24" width="24"/><path d="M20,6h-8l-2-2H4C2.9,4,2.01,4.9,2.01,6L2,18c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C22,6.9,21.1,6,20,6z M14,16H6v-2h8V16z M18,12H6v-2h12V12z" className="w-5 h-5 stroke-[#6d6d6e] stroke-[.2px]"/></g></svg>
-
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      enableBackground="new 0 0 24 24"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                      width="24px"
+                      fill="#6d6d6e"
+                    >
+                      <g>
+                        <rect fill="none" height="24" width="24" />
+                        <path
+                          d="M20,6h-8l-2-2H4C2.9,4,2.01,4.9,2.01,6L2,18c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8C22,6.9,21.1,6,20,6z M14,16H6v-2h8V16z M18,12H6v-2h12V12z"
+                          className="w-5 h-5 stroke-[#6d6d6e] stroke-[.2px]"
+                        />
+                      </g>
+                    </svg>
                     Data Library
                   </div>
                 </Link>
@@ -174,7 +195,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Go to Dashboard
               </Button> */}
               <div className=" bg-secondary p-3 rounded-full">
-                <img src="/bell.png" alt="bell" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                  width="24px"
+                  fill="#727272"
+                >
+                  <path d="M0 0h24v24H0V0z" fill="none" />
+                  <path
+                    d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.89 0 1.34-1.08.71-1.71L18 16z"
+                    className="w-5 h-5"
+                  />
+                </svg>
                 {/* <BellIcon className="w-5 h-5" /> */}
               </div>
               <DropdownMenu>
