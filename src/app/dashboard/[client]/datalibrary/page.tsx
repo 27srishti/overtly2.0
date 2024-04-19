@@ -135,7 +135,7 @@ const Page = () => {
       return [];
     }
   };
-////remove pr add to btn
+  ////remove pr add to btn
   useEffect(() => {
     if (files.length > 0) {
       uploadFilesToFirebase();
@@ -193,42 +193,48 @@ const Page = () => {
               Web Extracted
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="account">
+          <TabsContent value="account" className="px-0">
             <div className="mt-7">
-              <div className="mx-auto overflow-hidden max-w-[70vw]">
-                <div className="rounded-sm border">
+              <div className="mx-auto overflow-hidden max-w-[80vw]">
+                <div className="rounded-sm border-y">
                   <div className="text-left align-middle font-sm text-muted-foreground grid grid-cols-4 self-center border-b p-4">
-                    <div className="col-span-3">File name</div>
+                    <div className="col-span-3 ml-20">File name</div>
                     <div className="text-center">Actions</div>
                   </div>
-
-                  {currentFiles.map((file, index) => (
-                    <div
-                      key={index}
-                      className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center  ${
-                        index !== currentFiles.length - 1 ? "border-b" : ""
-                      }`}
-                    >
-                      <div className="col-span-3 line-clamp-1 px-3 over">
-                        {file.Filename}
-                      </div>
-                      <div className="text-center">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>Delete File</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                  {currentFiles.length === 0 ? (
+                    <div className="text-muted-foreground text-center p-4">
+                      No data
                     </div>
-                  ))}
+                  ) : (
+                    currentFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center  ${
+                          index !== currentFiles.length - 1 ? "border-b" : ""
+                        }`}
+                      >
+                        <div className="col-span-3 line-clamp-1 px-3 over  ml-4">
+                          {file.Filename}
+                        </div>
+                        <div className="text-center">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem>Delete File</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
+
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between mt-4">
                     <span className="ml-10 text-sm">
