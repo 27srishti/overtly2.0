@@ -73,18 +73,18 @@ const formSchema = z.object({
   name: z
     .string()
     .min(1, {
-      message: "Classname must be at least 1 characters.",
+      message: "Name be at least 1 characters.",
     })
     .max(15, {
-      message: "Classname must be at most 15 characters.",
+      message: "Name be at most 15 characters.",
     }),
   description: z
     .string()
     .min(1, {
-      message: "Classname must be at least 1 characters.",
+      message: "Description be at least 1 characters.",
     })
     .max(30, {
-      message: "Classname must be at most 30 characters.",
+      message: "Description be at most 30 characters.",
     }),
 });
 
@@ -420,7 +420,7 @@ const Page = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
-                        <div className="capitalize font-montserrat flex gap-4 text-xl max-w-[10ch] overflow-hidden items-center">
+                        <div className="capitalize font-montserrat flex gap-4 text-xl max-w-[16ch] overflow-hidden items-center">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="max-h-7 max-w-7 min-h-7 min-w-7"
