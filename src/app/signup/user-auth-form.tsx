@@ -118,29 +118,38 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   return (
     <div className={cn("grid gap-6", className)} {...props}>
       <form onSubmit={onSubmit}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
-            </Label>
-            <Input
-              id="email"
-              placeholder="name@example.com"
-              type="email"
-              autoComplete="off"
-              disabled={isLoading}
-              value={Email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Input
-              id="password"
-              placeholder="Password"
-              type="password"
-              autoComplete="off"
-              disabled={isLoading}
-              value={Password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+        <div className="grid gap-6">
+          <div className="grid gap-3">
+            <div>
+              <Label className="" htmlFor="email">
+                Email
+              </Label>
+              <Input
+                id="email"
+                placeholder="name@example.com"
+                type="email"
+                autoComplete="off"
+                disabled={isLoading}
+                value={Email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="p-4 py-6 border rounded-3xl"
+              />
+            </div>
+            <div>
+              <Label className="" htmlFor="email">
+                Password
+              </Label>
+              <Input
+                id="password"
+                placeholder="Password"
+                type="password"
+                autoComplete="off"
+                disabled={isLoading}
+                value={Password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="p-4 py-6 border rounded-3xl"
+              />
+            </div>
           </div>
           <Button disabled={isLoading}>
             {isLoading && (

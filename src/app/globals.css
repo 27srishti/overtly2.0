@@ -111,4 +111,8 @@
   .grey {
     background: rgba(213, 213, 213, 0.25);
   }
+  .border-gradient {
+    border-image: linear-gradient(to right, #CBCBCB, #297BC6);
+    border-image-slice: 1;
+  }
 }
