@@ -442,10 +442,6 @@ const Page = () => {
                     </Tooltip>
                   </TooltipProvider>
 
-                  {/* <div className=" capitalize font-montserrat flex  gap-4 text-xl">
-                    <img src="/company.png" alt="company"></img>
-                    {document.name}
-                  </div> */}
                   <div className="flex gap-3">
                     <div className="text-center">
                       <DropdownMenu>
@@ -458,16 +454,21 @@ const Page = () => {
                           align="center"
                           className="rounded-2xl font-montserrat"
                         >
-                          {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
                           <DropdownMenuItem
-                            onClick={() => handleEditProject(document)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditProject(document);
+                            }}
                             className="text-center items-center flex justify-center p-2 font-normal"
                           >
                             Edit
                           </DropdownMenuItem>
                           <SelectSeparator />
                           <DropdownMenuItem
-                            onClick={() => handleDeleteProject(document.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteProject(document.id);
+                            }}
                             className="text-center items-center flex justify-center p-2 font-normal"
                           >
                             Delete

@@ -440,7 +440,11 @@ const Page = () => {
                         <div className="text-center">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <MoreHorizontal className="h-5 w-5" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -448,16 +452,21 @@ const Page = () => {
                               align="center"
                               className="rounded-2xl font-montserrat"
                             >
-                              {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
                               <DropdownMenuItem
-                                onClick={() => handleEditClient(client)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleEditClient(client);
+                                }}
                                 className="text-center items-center flex justify-center p-2 font-normal"
                               >
                                 Edit
                               </DropdownMenuItem>
                               <SelectSeparator />
                               <DropdownMenuItem
-                                onClick={() => handleDeleteClient(client.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteClient(client.id);
+                                }}
                                 className="text-center items-center flex justify-center p-2 font-normal"
                               >
                                 Delete
