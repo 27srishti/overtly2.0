@@ -19,16 +19,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SelectSeparator } from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -61,13 +52,23 @@ import { useClientStore, useProjectStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
-import { Pencil2Icon } from "@radix-ui/react-icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
   name: z
@@ -98,8 +99,11 @@ const Page = () => {
   const params = useParams();
   const [projecteditid, setEditedProjectId] = useState<string>("");
   const [editMode, setEditMode] = useState(false);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [deleteId, setDeleteId] = useState("");
   const clientid = params.client;
   const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -221,14 +225,13 @@ const Page = () => {
     setOpen(true);
   };
 
-  const handleDeleteProject = async (projectId: string) => {
-    console.log(projectId);
-    if (window.confirm("Are you sure you want to delete this Project?")) {
+  const handleDeleteProject = async () => {
+    if (deleteId !== "" && deleteMode) {
       try {
         await deleteDoc(
           doc(
             db,
-            `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${projectId}`
+            `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${deleteId}`
           )
         );
         toast({
@@ -467,7 +470,8 @@ const Page = () => {
                           <DropdownMenuItem
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDeleteProject(document.id);
+                              setDeleteMode(true);
+                              setDeleteId(document.id);
                             }}
                             className="text-center items-center flex justify-center p-2 font-normal"
                           >
@@ -487,6 +491,29 @@ const Page = () => {
           ))}
         </div>
       )}
+      <AlertDialog open={deleteMode} onOpenChange={setDeleteMode}>
+        <AlertDialogTrigger asChild className="hidden"></AlertDialogTrigger>
+        <AlertDialogContent className="rounded-2xl font-montserrat">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              client details.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
+              onClick={() => {
+                handleDeleteProject();
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

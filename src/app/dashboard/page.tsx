@@ -67,6 +67,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
   name: z
@@ -93,6 +104,8 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [editedClientId, setEditedClientId] = useState("");
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [DeletedClientId, setDeletedClientId] = useState("");
   const router = useRouter();
   const authUser = auth.currentUser;
   const form = useForm<z.infer<typeof formSchema>>({
@@ -209,11 +222,11 @@ const Page = () => {
     setOpen(true);
   };
 
-  const handleDeleteClient = async (clientId: string) => {
-    if (window.confirm("Are you sure you want to delete this client?")) {
+  const handleDeleteClient = async () => {
+    if (DeletedClientId !== "" && deleteMode) {
       try {
         await deleteDoc(
-          doc(db, `users/${auth.currentUser?.uid}/clients`, clientId)
+          doc(db, `users/${auth.currentUser?.uid}/clients`, DeletedClientId)
         );
         const updatedClients = await fetchData();
         setClients(updatedClients);
@@ -465,7 +478,8 @@ const Page = () => {
                               <DropdownMenuItem
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteClient(client.id);
+                                  setDeletedClientId(client.id);
+                                  setDeleteMode(true);
                                 }}
                                 className="text-center items-center flex justify-center p-2 font-normal"
                               >
@@ -487,6 +501,29 @@ const Page = () => {
           </div>
         )}
       </div>
+      <AlertDialog open={deleteMode} onOpenChange={setDeleteMode}>
+        <AlertDialogTrigger asChild className="hidden"></AlertDialogTrigger>
+        <AlertDialogContent className="rounded-2xl font-montserrat">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              client details.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
+              onClick={() => {
+                handleDeleteClient();
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
