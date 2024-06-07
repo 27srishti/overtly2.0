@@ -106,8 +106,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     Pitch gen
                   </div>
                 </Link>
-                <div
-                  className={`
+                <Link href={`/dashboard/${client?.id}/research`}>
+                  <div
+                    className={`
                   ${
                     pathname.endsWith("/research")
                       ? "bg-[#BDF294] hover:bg-[#b3f87d]"
@@ -115,9 +116,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   }
                   
                   rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
-                >
-                  Research
-                </div>
+                  >
+                    Research
+                  </div>
+                </Link>
                 <div
                   className={`
                 ${
