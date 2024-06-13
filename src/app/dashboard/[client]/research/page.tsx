@@ -6,7 +6,7 @@ import { Icons } from "@/components/ui/Icons";
 
 const page = () => {
   return (
-    <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden p-5 gap-5 h-[85vh]">
+    <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden p-5 gap-10 h-[85vh]">
       <div className="w-full bg-[#DDDDDD] rounded-[30px] p-5 flex flex-col justify-between h-[83vh] py-10 bg-opacity-25">
         <div className="h-[90%] ">
           <ScrollArea className="h-full flex flex-col w-full">
