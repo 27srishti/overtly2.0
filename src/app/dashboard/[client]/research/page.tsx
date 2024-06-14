@@ -56,12 +56,13 @@ const page = () => {
         <div className="flex-none">
           <div className="flex gap-5 bg-white rounded-[30px] py-1 px-5 items-center">
             <Textarea
+            rows={1}
               placeholder="Type your message here."
-              className="outline-none focus:outline-none shadow-none border-none font-montserrat ring-[0px] focus:ring-0 ring-white p-0.5 text-base max-h-2"
+              className="outline-none focus:outline-none shadow-none border-none font-montserrat ring-[0px] focus:ring-0 ring-white"
             />
             <Button
               variant="outline"
-              className="shadow-none border-none bg-transparent"
+              className="shadow-none border-none bg-transparent self-end"
             >
               <Icons.Send />
             </Button>
