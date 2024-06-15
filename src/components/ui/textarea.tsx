@@ -17,25 +17,16 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     };
 
     React.useEffect(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto'; // Reset height initially
-        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 480)}px`;
-      }
-    }, [props.value]); // Adjust height when value changes
+      adjustTextareaHeight(); // Initial adjustment of textarea height
+    }, []);
+
+    // Expose textareaRef to the parent component through the forwarded ref
+    React.useImperativeHandle(ref, () => textareaRef.current as HTMLTextAreaElement);
 
     return (
       <textarea
         {...props}
-        ref={(node) => {
-          if (ref) {
-            if (typeof ref === "function") {
-              ref(node);
-            } else {
-              ref.current = node;
-            }
-          }
-          textareaRef.current = node;
-        }}
+        ref={textareaRef}
         className={cn(
           "flex min-h-[40px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
           className
