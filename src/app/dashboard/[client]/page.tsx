@@ -50,7 +50,7 @@ import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { useClientStore, useProjectStore } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/normaltextarea";
 import { MoreHorizontal, PlusCircle, Trash2 } from "lucide-react";
 import {
   Tooltip,

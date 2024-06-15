@@ -41,7 +41,7 @@ import {
   query,
   updateDoc,
 } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase/firebase";
+import { auth, db, storage } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
@@ -78,6 +78,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { deleteObject, ref } from "firebase/storage";
 
 const formSchema = z.object({
   name: z
@@ -225,9 +226,29 @@ const Page = () => {
   const handleDeleteClient = async () => {
     if (DeletedClientId !== "" && deleteMode) {
       try {
+        const projectsQuery = query(
+          collection(
+            db,
+            `users/${auth.currentUser?.uid}/clients/${DeletedClientId}/projects`
+          )
+        );
+        const querySnapshot = await getDocs(projectsQuery);
+
+        querySnapshot.forEach(async (doc) => {
+          await deleteDoc(doc.ref);
+          console.log(`Deleted project with ID: ${doc.id}`);
+        });
+
         await deleteDoc(
           doc(db, `users/${auth.currentUser?.uid}/clients`, DeletedClientId)
-        );
+        ).then(async () => {
+          const storageRef = ref(
+            storage,
+            `users/${authUser?.uid}/${DeletedClientId}`
+          );
+          await deleteObject(storageRef);
+        });
+
         const updatedClients = await fetchData();
         setClients(updatedClients);
         setLoading(false);
