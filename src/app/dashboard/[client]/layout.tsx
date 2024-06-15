@@ -1,6 +1,5 @@
 "use client";
 
-import { Icons } from "@/components/ui/Icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useParams, usePathname } from "next/navigation";
@@ -27,17 +26,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import { CubeIcon } from "@radix-ui/react-icons";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);

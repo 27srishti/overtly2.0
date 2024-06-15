@@ -4,9 +4,7 @@ import { Icons } from "@/components/ui/Icons";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { z } from "zod";
@@ -78,7 +76,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteObject, ref } from "firebase/storage";
+import { deleteObject, getStorage, listAll, ref, StorageReference } from "firebase/storage";
 
 const formSchema = z.object({
   name: z
@@ -223,6 +221,25 @@ const Page = () => {
     setOpen(true);
   };
 
+  async function deleteFolder(storage: ReturnType<typeof getStorage>, authUser: { uid: string } | null, DeletedClientId: string): Promise<void> {
+    if (!authUser) {
+      console.error("Error: No authenticated user");
+      return;
+    }
+  
+    const folderRef = ref(storage, `users/${authUser.uid}/${DeletedClientId}`);
+  
+    try {
+      const result = await listAll(folderRef);
+      const deletePromises = result.items.map((itemRef: StorageReference) => deleteObject(itemRef));
+  
+      await Promise.all(deletePromises);
+      console.log("Folder and all contents deleted successfully");
+    } catch (error: any) {
+      console.error("Error deleting folder contents:", error.code, error.message);
+    }
+  }
+
   const handleDeleteClient = async () => {
     if (DeletedClientId !== "" && deleteMode) {
       try {
@@ -242,14 +259,18 @@ const Page = () => {
         await deleteDoc(
           doc(db, `users/${auth.currentUser?.uid}/clients`, DeletedClientId)
         ).then(async () => {
-          const storageRef = ref(
-            storage,
-            `users/${authUser?.uid}/${DeletedClientId}`
-          );
-          await deleteObject(storageRef);
+          deleteFolder(storage, authUser, DeletedClientId);
         });
 
+
+
+
+
+
+
+
         const updatedClients = await fetchData();
+
         setClients(updatedClients);
         setLoading(false);
         toast({
