@@ -36,6 +36,7 @@ const Page = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
   const { client } = useClientStore();
   const authUser = auth.currentUser;
   const params = useParams<{ client: string }>();
@@ -62,10 +63,12 @@ const Page = () => {
   };
 
   const uploadFilesToFirebase = async () => {
+    setUploadProgress(0);
     if (files.length > 0 && authUser) {
       setLoading(true);
       setIsUploading(true);
       const uploadPromises: Promise<string>[] = [];
+      let uploadedCount = 0;
 
       files.forEach((file) => {
         const originalFileName = file.name;
@@ -81,6 +84,7 @@ const Page = () => {
           storage,
           `users/${authUser?.uid}/${params.client}/${newFileName}`
         );
+
         uploadPromises.push(
           uploadBytes(storageRef, file)
             .then((snapshot) => {
@@ -100,6 +104,11 @@ const Page = () => {
                 },
               }).then((response) => response.json());
             })
+            .then((data) => {
+              uploadedCount++;
+              setUploadProgress((uploadedCount / files.length) * 100); // Update progress here
+              return data;
+            })
             .catch((error) => {
               console.error("Error uploading file:", error.message);
               return "";
@@ -115,7 +124,8 @@ const Page = () => {
         console.error("Error uploading files:", error);
       } finally {
         setLoading(false);
-        setIsUploading(false);
+        setUploadProgress(0);
+        // setIsUploading(false);
         setFiles([]);
       }
     }
@@ -167,7 +177,7 @@ const Page = () => {
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-11 mb-14">
-        <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">
+        <div className="text-3xl mt-4  font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
 
@@ -193,49 +203,124 @@ const Page = () => {
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] xl:max-w-[1000px]">
-            <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-20 flex-col gap-10">
-              <div>
-                <div className="text-lg font-medium mb-10">Upload Files</div>
-                <div className="mt-2">
-                  <div
-                    className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center px-[20rem] py-[5rem] cursor-pointer"
-                    onClick={handleFileClick}
-                    onDrop={handleFileDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                  >
-                    <div className="text-gray-400">Drag and drop files</div>
-                  </div>
-                </div>
-              </div>
-
-              <div>or</div>
-              <button
-                className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C] gap-4"
-                onClick={handleFileClick}
-              >
-                <svg
-                  width="22"
-                  height="20"
-                  viewBox="0 0 22 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-6"
-                >
-                  <path
-                    d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.20974 13.05 0.56974 12.43L6.91974 1.5C7.26974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0797 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
-                    fill="white"
-                  />
-                </svg>
-                Upload From Drive
-              </button>
+            <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-10">
               <input
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
                 onChange={handleFileChange}
+                multiple
               />
-              {isUploading && (
-                <div className="mt-4 text-gray-500">Uploading...</div>
+              {isUploading ? (
+                <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col gap-10">
+                  <div className="text-lg font-medium mb-10 self-center">
+                    Upload Files
+                  </div>
+                  <div className="rounded-lg flex flex-col items-center justify-center py-[5rem] cursor-pointer w-full">
+                    <div className="text-gray-400 flex gap-3 mb-10">
+                      <svg
+                        width="25"
+                        height="31"
+                        viewBox="0 0 25 31"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-6 h-6"
+                      >
+                        <path
+                          d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
+                          fill="#545454"
+                        />
+                      </svg>
+                      <div className="self-center">
+                        Uploading {files.length} file(s)...
+                      </div>
+                    </div>
+                    <div className="w-full bg-[#E8E8E8]  rounded-full">
+                      <div
+                        className="progressbar rounded-full  p-[0.15rem]"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="w-full flex justify-center gap-4 mt-10">
+                    <Button
+                      className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                      onClick={handleFileClick}
+                    >
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-4 h-6"
+                      >
+                        <path
+                          d="M14 8H8V14H6V8H0V6H6V0H8V6H14V8Z"
+                          fill="white"
+                        />
+                      </svg>
+                      Choose more Files
+                    </Button>
+                    <Button className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5">
+                      Done
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <div className="text-lg font-medium mb-10">
+                      Upload Files
+                    </div>
+                    <div className="mt-2">
+                      <div
+                        className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center px-[20rem] py-[5rem] cursor-pointer"
+                        onClick={handleFileClick}
+                        onDrop={handleFileDrop}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
+                        <div className=" flex gap-3">
+                          <svg
+                            width="25"
+                            height="31"
+                            viewBox="0 0 25 31"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-6 h-6"
+                          >
+                            <path
+                              d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
+                              fill="#5C5C5E"
+                            />
+                          </svg>
+                          Drag and drop files
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div>or</div>
+                  <Button
+                    className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                    // onClick={handleFileClick}
+                  >
+                    <svg
+                      width="22"
+                      height="20"
+                      viewBox="0 0 22 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-6"
+                    >
+                      <path
+                        d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.20974 13.05 0.56974 12.43L6.91974 1.5C7.26974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0797 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
+                        fill="white"
+                      />
+                    </svg>
+                    Upload From Drive
+                  </Button>
+                </>
               )}
             </div>
           </DialogContent>
