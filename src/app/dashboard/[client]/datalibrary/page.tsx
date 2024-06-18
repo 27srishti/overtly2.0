@@ -19,6 +19,14 @@ import { MoreHorizontal } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "next/navigation";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const FILES_PER_PAGE = 10;
 
@@ -30,19 +38,25 @@ const Page = () => {
   const { client } = useClientStore();
   const authUser = auth.currentUser;
   const params = useParams<{ client: string }>();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const newFiles = e.target.files;
-    if (newFiles && newFiles.length > 0) {
-      setFiles((prevFiles) => [...prevFiles, ...Array.from(newFiles)]);
+  const handleFileClick = (): void => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFiles(Array.from(e.dataTransfer.files));
+      e.dataTransfer.clearData();
     }
   };
 
-  const openFileUploadDialog = () => {
-    // Trigger click on file input
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
     }
   };
 
@@ -54,10 +68,12 @@ const Page = () => {
       files.forEach((file) => {
         const originalFileName = file.name;
         const fileNameWithoutExtension = originalFileName.slice(0, 12);
-        const fileExtension = originalFileName.slice(-5);
+        const fileExtension = originalFileName.slice(
+          originalFileName.lastIndexOf(".")
+        );
 
         const uniqueId = uuidv4();
-        const newFileName = `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`;
+        const newFileName = `${fileNameWithoutExtension}_${uniqueId}${fileExtension}`;
 
         const storageRef = ref(
           storage,
@@ -99,8 +115,6 @@ const Page = () => {
         setLoading(false);
         setFiles([]);
       }
-    } else {
-      openFileUploadDialog();
     }
   };
 
@@ -135,7 +149,7 @@ const Page = () => {
       return [];
     }
   };
-  ////remove pr add to btn
+
   useEffect(() => {
     if (files.length > 0) {
       uploadFilesToFirebase();
@@ -148,40 +162,78 @@ const Page = () => {
   const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
 
   return (
-    <div className="w-full px-16 mt-4 font-montserrat ">
+    <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-11 mb-14">
         <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
 
-        <Button
-          className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <input
-            ref={fileInputRef}
-            className="absolute inset-0 z-[-1] opacity-0"
-            type="file"
-            onChange={handleFileUpload}
-            multiple
-          />
-          <div className="ml-1 font-montserrat text-[#545454]">
-            Upload files
-          </div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 0 24 24"
-            width="24px"
-            fill="#545454"
-          >
-            <path d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
-              className="w-6 h-6"
-            />
-          </svg>
-        </Button>
+        <Dialog>
+          <DialogTrigger>
+            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
+              <div className="ml-1 font-montserrat text-[#545454]">
+                Upload files
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24px"
+                viewBox="0 0 24 24"
+                width="24px"
+                fill="#545454"
+              >
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
+                  className="w-6 h-6"
+                />
+              </svg>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] xl:max-w-[1000px]">
+            <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-20 flex-col gap-10">
+              <div>
+                <div className="text-lg font-medium mb-10">Upload Files</div>
+                <div className="mt-2">
+                  <div
+                    className="border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center px-[20rem] py-[5rem] cursor-pointer"
+                    onClick={handleFileClick}
+                    onDrop={handleFileDrop}
+                    onDragOver={(e) => e.preventDefault()}
+                  >
+                    <div className="text-gray-400">Drag and drop files</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>or</div>
+              <button
+                className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C] gap-4"
+                onClick={handleFileClick}
+              >
+                <svg
+                  width="22"
+                  height="20"
+                  viewBox="0 0 22 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-6"
+                >
+                  <path
+                    d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.21974 13.02 0.57974 12.4L6.91974 1.49C7.27974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0597 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
+                    fill="white"
+                  />
+                </svg>
+                Upload From Drive
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="px-[10vw]">
         <Tabs defaultValue="account" className="w-full">
