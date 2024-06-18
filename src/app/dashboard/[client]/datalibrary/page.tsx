@@ -35,6 +35,7 @@ const Page = () => {
   const [fetchedFiles, setFetchedFiles] = useState<{ Filename: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const { client } = useClientStore();
   const authUser = auth.currentUser;
   const params = useParams<{ client: string }>();
@@ -63,6 +64,7 @@ const Page = () => {
   const uploadFilesToFirebase = async () => {
     if (files.length > 0 && authUser) {
       setLoading(true);
+      setIsUploading(true);
       const uploadPromises: Promise<string>[] = [];
 
       files.forEach((file) => {
@@ -113,6 +115,7 @@ const Page = () => {
         console.error("Error uploading files:", error);
       } finally {
         setLoading(false);
+        setIsUploading(false);
         setFiles([]);
       }
     }
@@ -219,7 +222,7 @@ const Page = () => {
                   className="w-4 h-6"
                 >
                   <path
-                    d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.21974 13.02 0.57974 12.4L6.91974 1.49C7.27974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0597 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
+                    d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.20974 13.05 0.56974 12.43L6.91974 1.5C7.26974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0797 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
                     fill="white"
                   />
                 </svg>
@@ -231,6 +234,9 @@ const Page = () => {
                 className="hidden"
                 onChange={handleFileChange}
               />
+              {isUploading && (
+                <div className="mt-4 text-gray-500">Uploading...</div>
+              )}
             </div>
           </DialogContent>
         </Dialog>
