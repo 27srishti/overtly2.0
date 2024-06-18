@@ -183,7 +183,7 @@ const Page = () => {
 
         <Dialog>
           <DialogTrigger>
-            <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
+            <div className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-4 py-[.8rem]">
               <div className="ml-1 font-montserrat text-[#545454]">
                 Upload files
               </div>
@@ -200,7 +200,7 @@ const Page = () => {
                   className="w-6 h-6"
                 />
               </svg>
-            </Button>
+            </div>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] xl:max-w-[1000px]">
             <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-10">
@@ -232,7 +232,7 @@ const Page = () => {
                         />
                       </svg>
                       <div className="self-center">
-                        Uploading {files.length} file(s)...
+                        Uploading {files.length} files...
                       </div>
                     </div>
                     <div className="w-full bg-[#E8E8E8]  rounded-full">
