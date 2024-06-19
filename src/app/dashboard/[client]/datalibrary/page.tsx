@@ -2,7 +2,13 @@
 
 import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import { auth, storage } from "@/lib/firebase/firebase";
-import { getDownloadURL, listAll, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  listAll,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/ui/Icons";
@@ -37,6 +43,7 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [open, setOpen] = React.useState(false);
   const { client } = useClientStore();
   const authUser = auth.currentUser;
   const params = useParams<{ client: string }>();
@@ -72,12 +79,15 @@ const Page = () => {
 
       files.forEach((file) => {
         const originalFileName = file.name;
-        const fileNameWithoutExtension = originalFileName.slice(0, 12);
+        const fileNameWithoutExtension = originalFileName.slice(
+          0,
+          originalFileName.lastIndexOf(".")
+        );
         const fileExtension = originalFileName.slice(
           originalFileName.lastIndexOf(".")
         );
 
-        const uniqueId = uuidv4();
+        const uniqueId = uuidv4().slice(0, 5);
         const newFileName = `${fileNameWithoutExtension}_${uniqueId}${fileExtension}`;
 
         const storageRef = ref(
@@ -96,7 +106,6 @@ const Page = () => {
                 bucketName
               )}&file_path=${encodeURIComponent(filePath)}`;
 
-              // Make the POST request
               return fetch(url, {
                 method: "POST",
                 headers: {
@@ -174,14 +183,33 @@ const Page = () => {
   const indexOfFirstFile = indexOfLastFile - FILES_PER_PAGE;
   const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
 
+  const deleteFileFromFirebase = async (filePath: string) => {
+    if (authUser) {
+      const fileRef = ref(storage, filePath);
+      try {
+        await deleteObject(fileRef);
+        console.log("File deleted successfully");
+        const updatedFiles = await fetchData();
+        setFetchedFiles(updatedFiles);
+      } catch (error) {
+        console.error("Error deleting file:", error);
+      }
+    }
+  };
+  const handleDialogOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-11 mb-14">
         <div className="text-3xl mt-4  font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
-
-        <Dialog>
+        <Dialog open={open} onOpenChange={handleDialogOpenChange}>
           <DialogTrigger>
             <div className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-4 py-[.8rem]">
               <div className="ml-1 font-montserrat text-[#545454]">
@@ -263,7 +291,12 @@ const Page = () => {
                       </svg>
                       Choose more Files
                     </Button>
-                    <Button className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5">
+                    <Button
+                      className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                      onClick={() => {
+                        setOpen(false);
+                      }}
+                    >
                       Done
                     </Button>
                   </div>
@@ -369,7 +402,15 @@ const Page = () => {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Delete File</DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  deleteFileFromFirebase(
+                                    `users/${authUser?.uid}/${params.client}/${file.Filename}`
+                                  )
+                                }
+                              >
+                                Delete File
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
