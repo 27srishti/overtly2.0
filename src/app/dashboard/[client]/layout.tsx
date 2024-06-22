@@ -90,7 +90,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       pathname.endsWith("create")
                         ? "bg-[#BDF294] hover:bg-[#b3f87d]"
                         : "hover:bg-[#F5F4F4]"
-                    }transition-all`}
+                    } rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
                   >
                     Pitch gen
                   </div>
