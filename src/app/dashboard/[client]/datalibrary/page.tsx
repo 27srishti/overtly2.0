@@ -59,6 +59,7 @@ const Page = () => {
       name: string;
       type: string;
       createdAt: number;
+      bucketName: string;
     }[]
   >([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -102,11 +103,13 @@ const Page = () => {
       files.forEach((file) => {
         const originalFileName = file.name;
 
-        const uniqueId = uuidv4();
+        const fileNamewithoutExtension = originalFileName.split(".")[0];
+
+        const uniqueId = uuidv4().slice(0, 6);
 
         const storageRef = ref(
           storage,
-          `users/${authUser?.uid}/${params.client}/${uniqueId}`
+          `users/${authUser?.uid}/${params.client}/${fileNamewithoutExtension}_${uniqueId}`
         );
 
         uploadPromises.push(
@@ -127,6 +130,7 @@ const Page = () => {
               const data = {
                 url: fileUrl,
                 name: originalFileName,
+                bucketName: `${fileNamewithoutExtension}_${uniqueId}`,
                 type: file.type,
                 createdAt: Date.now(),
               };
@@ -200,6 +204,7 @@ const Page = () => {
         originalName: file.originalName,
         type: file.type,
         createdAt: file.createdAt,
+        bucketName: file.bucketName,
       }));
     } catch (error) {
       console.error("Error retrieving files:", error);
@@ -297,7 +302,7 @@ const Page = () => {
             </div>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[900px] p-0">
-            <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-10">
+            <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-8">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -307,11 +312,9 @@ const Page = () => {
               />
               {isUploading ? (
                 <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col gap-10 ">
-                  <div className="text-3xl font-medium mb-10 self-center">
-                    Upload Files
-                  </div>
+                  <div className="text-xl font-medium">Upload Files</div>
                   <div className="rounded-lg flex flex-col items-center justify-center py-[5rem] cursor-pointer w-full border-spacing-[7px]">
-                    <div className="text-gray-400 flex gap-3 mb-10">
+                    <div className="text-gray-400 flex gap-3 mb-10 pt-8">
                       <svg
                         width="25"
                         height="31"
@@ -325,11 +328,11 @@ const Page = () => {
                           fill="#545454"
                         />
                       </svg>
-                      <div className="self-center">
+                      <div className="self-center text-[#545454]">
                         Uploading {files.length} files...
                       </div>
                     </div>
-                    <div className="w-full bg-[#E8E8E8]  rounded-full">
+                    <div className="w-[90%] bg-[#E8E8E8]  rounded-full">
                       <div
                         className="progressbar rounded-full  p-[0.15rem]"
                         style={{ width: `${uploadProgress}%` }}
@@ -369,10 +372,8 @@ const Page = () => {
                 </div>
               ) : (
                 <>
-                  <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col gap-10 px-10">
-                    <div className="text-xl font-medium mb-10">
-                      Upload Files
-                    </div>
+                  <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col px-4">
+                    <div className="text-xl font-medium">Upload Files</div>
                     <div
                       className="mt-2 relative cursor-pointer"
                       onClick={handleFileClick}
@@ -420,10 +421,7 @@ const Page = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
-                          className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
-                          // onClick={handleFileClick}
-                        >
+                        <Button className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5">
                           <svg
                             width="22"
                             height="20"
@@ -440,7 +438,7 @@ const Page = () => {
                           Upload From Drive
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent sideOffset={5} className="bg-[#5C5C5C]">
+                      <TooltipContent className="bg-[#5C5C5C]">
                         <div>Comming soon</div>
                       </TooltipContent>
                     </Tooltip>
