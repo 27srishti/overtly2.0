@@ -375,7 +375,7 @@ const Page = () => {
                   <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col px-4">
                     <div className="text-xl font-medium">Upload Files</div>
                     <div
-                      className="mt-2 relative cursor-pointer"
+                      className="mt-2 relative cursor-pointer mt-6"
                       onClick={handleFileClick}
                       onDrop={handleFileDrop}
                       onDragOver={(e) => e.preventDefault()}
