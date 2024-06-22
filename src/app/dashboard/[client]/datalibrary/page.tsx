@@ -66,6 +66,7 @@ const Page = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [fakeProgress, setFakeProgress] = useState<number>(0);
   const [open, setOpen] = React.useState(false);
   const { client } = useClientStore();
   const authUser = auth.currentUser;
@@ -94,22 +95,28 @@ const Page = () => {
 
   const uploadFilesToFirebase = async () => {
     setUploadProgress(0);
+    setFakeProgress(0);
+
     if (files.length > 0 && authUser) {
       setLoading(true);
       setIsUploading(true);
       const uploadPromises: Promise<string>[] = [];
       let uploadedCount = 0;
 
+      const fakeProgressInterval = setInterval(() => {
+        setFakeProgress((prev) => {
+          const nextProgress = Math.min(prev + 5, 85);
+          return nextProgress;
+        });
+      }, 150);
+
       files.forEach((file) => {
         const originalFileName = file.name;
-
-        const fileNamewithoutExtension = originalFileName.split(".")[0];
-
+        const fileNameWithoutExtension = originalFileName.split(".")[0];
         const uniqueId = uuidv4().slice(0, 6);
-
         const storageRef = ref(
           storage,
-          `users/${authUser?.uid}/${params.client}/${fileNamewithoutExtension}_${uniqueId}`
+          `users/${authUser?.uid}/${params.client}/${fileNameWithoutExtension}_${uniqueId}`
         );
 
         uploadPromises.push(
@@ -130,12 +137,12 @@ const Page = () => {
               const data = {
                 url: fileUrl,
                 name: originalFileName,
-                bucketName: `${fileNamewithoutExtension}_${uniqueId}`,
+                bucketName: `${fileNameWithoutExtension}_${uniqueId}`,
                 type: file.type,
                 createdAt: Date.now(),
               };
 
-              setDoc(docRef, data);
+              await setDoc(docRef, data);
 
               const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file?bucket_name=${encodeURIComponent(
                 bucketName
@@ -167,9 +174,10 @@ const Page = () => {
       } catch (error: any) {
         console.error("Error uploading files:", error);
       } finally {
+        clearInterval(fakeProgressInterval);
         setLoading(false);
         setUploadProgress(0);
-        // setIsUploading(false);
+        setFakeProgress(0);
         setFiles([]);
       }
     }
@@ -332,10 +340,12 @@ const Page = () => {
                         Uploading {files.length} files...
                       </div>
                     </div>
-                    <div className="w-[90%] bg-[#E8E8E8]  rounded-full">
+                    <div className="w-[90%] bg-[#E8E8E8] rounded-full">
                       <div
-                        className="progressbar rounded-full  p-[0.15rem]"
-                        style={{ width: `${uploadProgress}%` }}
+                        className="progressbar rounded-full p-[0.15rem]"
+                        style={{
+                          width: `${Math.max(fakeProgress, uploadProgress)}%`,
+                        }}
                       ></div>
                     </div>
                   </div>

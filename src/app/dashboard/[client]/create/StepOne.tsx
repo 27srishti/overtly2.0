@@ -1,17 +1,47 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import React, { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { Icons } from "@/components/ui/Icons";
 import { useFormStore, useProjectStore } from "@/store";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { auth, db } from "@/lib/firebase/firebase";
 import { useParams } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { User } from "firebase/auth";
+
+interface FileType {
+  url: string;
+  name: string;
+  type: string;
+  createdAt: number;
+  bucketName: string;
+}
 interface StepOneProps {
   onNext: () => void;
 }
@@ -26,6 +56,10 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
   const clientid = params.client;
   const searchParams = useSearchParams();
   const projectDocId = searchParams.get("projectid");
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [files, setFiles] = useState<FileType[]>([]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -48,6 +82,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
               setIdeaHint(data.ideaHint);
             }
           }
+          fetchfiles(user);
         }
       });
 
@@ -122,11 +157,123 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
     }
   };
 
+  const handleSelect = (currentValue: string) => {
+    setSelectedValues((prevValues) =>
+      prevValues.includes(currentValue)
+        ? prevValues.filter((value) => value !== currentValue)
+        : [...prevValues, currentValue]
+    );
+  };
+
+  const fetchfiles = async (user: User) => {
+    if (!user?.uid) {
+      return [];
+    }
+
+    try {
+      const docRef = collection(
+        db,
+        `users/${user.uid}/clients/${params.client}/files`
+      );
+      const querySnapshot = await getDocs(docRef);
+      const files = querySnapshot.docs.map((doc) => doc.data());
+      console.log("Fetch successful:", files);
+      const totalfiles = files.map((file) => ({
+        url: file.url,
+        name: file.name,
+        originalName: file.originalName,
+        type: file.type,
+        createdAt: file.createdAt,
+        bucketName: file.bucketName,
+      }));
+      totalfiles;
+      setFiles(totalfiles);
+      console.log(files);
+    } catch (error) {
+      console.error("Error retrieving files:", error);
+      return [];
+    }
+  };
+
   return (
     <div className="w-full mt-4 xl:px-52 font-montserrat">
       <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center">
         <div className="grid w-full max-w-lg items-center gap-3">
-          <div className="text-2xl  my-7 text-[#545454] font-medium">Pitch Info</div>
+          <div className="text-2xl  my-7 text-[#545454] font-medium">
+            Pitch Info
+          </div>
+          <div>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <div className="flex gap-4 items-center file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg p-1">
+                  <div
+                    role="combobox"
+                    aria-expanded={open}
+                    className="flex flex-wrap w-full min-h-9 rounded-md px-1 py-1 text-sm transition-colors min-h-11 "
+                  >
+                    {selectedValues.length > 0 ? (
+                      <div className="  flex gap-2 items-center flex-wrap">
+                        {selectedValues.map((value) => (
+                          <div
+                            key={value}
+                            className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex"
+                          >
+                            <div>
+                              {
+                                files.find((file) => file.bucketName === value)
+                                  ?.bucketName
+                              }
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelect(value);
+                              }}
+                              className="text-red-500 ml-1"
+                            >
+                              <Icons.Cross />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[#545454]">Select frameworks</div>
+                    )}
+                  </div>
+
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="Search framework..." />
+                  <CommandList>
+                    <CommandEmpty>No framework found.</CommandEmpty>
+                    <CommandGroup>
+                      {files.map((file) => (
+                        <CommandItem
+                          key={file.bucketName}
+                          value={file.bucketName}
+                          onSelect={() => handleSelect(file.bucketName)}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedValues.includes(file.bucketName)
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {file.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <Label htmlFor="email">Idea hint</Label>
           <Input
             placeholder="Idea hint"
@@ -182,8 +329,11 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
           )}
           <div className="mt-16">
             <div className="flex items-center justify-between">
-              <Button className="flex rounded-full px-5 items-center justify-start p-5" disabled>
-                <ArrowLeftIcon className="mr-3"/>
+              <Button
+                className="flex rounded-full px-5 items-center justify-start p-5"
+                disabled
+              >
+                <ArrowLeftIcon className="mr-3" />
               </Button>
               <Button
                 className="items-center rounded-full px-14 bg-[#5C5C5C] py-5"
