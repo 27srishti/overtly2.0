@@ -48,8 +48,18 @@ import {
   getDocs,
   setDoc,
 } from "firebase/firestore";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
-const FILES_PER_PAGE = 10;
+const FILES_PER_PAGE = 6;
 
 const Page = () => {
   const [files, setFiles] = useState<File[]>([]);
@@ -284,275 +294,457 @@ const Page = () => {
 
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
-      <div className="flex gap-16 mt-11 mb-14">
+      <div className="flex gap-16 mt-11 mb-10">
         <div className="text-3xl mt-4  font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
-        <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-          <DialogTrigger>
-            <div className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-4 py-[.8rem]">
-              <div className="ml-1 font-montserrat text-[#545454]">
-                Upload files
-              </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 0 24 24"
-                width="24px"
-                fill="#545454"
+      </div>
+      <div className="">
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList className="mb-8 flex flex-row justify-between">
+            <div className="flex gap-8">
+              <TabsTrigger
+                value="account"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
               >
-                <path d="M0 0h24v24H0z" fill="none" />
-                <path
-                  d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
-                  className="w-6 h-6"
-                />
-              </svg>
+                Documents
+              </TabsTrigger>
+              <TabsTrigger
+                value="newsarticles"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+              >
+                News Articles
+              </TabsTrigger>
+              <TabsTrigger
+                value="knowledgegraph"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+              >
+                Knowledge Graph
+              </TabsTrigger>
+              <TabsTrigger
+                value="mediadatabase"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+              >
+                Media Database
+              </TabsTrigger>
             </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[900px] p-0">
-            <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-8">
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                onChange={handleFileChange}
-                multiple
-              />
-              {isUploading ? (
-                <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col gap-10 ">
-                  <div className="text-xl font-medium">Upload Files</div>
-                  <div className="rounded-lg flex flex-col items-center justify-center py-[5rem] cursor-pointer w-full border-spacing-[7px]">
-                    <div className="text-gray-400 flex gap-3 mb-10 pt-8">
-                      <svg
-                        width="25"
-                        height="31"
-                        viewBox="0 0 25 31"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+            <div>
+              {" "}
+              <Dialog open={open} onOpenChange={handleDialogOpenChange}>
+                <DialogTrigger>
+                  <div className="gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-4 py-[.7rem]">
+                    <div className="ml-1 font-montserrat text-[#545454]">
+                      Upload files
+                    </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                      width="24px"
+                      fill="#545454"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
                         className="w-6 h-6"
-                      >
-                        <path
-                          d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
-                          fill="#545454"
-                        />
-                      </svg>
-                      <div className="self-center text-[#545454]">
-                        Uploading {files.length} files...
-                      </div>
-                    </div>
-                    <div className="w-[90%] bg-[#E8E8E8] rounded-full">
-                      <div
-                        className="progressbar rounded-full p-[0.15rem]"
-                        style={{
-                          width: `${Math.max(fakeProgress, uploadProgress)}%`,
-                        }}
-                      ></div>
-                    </div>
+                      />
+                    </svg>
                   </div>
-
-                  <div className="w-full flex justify-center gap-4 mt-10">
-                    <Button
-                      className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
-                      onClick={handleFileClick}
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 14 14"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-4 h-6"
-                      >
-                        <path
-                          d="M14 8H8V14H6V8H0V6H6V0H8V6H14V8Z"
-                          fill="white"
-                        />
-                      </svg>
-                      Choose more Files
-                    </Button>
-                    <Button
-                      className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
-                      onClick={() => {
-                        setOpen(false);
-                      }}
-                    >
-                      Done
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col px-4">
-                    <div className="text-xl font-medium">Upload Files</div>
-                    <div
-                      className="mt-2 relative cursor-pointer mt-6"
-                      onClick={handleFileClick}
-                      onDrop={handleFileDrop}
-                      onDragOver={(e) => e.preventDefault()}
-                    >
-                      <svg
-                        width="100%"
-                        height="272"
-                        viewBox="0 0 893 272"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <rect
-                          x="0.5"
-                          y="0.5"
-                          width="892"
-                          height="271"
-                          rx="24.5"
-                          stroke="#5B6FA4"
-                          stroke-linecap="round"
-                          stroke-dasharray="7 15"
-                        />
-                      </svg>
-                      <div className="flex gap-3 font-medium font-montserrat text-lg absolute top-[47%] w-full text-center justify-center">
-                        <svg
-                          width="25"
-                          height="31"
-                          viewBox="0 0 25 31"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="w-6 h-6"
-                        >
-                          <path
-                            d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
-                            fill="#5C5C5E"
-                          />
-                        </svg>
-                        Drag and drop files
-                      </div>
-                    </div>
-                  </div>
-                  <div>OR</div>
-
-                  <div
-                    onFocusCapture={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5">
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[900px] p-0">
+                  <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-8">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      onChange={handleFileChange}
+                      multiple
+                    />
+                    {isUploading ? (
+                      <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col gap-10 ">
+                        <div className="text-xl font-medium">Upload Files</div>
+                        <div className="rounded-lg flex flex-col items-center justify-center py-[5rem] cursor-pointer w-full border-spacing-[7px]">
+                          <div className="text-gray-400 flex gap-3 mb-10 pt-8">
                             <svg
-                              width="22"
-                              height="20"
-                              viewBox="0 0 22 20"
+                              width="25"
+                              height="31"
+                              viewBox="0 0 25 31"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="w-6 h-6"
+                            >
+                              <path
+                                d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
+                                fill="#545454"
+                              />
+                            </svg>
+                            <div className="self-center text-[#545454]">
+                              Uploading {files.length} files...
+                            </div>
+                          </div>
+                          <div className="w-[90%] bg-[#E8E8E8] rounded-full">
+                            <div
+                              className="progressbar rounded-full p-[0.15rem]"
+                              style={{
+                                width: `${Math.max(
+                                  fakeProgress,
+                                  uploadProgress
+                                )}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        <div className="w-full flex justify-center gap-4 mt-10">
+                          <Button
+                            className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                            onClick={handleFileClick}
+                          >
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 14 14"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
                               className="w-4 h-6"
                             >
                               <path
-                                d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.20974 13.05 0.56974 12.43L6.91974 1.5C7.26974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0797 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
+                                d="M14 8H8V14H6V8H0V6H6V0H8V6H14V8Z"
                                 fill="white"
                               />
                             </svg>
-                            Upload From Drive
+                            Choose more Files
                           </Button>
-                        </TooltipTrigger>
-                        <TooltipContent className="bg-[#5C5C5C]">
-                          <p>Comming soon</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                </>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-      <div className="px-[10vw]">
-        <Tabs defaultValue="account" className="w-full">
-          <TabsList className="flex justify-start items-center ml-12">
-            <TabsTrigger value="account" className="px-20 pt-4 mr-5 pb-3">
-              Uploaded
-            </TabsTrigger>
-            <TabsTrigger value="password" className="px-20 pt-4 mr-5 pb-3">
-              Web Extracted
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="account" className="px-0">
-            <div className="mt-7">
-              <div className="mx-auto overflow-hidden max-w-[80vw]">
-                <div className="rounded-sm border-y">
-                  <div className="text-left align-middle font-sm text-muted-foreground grid grid-cols-4 self-center border-b p-4">
-                    <div className="col-span-3 ml-20">File name</div>
-                    <div className="text-center">Actions</div>
-                  </div>
-                  {currentFiles.length === 0 ? (
-                    <div className="text-muted-foreground text-center p-4">
-                      No data
-                    </div>
-                  ) : (
-                    currentFiles.map((file, index) => (
-                      <div
-                        key={index}
-                        className={`h-10 text-left align-middle font-sm text-muted-foreground grid grid-cols-4 items-center  ${
-                          index !== currentFiles.length - 1 ? "border-b" : ""
-                        }`}
-                      >
-                        <div className="col-span-3 line-clamp-1 px-3 over  ml-4">
-                          {file.name}
-                        </div>
-                        <div className="text-center">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem
-                                onClick={() => handleDeleteFile(file)}
-                              >
-                                Delete File
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <Button
+                            className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                            onClick={() => {
+                              setOpen(false);
+                            }}
+                          >
+                            Done
+                          </Button>
                         </div>
                       </div>
-                    ))
-                  )}
+                    ) : (
+                      <>
+                        <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col px-4">
+                          <div className="text-xl font-medium">
+                            Upload Files
+                          </div>
+                          <div
+                            className="mt-2 relative cursor-pointer mt-6"
+                            onClick={handleFileClick}
+                            onDrop={handleFileDrop}
+                            onDragOver={(e) => e.preventDefault()}
+                          >
+                            <svg
+                              width="100%"
+                              height="272"
+                              viewBox="0 0 893 272"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <rect
+                                x="0.5"
+                                y="0.5"
+                                width="892"
+                                height="271"
+                                rx="24.5"
+                                stroke="#5B6FA4"
+                                stroke-linecap="round"
+                                stroke-dasharray="7 15"
+                              />
+                            </svg>
+                            <div className="flex gap-3 font-medium font-montserrat text-lg absolute top-[47%] w-full text-center justify-center">
+                              <svg
+                                width="25"
+                                height="31"
+                                viewBox="0 0 25 31"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-6 h-6"
+                              >
+                                <path
+                                  d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
+                                  fill="#5C5C5E"
+                                />
+                              </svg>
+                              Drag and drop files
+                            </div>
+                          </div>
+                        </div>
+                        <div>OR</div>
+
+                        <div
+                          onFocusCapture={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5">
+                                  <svg
+                                    width="22"
+                                    height="20"
+                                    viewBox="0 0 22 20"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-4 h-6"
+                                  >
+                                    <path
+                                      d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.20974 13.05 0.56974 12.43L6.91974 1.5C7.26974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0797 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
+                                      fill="white"
+                                    />
+                                  </svg>
+                                  Upload From Drive
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-[#5C5C5C]">
+                                <p>Comming soon</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </TabsList>
+          <TabsContent value="account" className="px-0 bg-transparent border">
+            <div className="mx-auto overflow-hidden">
+              <div className="flex flex-row p-2 w-full justify-end ">
+                <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
+                  <Input
+                    type="search"
+                    placeholder="Search"
+                    className="shadow-none border-none"
+                  />
+
+                  <div className="bg-[#3E3E3E] rounded-full p-2">
+                    <svg
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5 text-white"
+                    >
+                      <path
+                        d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </div>
                 </div>
+              </div>
+              {currentFiles.length === 0 ? (
+                <div className="text-muted-foreground text-center p-4">
+                  No data
+                </div>
+              ) : (
+                currentFiles.map((file, index) => (
+                  <div
+                    key={index}
+                    className="bg-[#F5F5F0] flex justify-between mx-6 p-3 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current"
+                  >
+                    <div className="flex gap-10 text-center items-center font-medium">
+                      <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
+                        <svg
+                          width="13"
+                          height="16"
+                          viewBox="0 0 13 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2.54453 0.5C1.62479 0.5 0.867188 1.26219 0.867188 2.1875V13.8125C0.867188 14.7378 1.62479 15.5 2.54453 15.5H11.1176C12.0374 15.5 12.795 14.7378 12.795 13.8125V5.9375C12.7949 5.78833 12.736 5.64527 12.6311 5.53979L12.6253 5.53394L7.78549 0.664795C7.68065 0.559306 7.53846 0.500029 7.39018 0.5H2.54453ZM2.54453 1.625H6.83107V4.8125C6.83107 5.73781 7.58867 6.5 8.50841 6.5H11.6767V13.8125C11.6767 14.1299 11.4331 14.375 11.1176 14.375H2.54453C2.229 14.375 1.98542 14.1299 1.98542 13.8125V2.1875C1.98542 1.87006 2.229 1.625 2.54453 1.625ZM7.9493 2.42041L10.8861 5.375H8.50841C8.19288 5.375 7.9493 5.12994 7.9493 4.8125V2.42041Z"
+                            fill="#484848"
+                          />
+                        </svg>
+                      </div>
 
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-4">
-                    <span className="ml-10 text-sm">
-                      Page {currentPage} of {totalPages}
-                    </span>
-                    <div className="mr-10">
-                      <Button
-                        variant="ghost"
-                        onClick={() =>
-                          setCurrentPage((prevPage) => prevPage - 1)
-                        }
-                        disabled={currentPage === 1}
-                      >
-                        Previous
-                      </Button>
+                      {file.name}
+                    </div>
 
-                      <Button
-                        variant="ghost"
-                        onClick={() =>
-                          setCurrentPage((prevPage) => prevPage + 1)
-                        }
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </Button>
+                    <div className="flex gap-24 flex-row">
+                      <Select>
+                        <SelectTrigger className="w-[180px] bg-white border-none shadow-none rounded-xl text-center font-medium">
+                          <SelectValue placeholder="Select a fruit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Fruits</SelectLabel>
+                            <SelectItem value="apple">Apple</SelectItem>
+                            <SelectItem value="banana">Banana</SelectItem>
+                            <SelectItem value="blueberry">Blueberry</SelectItem>
+                            <SelectItem value="grapes">Grapes</SelectItem>
+                            <SelectItem value="pineapple">Pineapple</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-10 h-10 rounded-full border bg-transparent"
+                          >
+                            <svg
+                              viewBox="0 0 8 8"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="min-w-[.7rem]"
+                            >
+                              <path
+                                d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"
+                                fill="black"
+                              />
+                            </svg>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteFile(file)}
+                          >
+                            Delete File
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
-                )}
+                ))
+              )}
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4">
+                  <span className="ml-10 text-sm">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <div className="mr-10">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      Previous
+                    </Button>
+
+                    <Button
+                      variant="ghost"
+                      onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+          <TabsContent
+            value="newsarticles"
+            className="px-0 bg-transparent border"
+          >
+            <div className="mx-auto overflow-hidden">
+              <div className="flex flex-row p-2 w-full justify-end px-10">
+                <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
+                  <Input
+                    type="search"
+                    placeholder="Search"
+                    className="shadow-none border-none"
+                  />
+
+                  <div className="bg-[#3E3E3E] rounded-full p-2">
+                    <svg
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5 text-white"
+                    >
+                      <path
+                        d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
+                        fill="white"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 mt-5">
+                <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
+                  <img src="/placeholder.png"></img>
+                  <div className="flex flex-col gap-2">
+                    <div className="font-semibold">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit.
+                    </div>
+                    <div>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
+                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
+                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
+                      minus necessitatibus voluptatem unde, delectus neque
+                      tempora voluptate!
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
+                  <img src="/placeholder.png"></img>
+                  <div className="flex flex-col gap-2">
+                    <div className="font-semibold">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit.
+                    </div>
+                    <div>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
+                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
+                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
+                      minus necessitatibus voluptatem unde, delectus neque
+                      tempora voluptate!
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
+                  <img src="/placeholder.png"></img>
+                  <div className="flex flex-col gap-2">
+                    <div className="font-semibold">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit.
+                    </div>
+                    <div>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
+                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
+                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
+                      minus necessitatibus voluptatem unde, delectus neque
+                      tempora voluptate!
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
+                  <img src="/placeholder.png"></img>
+                  <div className="flex flex-col gap-2">
+                    <div className="font-semibold">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit.
+                    </div>
+                    <div>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
+                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
+                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
+                      minus necessitatibus voluptatem unde, delectus neque
+                      tempora voluptate!
+                    </div>
+                  </div>
+                </div>
+
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="password">Web extracted Stuff here</TabsContent>
+          <TabsContent value="knowledgegraph"> knowledge graph</TabsContent>
+          <TabsContent value="mediadatabase">media database</TabsContent>
         </Tabs>
       </div>
     </div>
