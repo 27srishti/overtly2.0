@@ -80,6 +80,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             if (data.Ideas && data.ideaHint) {
               setChips(data.Ideas);
               setIdeaHint(data.ideaHint);
+              setSelectedValues(data.selectedFiles);
             }
           }
           fetchfiles(user);
@@ -121,6 +122,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
         ideaHint: ideahint,
         currentStep: 1,
         generatebyai: false,
+        selectedFiles: selectedValues,
       };
       updateFormDataInDB(formData);
       onNext();
@@ -237,7 +239,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-[#545454]">Select frameworks</div>
+                      <div className="text-[#545454]">Select Files</div>
                     )}
                   </div>
 
@@ -246,9 +248,9 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
               </PopoverTrigger>
               <PopoverContent className="w-[200px] p-0">
                 <Command>
-                  <CommandInput placeholder="Search framework..." />
+                  <CommandInput placeholder="Search files..." />
                   <CommandList>
-                    <CommandEmpty>No framework found.</CommandEmpty>
+                    <CommandEmpty>No files found.</CommandEmpty>
                     <CommandGroup>
                       {files.map((file) => (
                         <CommandItem
