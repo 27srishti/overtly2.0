@@ -58,6 +58,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { DashboardIcon, DashIcon, ListBulletIcon } from "@radix-ui/react-icons";
 
 const FILES_PER_PAGE = 6;
 
@@ -81,6 +82,7 @@ const Page = () => {
   const { client } = useClientStore();
   const authUser = auth.currentUser;
   const params = useParams<{ client: string }>();
+  const [list, setlist] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -124,9 +126,11 @@ const Page = () => {
         const originalFileName = file.name;
         const fileNameWithoutExtension = originalFileName.split(".")[0];
         const uniqueId = uuidv4().slice(0, 6);
+        const fileExtension = file.name.split(".").pop();
+
         const storageRef = ref(
           storage,
-          `users/${authUser?.uid}/${params.client}/${fileNameWithoutExtension}_${uniqueId}`
+          `users/${authUser?.uid}/${params.client}/${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`
         );
 
         uploadPromises.push(
@@ -515,7 +519,27 @@ const Page = () => {
           </TabsList>
           <TabsContent value="account" className="px-0 bg-transparent border">
             <div className="mx-auto overflow-hidden">
-              <div className="flex flex-row p-2 w-full justify-end ">
+              <div className="flex flex-row p-2 w-full justify-end gap-10">
+                <div className="flex gap-2 bg-[#F5F6F1] rounded-full px-4 py-1">
+                  <div
+                    className={`flex-1 flex items-center justify-center gap-3 py-2 cursor-pointer ${
+                      list ? "bg-[#3E3E3E] text-white rounded-full px-4" : ""
+                    }`}
+                    onClick={() => setlist(true)}
+                  >
+                    List <ListBulletIcon className="w-5 h-5" />
+                  </div>
+
+                  <div
+                    className={`flex-1 flex items-center justify-center gap-3 py-2 cursor-pointer ${
+                      !list ? "bg-[#3E3E3E] text-white rounded-full px-4" : ""
+                    }`}
+                    onClick={() => setlist(false)}
+                  >
+                    Folder <DashboardIcon className="w-5 h-5" />
+                  </div>
+                </div>
+
                 <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
                   <Input
                     type="search"
@@ -538,105 +562,204 @@ const Page = () => {
                   </div>
                 </div>
               </div>
-              {currentFiles.length === 0 ? (
-                <div className="text-muted-foreground text-center p-4">
-                  No data
-                </div>
-              ) : (
-                currentFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className="bg-[#F5F5F0] flex justify-between mx-6 p-3 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current"
-                  >
-                    <div className="flex gap-10 text-center items-center font-medium">
-                      <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
-                        <svg
-                          width="13"
-                          height="16"
-                          viewBox="0 0 13 16"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2.54453 0.5C1.62479 0.5 0.867188 1.26219 0.867188 2.1875V13.8125C0.867188 14.7378 1.62479 15.5 2.54453 15.5H11.1176C12.0374 15.5 12.795 14.7378 12.795 13.8125V5.9375C12.7949 5.78833 12.736 5.64527 12.6311 5.53979L12.6253 5.53394L7.78549 0.664795C7.68065 0.559306 7.53846 0.500029 7.39018 0.5H2.54453ZM2.54453 1.625H6.83107V4.8125C6.83107 5.73781 7.58867 6.5 8.50841 6.5H11.6767V13.8125C11.6767 14.1299 11.4331 14.375 11.1176 14.375H2.54453C2.229 14.375 1.98542 14.1299 1.98542 13.8125V2.1875C1.98542 1.87006 2.229 1.625 2.54453 1.625ZM7.9493 2.42041L10.8861 5.375H8.50841C8.19288 5.375 7.9493 5.12994 7.9493 4.8125V2.42041Z"
-                            fill="#484848"
-                          />
-                        </svg>
-                      </div>
-
-                      {file.name}
+              {list ? (
+                <>
+                  {currentFiles.length === 0 ? (
+                    <div className="text-muted-foreground text-center p-4">
+                      No data
                     </div>
-
-                    <div className="flex gap-24 flex-row">
-                      <Select>
-                        <SelectTrigger className="w-[180px] bg-white border-none shadow-none rounded-xl text-center font-medium">
-                          <SelectValue placeholder="Select a fruit" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectLabel>Fruits</SelectLabel>
-                            <SelectItem value="apple">Apple</SelectItem>
-                            <SelectItem value="banana">Banana</SelectItem>
-                            <SelectItem value="blueberry">Blueberry</SelectItem>
-                            <SelectItem value="grapes">Grapes</SelectItem>
-                            <SelectItem value="pineapple">Pineapple</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-10 h-10 rounded-full border bg-transparent"
-                          >
+                  ) : (
+                    currentFiles.map((file, index) => (
+                      <div
+                        key={index}
+                        className="bg-[#F5F5F0] flex justify-between mx-6 p-3 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current"
+                      >
+                        <div className="flex gap-10 text-center items-center font-medium">
+                          <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
                             <svg
-                              viewBox="0 0 8 8"
+                              width="13"
+                              height="16"
+                              viewBox="0 0 13 16"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
-                              className="min-w-[.7rem]"
                             >
                               <path
-                                d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"
-                                fill="black"
+                                d="M2.54453 0.5C1.62479 0.5 0.867188 1.26219 0.867188 2.1875V13.8125C0.867188 14.7378 1.62479 15.5 2.54453 15.5H11.1176C12.0374 15.5 12.795 14.7378 12.795 13.8125V5.9375C12.7949 5.78833 12.736 5.64527 12.6311 5.53979L12.6253 5.53394L7.78549 0.664795C7.68065 0.559306 7.53846 0.500029 7.39018 0.5H2.54453ZM2.54453 1.625H6.83107V4.8125C6.83107 5.73781 7.58867 6.5 8.50841 6.5H11.6767V13.8125C11.6767 14.1299 11.4331 14.375 11.1176 14.375H2.54453C2.229 14.375 1.98542 14.1299 1.98542 13.8125V2.1875C1.98542 1.87006 2.229 1.625 2.54453 1.625ZM7.9493 2.42041L10.8861 5.375H8.50841C8.19288 5.375 7.9493 5.12994 7.9493 4.8125V2.42041Z"
+                                fill="#484848"
                               />
                             </svg>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteFile(file)}
-                          >
-                            Delete File
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          </div>
+
+                          {file.name}
+                        </div>
+
+                        <div className="flex gap-24 flex-row">
+                          <Select>
+                            <SelectTrigger className="w-[180px] bg-white border-none shadow-none rounded-xl text-center font-medium">
+                              <SelectValue placeholder="Select a fruit" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Fruits</SelectLabel>
+                                <SelectItem value="apple">Apple</SelectItem>
+                                <SelectItem value="banana">Banana</SelectItem>
+                                <SelectItem value="blueberry">
+                                  Blueberry
+                                </SelectItem>
+                                <SelectItem value="grapes">Grapes</SelectItem>
+                                <SelectItem value="pineapple">
+                                  Pineapple
+                                </SelectItem>
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-10 h-10 rounded-full border bg-transparent"
+                              >
+                                <svg
+                                  viewBox="0 0 8 8"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="min-w-[.7rem]"
+                                >
+                                  <path
+                                    d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"
+                                    fill="black"
+                                  />
+                                </svg>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteFile(file)}
+                              >
+                                Delete File
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    ))
+                  )}
+
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <span className="ml-10 text-sm">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                      <div className="mr-10">
+                        <Button
+                          variant="ghost"
+                          onClick={() =>
+                            setCurrentPage((prevPage) => prevPage - 1)
+                          }
+                          disabled={currentPage === 1}
+                        >
+                          Previous
+                        </Button>
+
+                        <Button
+                          variant="ghost"
+                          onClick={() =>
+                            setCurrentPage((prevPage) => prevPage + 1)
+                          }
+                          disabled={currentPage === totalPages}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="mx-10 grid grid-cols-5 gap-5 mt-5">
+                  <div className="flex flex-col bg-[#FFC8C8] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-80">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
+                      <div>
+                        <Icons.Expand className="w-4 h-4 mr-5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xl"> Press Release</div>
+                      <div>
+                        This is the second vehicle company Henrik Fisker
+                      </div>
                     </div>
                   </div>
-                ))
-              )}
-
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <span className="ml-10 text-sm">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <div className="mr-10">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setCurrentPage((prevPage) => prevPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      Previous
-                    </Button>
-
-                    <Button
-                      variant="ghost"
-                      onClick={() => setCurrentPage((prevPage) => prevPage + 1)}
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                    </Button>
+                  <div className="flex flex-col bg-[#FFEAB5] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-40">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
+                      <div>
+                        <Icons.Expand className="w-4 h-4 mr-5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xl"> Press Release</div>
+                      <div>
+                        This is the second vehicle company Henrik Fisker
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col bg-[#8DBBFF] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-50">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
+                      <div>
+                        <Icons.Expand className="w-4 h-4 mr-5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xl"> Press Release</div>
+                      <div>
+                        This is the second vehicle company Henrik Fisker
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col bg-[#A1FFB0] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-20">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
+                      <div>
+                        <Icons.Expand className="w-4 h-4 mr-5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xl"> Press Release</div>
+                      <div>
+                        This is the second vehicle company Henrik Fisker
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col bg-[#77D7D7] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-20">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
+                      <div>
+                        <Icons.Expand className="w-4 h-4 mr-5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xl"> Press Release</div>
+                      <div>
+                        This is the second vehicle company Henrik Fisker
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col bg-[#D8D8D8] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-20">
+                    <div className="flex flex-row justify-between items-center">
+                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
+                      <div>
+                        <Icons.Expand className="w-4 h-4 mr-5" />
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="font-medium text-xl"> Press Release</div>
+                      <div>
+                        This is the second vehicle company Henrik Fisker
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -739,7 +862,6 @@ const Page = () => {
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
           </TabsContent>
