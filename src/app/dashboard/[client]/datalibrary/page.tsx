@@ -572,7 +572,7 @@ const Page = () => {
                 <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
                   <Input
                     type="search"
-                    placeholder="Search"
+                    placeholder="Search Data"
                     className="shadow-none border-none"
                   />
 
@@ -830,7 +830,7 @@ const Page = () => {
                 <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
                   <Input
                     type="search"
-                    placeholder="Search"
+                    placeholder="Search Data"
                     className="shadow-none border-none"
                   />
 
@@ -853,68 +853,185 @@ const Page = () => {
                 <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
                   <img src="/placeholder.png"></img>
                   <div className="flex flex-col gap-2">
-                    <div className="font-semibold">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Dolore, impedit.
+                    <div className="flex flex-row justify-between pr-10">
+                      <div className="font-semibold mt-2">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Dolore, impedit.
+                      </div>
+
+                      <div className="flex gap-2 items-center text-[.8rem] text-center">
+                        <svg
+                          width="17"
+                          height="17"
+                          viewBox="0 0 17 17"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_1455_2103)">
+                            <path
+                              d="M8.49422 1.4165C4.58422 1.4165 1.41797 4.58984 1.41797 8.49984C1.41797 12.4098 4.58422 15.5832 8.49422 15.5832C12.4113 15.5832 15.5846 12.4098 15.5846 8.49984C15.5846 4.58984 12.4113 1.4165 8.49422 1.4165ZM8.5013 14.1665C5.37047 14.1665 2.83464 11.6307 2.83464 8.49984C2.83464 5.369 5.37047 2.83317 8.5013 2.83317C11.6321 2.83317 14.168 5.369 14.168 8.49984C14.168 11.6307 11.6321 14.1665 8.5013 14.1665Z"
+                              fill="#858383"
+                            />
+                            <path
+                              d="M8.85547 4.9585H7.79297V9.2085L11.5117 11.4397L12.043 10.5685L8.85547 8.67725V4.9585Z"
+                              fill="#858383"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_1455_2103">
+                              <rect width="17" height="17" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        10 hours back
+                      </div>
                     </div>
                     <div>
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
-                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
-                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
-                      minus necessitatibus voluptatem unde, delectus neque
-                      tempora voluptate!
+                      adipisicing elit. Cum, eaque quis. ue quis ue quis
+                      Quisquam eaque velit tenetur sed aliquid, alias impedit
+                      pariatur enim. Repellat minus necessitatibus voluptatem
+                      unde, delectus neque tempora voluptate!
                     </div>
                   </div>
                 </div>
                 <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
                   <img src="/placeholder.png"></img>
                   <div className="flex flex-col gap-2">
-                    <div className="font-semibold">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Dolore, impedit.
+                    <div className="flex flex-row justify-between pr-10">
+                      <div className="font-semibold mt-2">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Dolore, impedit.
+                      </div>
+
+                      <div className="flex gap-2 items-center text-[.8rem]">
+                        <svg
+                          width="17"
+                          height="17"
+                          viewBox="0 0 17 17"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_1455_2103)">
+                            <path
+                              d="M8.49422 1.4165C4.58422 1.4165 1.41797 4.58984 1.41797 8.49984C1.41797 12.4098 4.58422 15.5832 8.49422 15.5832C12.4113 15.5832 15.5846 12.4098 15.5846 8.49984C15.5846 4.58984 12.4113 1.4165 8.49422 1.4165ZM8.5013 14.1665C5.37047 14.1665 2.83464 11.6307 2.83464 8.49984C2.83464 5.369 5.37047 2.83317 8.5013 2.83317C11.6321 2.83317 14.168 5.369 14.168 8.49984C14.168 11.6307 11.6321 14.1665 8.5013 14.1665Z"
+                              fill="#858383"
+                            />
+                            <path
+                              d="M8.85547 4.9585H7.79297V9.2085L11.5117 11.4397L12.043 10.5685L8.85547 8.67725V4.9585Z"
+                              fill="#858383"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_1455_2103">
+                              <rect width="17" height="17" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        10 hours back
+                      </div>
                     </div>
                     <div>
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
-                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
-                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
-                      minus necessitatibus voluptatem unde, delectus neque
-                      tempora voluptate!
+                      adipisicing elit. Cum, eaque quis. ue quis ue quis
+                      Quisquam eaque velit tenetur sed aliquid, alias impedit
+                      pariatur enim. Repellat minus necessitatibus voluptatem
+                      unde, delectus neque tempora voluptate!
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
+                  <img src="/placeholder.png"></img>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex flex-row justify-between pr-10">
+                      <div className="font-semibold mt-2">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Dolore, impedit.
+                      </div>
+
+                      <div className="flex gap-2 items-center text-[.8rem]">
+                        <svg
+                          width="17"
+                          height="17"
+                          viewBox="0 0 17 17"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_1455_2103)">
+                            <path
+                              d="M8.49422 1.4165C4.58422 1.4165 1.41797 4.58984 1.41797 8.49984C1.41797 12.4098 4.58422 15.5832 8.49422 15.5832C12.4113 15.5832 15.5846 12.4098 15.5846 8.49984C15.5846 4.58984 12.4113 1.4165 8.49422 1.4165ZM8.5013 14.1665C5.37047 14.1665 2.83464 11.6307 2.83464 8.49984C2.83464 5.369 5.37047 2.83317 8.5013 2.83317C11.6321 2.83317 14.168 5.369 14.168 8.49984C14.168 11.6307 11.6321 14.1665 8.5013 14.1665Z"
+                              fill="#858383"
+                            />
+                            <path
+                              d="M8.85547 4.9585H7.79297V9.2085L11.5117 11.4397L12.043 10.5685L8.85547 8.67725V4.9585Z"
+                              fill="#858383"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_1455_2103">
+                              <rect width="17" height="17" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        10 hours back
+                      </div>
+                    </div>
+                    <div>
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
+                      adipisicing elit. Cum, eaque quis. ue quis ue quis
+                      Quisquam eaque velit tenetur sed aliquid, alias impedit
+                      pariatur enim. Repellat minus necessitatibus voluptatem
+                      unde, delectus neque tempora voluptate!
                     </div>
                   </div>
                 </div>
                 <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
                   <img src="/placeholder.png"></img>
                   <div className="flex flex-col gap-2">
-                    <div className="font-semibold">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Dolore, impedit.
+                    <div className="flex flex-row justify-between pr-10">
+                      <div className="font-semibold mt-2">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Dolore, impedit.
+                      </div>
+
+                      <div className="flex gap-2 items-center text-[.8rem]">
+                        <svg
+                          width="17"
+                          height="17"
+                          viewBox="0 0 17 17"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g clip-path="url(#clip0_1455_2103)">
+                            <path
+                              d="M8.49422 1.4165C4.58422 1.4165 1.41797 4.58984 1.41797 8.49984C1.41797 12.4098 4.58422 15.5832 8.49422 15.5832C12.4113 15.5832 15.5846 12.4098 15.5846 8.49984C15.5846 4.58984 12.4113 1.4165 8.49422 1.4165ZM8.5013 14.1665C5.37047 14.1665 2.83464 11.6307 2.83464 8.49984C2.83464 5.369 5.37047 2.83317 8.5013 2.83317C11.6321 2.83317 14.168 5.369 14.168 8.49984C14.168 11.6307 11.6321 14.1665 8.5013 14.1665Z"
+                              fill="#858383"
+                            />
+                            <path
+                              d="M8.85547 4.9585H7.79297V9.2085L11.5117 11.4397L12.043 10.5685L8.85547 8.67725V4.9585Z"
+                              fill="#858383"
+                            />
+                          </g>
+                          <defs>
+                            <clipPath id="clip0_1455_2103">
+                              <rect width="17" height="17" fill="white" />
+                            </clipPath>
+                          </defs>
+                        </svg>
+                        10 hours back
+                      </div>
                     </div>
                     <div>
                       Lorem ipsum dolor sit amet consectetur adipisicing elit.
                       Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
-                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
-                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
-                      minus necessitatibus voluptatem unde, delectus neque
-                      tempora voluptate!
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-[#D8D8D8] bg-opacity-20 flex mx-12 flex gap-6 p-2 rounded-2xl">
-                  <img src="/placeholder.png"></img>
-                  <div className="flex flex-col gap-2">
-                    <div className="font-semibold">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Dolore, impedit.
-                    </div>
-                    <div>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
-                      adipisicing elit. Cum, eaque quis. Quisquam eaque velit
-                      tenetur sed aliquid, alias impedit pariatur enim. Repellat
-                      minus necessitatibus voluptatem unde, delectus neque
-                      tempora voluptate!
+                      adipisicing elit. Cum, eaque quis. ue quis ue quis
+                      Quisquam eaque velit tenetur sed aliquid, alias impedit
+                      pariatur enim. Repellat minus necessitatibus voluptatem
+                      unde, delectus neque tempora voluptate!
                     </div>
                   </div>
                 </div>
