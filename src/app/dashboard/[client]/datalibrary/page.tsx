@@ -47,6 +47,7 @@ import {
   doc,
   getDocs,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import {
   Select,
@@ -60,19 +61,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { DashboardIcon, DashIcon, ListBulletIcon } from "@radix-ui/react-icons";
 
-const FILES_PER_PAGE = 6;
+const FILES_PER_PAGE = 7;
+
+interface FileCollection {
+  id: string;
+  url: string;
+  name: string;
+  type: string;
+  createdAt: number;
+  bucketName: string;
+  filesCategory: string;
+}
 
 const Page = () => {
   const [files, setFiles] = useState<File[]>([]);
-  const [fetchedFiles, setFetchedFiles] = useState<
-    {
-      url: string;
-      name: string;
-      type: string;
-      createdAt: number;
-      bucketName: string;
-    }[]
-  >([]);
+  const [fetchedFiles, setFetchedFiles] = useState<FileCollection[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -151,7 +154,7 @@ const Page = () => {
               const data = {
                 url: fileUrl,
                 name: originalFileName,
-                bucketName: `${fileNameWithoutExtension}_${uniqueId}`,
+                bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
                 type: file.type,
                 createdAt: Date.now(),
               };
@@ -218,16 +221,18 @@ const Page = () => {
         `users/${authUser.uid}/clients/${params.client}/files`
       );
       const querySnapshot = await getDocs(docRef);
-      const files = querySnapshot.docs.map((doc) => doc.data());
-      console.log("Fetch successful:", files);
-      return files.map((file) => ({
-        url: file.url,
-        name: file.name,
-        originalName: file.originalName,
-        type: file.type,
-        createdAt: file.createdAt,
-        bucketName: file.bucketName,
+      const files = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        url: doc.data().url,
+        name: doc.data().name,
+        originalName: doc.data().originalName,
+        type: doc.data().type,
+        createdAt: doc.data().createdAt,
+        bucketName: doc.data().bucketName,
+        filesCategory: doc.data().filesCategory,
       }));
+      console.log("Fetch successful:", files);
+      return files;
     } catch (error) {
       console.error("Error retrieving files:", error);
       return [];
@@ -296,16 +301,40 @@ const Page = () => {
     setFetchedFiles(updatedFiles);
   };
 
+  const handleUpdateFile = async (file: FileCollection, value: string) => {
+    if (!authUser?.uid) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    try {
+      const docRef = doc(
+        db,
+        `users/${authUser.uid}/clients/${params.client}/files`,
+        file.id
+      );
+
+      await updateDoc(docRef, {
+        filesCategory: value,
+      });
+
+      const updatedFiles = await fetchData();
+      setFetchedFiles(updatedFiles);
+    } catch (error) {
+      console.error("Error updating file metadata in Firestore:", error);
+    }
+  };
+
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
-      <div className="flex gap-16 mt-11 mb-10">
+      <div className="flex gap-16 mt-6 mb-10">
         <div className="text-3xl mt-4  font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
       </div>
-      <div className="">
+      <div>
         <Tabs defaultValue="account" className="w-full">
-          <TabsList className="mb-8 flex flex-row justify-between">
+          <TabsList className="mb-5 flex flex-row justify-between ml-3">
             <div className="flex gap-8">
               <TabsTrigger
                 value="account"
@@ -519,24 +548,24 @@ const Page = () => {
           </TabsList>
           <TabsContent value="account" className="px-0 bg-transparent border">
             <div className="mx-auto overflow-hidden">
-              <div className="flex flex-row p-2 w-full justify-end gap-10">
-                <div className="flex gap-2 bg-[#F5F6F1] rounded-full px-4 py-1">
+              <div className="flex flex-row p-2 w-full justify-end gap-10 mb-4">
+                <div className="flex gap-2 bg-[#F5F6F1] rounded-full px-3 py-1">
                   <div
-                    className={`flex-1 flex items-center justify-center gap-3 py-2 cursor-pointer ${
-                      list ? "bg-[#3E3E3E] text-white rounded-full px-4" : ""
+                    className={`flex-1 flex items-center justify-center gap-3 py-[.6rem] cursor-pointer ${
+                      list ? "bg-[#3E3E3E] text-white rounded-full px-5" : ""
                     }`}
                     onClick={() => setlist(true)}
                   >
-                    List <ListBulletIcon className="w-5 h-5" />
+                    List <ListBulletIcon className="w-4 h-4" />
                   </div>
 
                   <div
-                    className={`flex-1 flex items-center justify-center gap-3 py-2 cursor-pointer ${
+                    className={`flex-1 flex items-center justify-center gap-3 py-[.6rem] cursor-pointer ${
                       !list ? "bg-[#3E3E3E] text-white rounded-full px-4" : ""
                     }`}
                     onClick={() => setlist(false)}
                   >
-                    Folder <DashboardIcon className="w-5 h-5" />
+                    Folder <DashboardIcon className="w-4 h-4" />
                   </div>
                 </div>
 
@@ -547,12 +576,12 @@ const Page = () => {
                     className="shadow-none border-none"
                   />
 
-                  <div className="bg-[#3E3E3E] rounded-full p-2">
+                  <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem]">
                     <svg
                       viewBox="0 0 14 14"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 text-white"
+                      className="w-4 h-4 text-white"
                     >
                       <path
                         d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
@@ -572,7 +601,7 @@ const Page = () => {
                     currentFiles.map((file, index) => (
                       <div
                         key={index}
-                        className="bg-[#F5F5F0] flex justify-between mx-6 p-3 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current"
+                        className="bg-[#F5F5F0] flex justify-between mx-6 p-2 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current "
                       >
                         <div className="flex gap-10 text-center items-center font-medium">
                           <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
@@ -593,22 +622,49 @@ const Page = () => {
                           {file.name}
                         </div>
 
-                        <div className="flex gap-24 flex-row">
-                          <Select>
+                        <div className="flex gap-28 flex-row">
+                          <Select
+                            defaultValue={file.filesCategory}
+                            onValueChange={(value) =>
+                              handleUpdateFile(file, value)
+                            }
+                          >
                             <SelectTrigger className="w-[180px] bg-white border-none shadow-none rounded-xl text-center font-medium">
-                              <SelectValue placeholder="Select a fruit" />
+                              <SelectValue placeholder="Select an category" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                <SelectLabel>Fruits</SelectLabel>
-                                <SelectItem value="apple">Apple</SelectItem>
-                                <SelectItem value="banana">Banana</SelectItem>
-                                <SelectItem value="blueberry">
-                                  Blueberry
+                                <SelectItem value="Corporate Information">
+                                  Corporate Information
                                 </SelectItem>
-                                <SelectItem value="grapes">Grapes</SelectItem>
-                                <SelectItem value="pineapple">
-                                  Pineapple
+                                <SelectItem value="Press Releases & Announcements">
+                                  Press Releases & Announcements
+                                </SelectItem>
+                                <SelectItem value="Reports">Reports</SelectItem>
+                                <SelectItem value="Case Studies">
+                                  Case Studies
+                                </SelectItem>
+                                <SelectItem value="Media Hits">
+                                  Media Hits
+                                </SelectItem>
+                                <SelectItem value="Press Kits">
+                                  Press Kits
+                                </SelectItem>
+                                <SelectItem value="Media Kits">
+                                  Media Kits
+                                </SelectItem>
+                                <SelectItem value="White Paper">
+                                  White Paper
+                                </SelectItem>
+                                <SelectItem value="Media/Brand Presence">
+                                  Media/Brand Presence
+                                </SelectItem>
+                                <SelectItem value="Marketing Material">
+                                  Marketing Material
+                                </SelectItem>
+                                <SelectItem value="Emails">Emails</SelectItem>
+                                <SelectItem value="Important Docs (others)">
+                                  Important Docs (others)
                                 </SelectItem>
                               </SelectGroup>
                             </SelectContent>
@@ -623,7 +679,7 @@ const Page = () => {
                                   viewBox="0 0 8 8"
                                   fill="none"
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="min-w-[.7rem]"
+                                  className="min-w-[.6rem]"
                                 >
                                   <path
                                     d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"

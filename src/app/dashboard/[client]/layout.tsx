@@ -27,6 +27,7 @@ import { auth } from "@/lib/firebase/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
+import { CalendarIcon } from "@radix-ui/react-icons";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);
@@ -179,13 +180,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Breadcrumb> */}
             </div>
             <div className="flex items-center gap-5">
-              {/* <Button
-                variant="outline"
-                onClick={() => router.push("/dashboard")}
-              >
-                Go to Dashboard
-              </Button> */}
-              <div className=" bg-secondary p-3 rounded-full">
+              <div className="bg-secondary p-[0.8rem] rounded-full">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 17 17"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g clipPath="url(#clip0_1455_1874)">
+                    <path
+                      d="M13.75 2.41667H13.0417V1H11.625V2.41667H4.54167V1H3.125V2.41667H2.41667C1.6375 2.41667 1 3.05417 1 3.83333V15.1667C1 15.9458 1.6375 16.5833 2.41667 16.5833H13.75C14.5292 16.5833 15.1667 15.9458 15.1667 15.1667V3.83333C15.1667 3.05417 14.5292 2.41667 13.75 2.41667ZM13.75 15.1667H2.41667V5.95833H13.75V15.1667Z"
+                      fill="#747474"
+                    />
+                    <rect x="10" y="8" width="2" height="2" fill="#BBBBBB" />
+                    <rect x="4" y="8" width="2" height="2" fill="#BBBBBB" />
+                    <rect x="7" y="8" width="2" height="2" fill="#BBBBBB" />
+                    <rect x="4" y="11" width="2" height="2" fill="#BBBBBB" />
+                    <rect x="7" y="11" width="2" height="2" fill="#BBBBBB" />
+                    <rect x="10" y="11" width="2" height="2" fill="#BBBBBB" />
+                  </g>
+                  <defs>
+                    <clipPath id="clip0_1455_1874">
+                      <rect width="17" height="17" fill="white" />
+                    </clipPath>
+                  </defs>
+                </svg>
+              </div>
+              <div className="bg-secondary p-3 rounded-full">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   height="24px"
