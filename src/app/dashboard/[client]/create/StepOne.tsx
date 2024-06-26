@@ -213,7 +213,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                     aria-expanded={open}
                     className="flex flex-wrap w-full min-h-9 rounded-md px-1 py-1 text-sm transition-colors min-h-11 "
                   >
-                    {selectedValues.length > 0 ? (
+                    {selectedValues && selectedValues.length > 0 ? (
                       <div className="  flex gap-2 items-center flex-wrap">
                         {selectedValues.map((value) => (
                           <div
