@@ -91,6 +91,10 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       topic: {
                         idea: firebasedata.selectedGeneratedIdea.idea,
                         story: firebasedata.selectedGeneratedIdea.story,
+                        media_format: firebasedata.mediaFormat,
+                        beat: firebasedata.beat,
+                        outlet: firebasedata.outlet,
+                        objective: firebasedata.objective,
                       },
                     }),
                   }
