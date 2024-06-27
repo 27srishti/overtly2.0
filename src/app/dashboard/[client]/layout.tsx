@@ -153,31 +153,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 </Link>
               </div>
-              {/* <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href={`/dashboard/${client?.id}`}>
-                      {client?.name ? (
-                        client.name
-                      ) : (
-                        <Skeleton className="h-4 w-[20px]" />
-                      )}
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>
-                      {pathname.endsWith(`${client?.id}`) ? "Home" : ""}
-                      {pathname.endsWith("/datalibrary") ? "Data Library" : ""}
-                      {pathname.endsWith("/create") ? "Create" : ""}
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb> */}
             </div>
             <div className="flex items-center gap-5">
               <div className="bg-secondary p-[0.8rem] rounded-full">
@@ -221,7 +196,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     className="w-5 h-5"
                   />
                 </svg>
-                {/* <BellIcon className="w-5 h-5" /> */}
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -282,78 +256,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-      {/* <div className="container px-0 relative ">
-        <div className="flex transition  duration-1000 ease-in-out">
-          <div
-            className={`${
-              mini ? "w-16" : "w-44 rounded-r-sm"
-            } sm:w-44 z-50 h-[calc(100vh-1rem)] fixed top-15 border-x cursor-pointer flex flex-col gap-3 bg-opacity-20  backdrop-filter backdrop-blur-lg border-opacity-20 transition  duration-1000 ease-in-out bg-secondary`}
-            onMouseOver={toggleSidebar}
-            onMouseOut={toggleSidebar}
-          >
-            <Link href={`/dashboard/${params.client}`}>
-              <div
-                className={`flex items-center py-2 px-4 mt-6 gap-2 
-              ${
-                pathname.endsWith(`${client?.id}`)
-                  ? "bg-[#c1c1c1]"
-                  : "hover:bg-[#EFEFEF]"
-              } 
-             `}
-                // onClick={() => {
-                //   router.push(`/dashboard/${params.client}`);
-                // }}
-              >
-                <div>
-                  <Icons.Home />
-                </div>
-                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                  Home
-                </span>
-              </div>
-            </Link>
-            <Link href={`/dashboard/${params.client}/datalibrary`}>
-              <div
-                className={`flex items-center py-2 px-4 gap-2 
-              ${
-                pathname.endsWith("/datalibrary")
-                  ? "bg-[#c1c1c1]"
-                  : "hover:bg-[#EFEFEF]"
-              } 
-             `}
-                // onClick={() => {
-                //   router.push();
-                // }}
-              >
-                <div>
-                  <Icons.Files />
-                </div>
-                <span className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                  Data&nbsp;Library
-                </span>
-              </div>
-            </Link>
-
-            <div
-              className={`flex items-center py-2 px-4 gap-2 
-              ${
-                pathname.endsWith("/settings")
-                  ? "bg-primary text-primary-foreground"
-                  : ""
-              } 
-             `}
-            >
-              <div>
-                <Icons.Gear />
-              </div>
-              <div className={`${mini ? "hidden" : ""} sm:block ml-2`}>
-                Settings
-              </div>
-            </div>
-          </div>
-          {children}
-        </div>
-      </div> */}
       {children}
     </div>
   );

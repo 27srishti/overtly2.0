@@ -60,6 +60,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { DashboardIcon, DashIcon, ListBulletIcon } from "@radix-ui/react-icons";
+import { Filetypes } from "@/lib/dropdown";
 
 const FILES_PER_PAGE = 7;
 
@@ -328,7 +329,7 @@ const Page = () => {
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-6 mb-10">
-        <div className="text-3xl mt-4  font-montserrat capitalize">
+        <div className="text-[23px] mt-4  font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
       </div>
@@ -546,13 +547,18 @@ const Page = () => {
               </Dialog>
             </div>
           </TabsList>
-          <TabsContent value="account" className="px-0 bg-transparent border">
+          <TabsContent
+            value="account"
+            className="px-0 bg-transparent border rounded-[30px]"
+          >
             <div className="mx-auto overflow-hidden">
-              <div className="flex flex-row p-2 w-full justify-end gap-10 mb-4">
-                <div className="flex gap-2 bg-[#F5F6F1] rounded-full px-3 py-1">
+              <div className="flex flex-row p-2 w-full justify-end gap-10 mb-4 px-6">
+                <div className="flex gap-2 bg-[#F5F6F1] rounded-full px-3 py-1 mx-6">
                   <div
-                    className={`flex-1 flex items-center justify-center gap-3 py-[.6rem] cursor-pointer ${
-                      list ? "bg-[#3E3E3E] text-white rounded-full px-5" : ""
+                    className={`flex-1 flex items-center justify-center gap-4  cursor-pointer rounded-full px-5 ${
+                      list
+                        ? "bg-[#3E3E3E] text-white"
+                        : "bg-transparent text-black"
                     }`}
                     onClick={() => setlist(true)}
                   >
@@ -560,8 +566,10 @@ const Page = () => {
                   </div>
 
                   <div
-                    className={`flex-1 flex items-center justify-center gap-3 py-[.6rem] cursor-pointer ${
-                      !list ? "bg-[#3E3E3E] text-white rounded-full px-4" : ""
+                    className={`flex-1 flex items-center justify-center gap-3 py-[.6rem] cursor-pointer rounded-full px-5 ${
+                      !list
+                        ? "bg-[#3E3E3E] text-white"
+                        : "bg-transparent text-black"
                     }`}
                     onClick={() => setlist(false)}
                   >
@@ -601,7 +609,7 @@ const Page = () => {
                     currentFiles.map((file, index) => (
                       <div
                         key={index}
-                        className="bg-[#F5F5F0] flex justify-between mx-6 p-2 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current "
+                        className="bg-[#D8D8D8] bg-opacity-[20%] flex justify-between mx-6 p-2 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current font-montserrat font-[#282828]"
                       >
                         <div className="flex gap-10 text-center items-center font-medium">
                           <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
@@ -629,44 +637,18 @@ const Page = () => {
                               handleUpdateFile(file, value)
                             }
                           >
-                            <SelectTrigger className="w-[180px] bg-white border-none shadow-none rounded-xl text-center font-medium">
+                            <SelectTrigger className="px-12 w-[250px] bg-white border-none shadow-none rounded-xl text-center font-medium bg-opacity-60">
                               <SelectValue placeholder="Select an category" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectGroup>
-                                <SelectItem value="Corporate Information">
-                                  Corporate Information
+                              {Filetypes.map((option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.value}
                                 </SelectItem>
-                                <SelectItem value="Press Releases & Announcements">
-                                  Press Releases & Announcements
-                                </SelectItem>
-                                <SelectItem value="Reports">Reports</SelectItem>
-                                <SelectItem value="Case Studies">
-                                  Case Studies
-                                </SelectItem>
-                                <SelectItem value="Media Hits">
-                                  Media Hits
-                                </SelectItem>
-                                <SelectItem value="Press Kits">
-                                  Press Kits
-                                </SelectItem>
-                                <SelectItem value="Media Kits">
-                                  Media Kits
-                                </SelectItem>
-                                <SelectItem value="White Paper">
-                                  White Paper
-                                </SelectItem>
-                                <SelectItem value="Media/Brand Presence">
-                                  Media/Brand Presence
-                                </SelectItem>
-                                <SelectItem value="Marketing Material">
-                                  Marketing Material
-                                </SelectItem>
-                                <SelectItem value="Emails">Emails</SelectItem>
-                                <SelectItem value="Important Docs (others)">
-                                  Important Docs (others)
-                                </SelectItem>
-                              </SelectGroup>
+                              ))}
                             </SelectContent>
                           </Select>
                           <DropdownMenu>
@@ -732,98 +714,46 @@ const Page = () => {
                   )}
                 </>
               ) : (
-                <div className="mx-10 grid grid-cols-5 gap-5 mt-5">
-                  <div className="flex flex-col bg-[#FFC8C8] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-80">
-                    <div className="flex flex-row justify-between items-center">
-                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
-                      <div>
-                        <Icons.Expand className="w-4 h-4 mr-5" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-xl"> Press Release</div>
-                      <div>
-                        This is the second vehicle company Henrik Fisker
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col bg-[#FFEAB5] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-40">
-                    <div className="flex flex-row justify-between items-center">
-                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
-                      <div>
-                        <Icons.Expand className="w-4 h-4 mr-5" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-xl"> Press Release</div>
-                      <div>
-                        This is the second vehicle company Henrik Fisker
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col bg-[#8DBBFF] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-50">
-                    <div className="flex flex-row justify-between items-center">
-                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
-                      <div>
-                        <Icons.Expand className="w-4 h-4 mr-5" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-xl"> Press Release</div>
-                      <div>
-                        This is the second vehicle company Henrik Fisker
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col bg-[#A1FFB0] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-20">
-                    <div className="flex flex-row justify-between items-center">
-                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
-                      <div>
-                        <Icons.Expand className="w-4 h-4 mr-5" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-xl"> Press Release</div>
-                      <div>
-                        This is the second vehicle company Henrik Fisker
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col bg-[#77D7D7] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-20">
-                    <div className="flex flex-row justify-between items-center">
-                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
-                      <div>
-                        <Icons.Expand className="w-4 h-4 mr-5" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-xl"> Press Release</div>
-                      <div>
-                        This is the second vehicle company Henrik Fisker
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex flex-col bg-[#D8D8D8] p-5 rounded-[35px] gap-10 py-7 max-w-[320px] bg-opacity-20">
-                    <div className="flex flex-row justify-between items-center">
-                      <span className="p-2 rounded-full bg-white h-10 w-10"></span>
-                      <div>
-                        <Icons.Expand className="w-4 h-4 mr-5" />
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <div className="font-medium text-xl"> Press Release</div>
-                      <div>
-                        This is the second vehicle company Henrik Fisker
-                      </div>
-                    </div>
-                  </div>
+                <div className="mx-10 grid grid-cols-5 gap-5 mt-5 font-montserrat">
+                  {Filetypes.map((option) => (
+                    <Dialog key={option.value}>
+                      <DialogTrigger className="text-left">
+                        <div
+                          className={`flex flex-col  p-5 rounded-[35px] gap-5  text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3  ${option.color}`}
+                          key={option.value}
+                        >
+                          <div
+                            className={`flex flex-row justify-between items-center `}
+                          >
+                            <span
+                              className={`p-2 rounded-full  h-[32px] w-[32px] ${option.colorwheel}`}
+                            ></span>
+                            <div>
+                              <Icons.Expand className="w-[12px] h-[12px] mr-5" />
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-[10px] font-medium font-montserrat">
+                            <div className="text-[14px] break-words leading-tight">
+                              {option.value}
+                            </div>
+                            <div className="text-[10px] leading-tight">
+                              This is the second vehicle company Henrik Fisker
+                            </div>
+                          </div>
+                        </div>
+                      </DialogTrigger>
+                      <DialogContent>
+                        {option.value}
+                      </DialogContent>
+                    </Dialog>
+                  ))}
                 </div>
               )}
             </div>
           </TabsContent>
           <TabsContent
             value="newsarticles"
-            className="px-0 bg-transparent border"
+            className="px-0 bg-transparent border rounded-[30px]"
           >
             <div className="mx-auto overflow-hidden">
               <div className="flex flex-row p-2 w-full justify-end px-10">

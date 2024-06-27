@@ -183,6 +183,21 @@ const Industry = [
     "Celebrity PR"
 ]
 
+const Filetypes = [
+    { value: "Corporate Information", color: "bg-[#FFC8C8] bg-opacity-60", colorwheel: "bg-[#FFEBEB]" },
+    { value: "Press Releases & Announcements", color: "bg-[#FFEAB5] bg-opacity-40", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
+    { value: "Reports", color: "bg-[#C7E3FF] bg-opacity-30", colorwheel: "bg-[#FFFFFF] bg-opacity-70" },
+    { value: "Case Studies", color: "bg-[#A1FFB0] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
+    { value: "Media Hits", color: "bg-[#77D7D7] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-50" },
+    { value: "Press Kits", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
+    { value: "Media Kits", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
+    { value: "White Paper", color: "bg-[#FFC8C8] bg-opacity-60", colorwheel: "bg-[#FFEBEB]" },
+    { value: "Media/Brand Presence", color: "bg-[#77D7D7] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-50" },
+    { value: "Marketing Material", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
+    { value: "Emails", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
+    { value: "Important Docs (others)", color: "bg-[#A1FFB0] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
+];
 
 
-export { Demographics, mediaFormats, beats, TraditionalMedia, DigitalMedia, Objective ,Industry };
+
+export { Demographics, mediaFormats, beats, TraditionalMedia, DigitalMedia, Objective, Industry, Filetypes };
