@@ -205,9 +205,10 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             Pitch Info
           </div>
           <div>
+            <Label htmlFor="email">Select Files from Data Library</Label>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
-                <div className="flex gap-4 items-center file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg p-1">
+                <div className="flex gap-4 items-center file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg p-1 mt-2">
                   <div
                     role="combobox"
                     aria-expanded={open}
@@ -218,12 +219,12 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                         {selectedValues.map((value) => (
                           <div
                             key={value}
-                            className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex"
+                            className="bg-[#E9E7E4] bg-secondary p-2 px-4 rounded-full justify-center items-center gap-2 text-sm flex"
                           >
                             <div>
                               {
                                 files.find((file) => file.bucketName === value)
-                                  ?.bucketName
+                                  ?.bucketName?.slice(0, 10).concat("...")
                               }
                             </div>
                             <button
@@ -246,10 +247,10 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </div>
               </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
+              <PopoverContent className="w-[250px] p-0 font-montserrat">
                 <Command>
                   <CommandInput placeholder="Search files..." />
-                  <CommandList>
+                  <CommandList className="capitalize text-left">
                     <CommandEmpty>No files found.</CommandEmpty>
                     <CommandGroup>
                       {files.map((file) => (
@@ -260,7 +261,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
                         >
                           <Check
                             className={cn(
-                              "mr-2 h-4 w-4",
+                              "mr-2 min-h-4 min-w-4 max-h-4 max-w-4",
                               selectedValues.includes(file.bucketName)
                                 ? "opacity-100"
                                 : "opacity-0"
@@ -297,12 +298,12 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
           <div>
             <div
               id="ideas"
-              className="flex flex-wrap w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg  min-h-11"
+              className="flex flex-wrap w-full min-h-9 rounded-md border border-input bg-transparent px-1 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg  min-h-11 px-3 py-2 gap-2"
             >
               {chips?.map((chip, index) => (
                 <div
                   key={index}
-                  className="border bg-secondary p-1 pl-2 rounded-lg justify-center items-center gap-2 text-sm flex ml-2 mb-1"
+                  className="bg-[#E9E7E4] bg-secondary p-2 px-4 rounded-full justify-center items-center gap-2 text-sm flex"
                 >
                   <div>{chip}</div>
                   <button

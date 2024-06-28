@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/lib/firebase/firebase-admin-config.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/lib/firebase/firebase-admin-config.ts", "src/app/dashboard/[client]/create/StepFour.jsx", "src/app/dashboard/[client]/create/Draggable.tsx"],
   "exclude": ["node_modules"]
 }

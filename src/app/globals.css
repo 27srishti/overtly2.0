@@ -73,6 +73,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    height: 100%; /* Ensure the body takes full height */
+    margin: 0; /* Remove default margin */
   }
 }
 

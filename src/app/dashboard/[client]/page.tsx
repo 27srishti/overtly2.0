@@ -285,7 +285,7 @@ const Page = () => {
   };
   return (
     // <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
-    <div className="w-full px-16 mt-4 font-montserrat ">
+    <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-11 mb-14">
         <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}

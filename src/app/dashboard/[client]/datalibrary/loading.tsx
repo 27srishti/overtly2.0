@@ -6,7 +6,6 @@ const Loading = () => {
     <div className="w-full px-16 mt-4">
       <div className="flex gap-16 mt-11 mb-14">
         <Skeleton className="h-10 w-[100px]" />
-
         <Skeleton className="h-10 w-[100px]" />
       </div>
       <div className="mt-7 max-w-[70vw]">

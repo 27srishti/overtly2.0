@@ -56,7 +56,7 @@ const Page = () => {
       case 3:
         return <StepThree onPrevious={onPrevious} onNext={onNext} />;
       case 4:
-        return <StepFour onPrevious={onPrevious} onNext={onNext} />;
+        return <StepFour />;
       case 5:
         return <StepEnd onPrevious={onPrevious} />;
       default:

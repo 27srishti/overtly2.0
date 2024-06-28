@@ -655,7 +655,7 @@ const Page = () => {
                             <DropdownMenuTrigger asChild>
                               <Button
                                 variant="outline"
-                                className="w-10 h-10 rounded-full border bg-transparent"
+                                className="w-10 h-10 rounded-full border bg-transparent shadow-none border-[#797979] border-opacity-30"
                               >
                                 <svg
                                   viewBox="0 0 8 8"
@@ -742,9 +742,7 @@ const Page = () => {
                           </div>
                         </div>
                       </DialogTrigger>
-                      <DialogContent>
-                        {option.value}
-                      </DialogContent>
+                      <DialogContent>{option.value}</DialogContent>
                     </Dialog>
                   ))}
                 </div>
