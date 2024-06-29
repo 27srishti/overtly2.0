@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MoreHorizontal } from "lucide-react";
 import { onAuthStateChanged } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "next/navigation";
@@ -263,6 +262,7 @@ const Page = () => {
     name: string;
     type: string;
     createdAt: number;
+    bucketName: string;
   }) => {
     const storageRef = ref(storage, file.url);
 
@@ -293,6 +293,19 @@ const Page = () => {
           )
         );
         console.log("File metadata deleted from Firestore:", file.name);
+
+        const url = `https://pr-ai-99.uc.r.appspot.com/file?client_id=${params.client}&user_id=${authUser?.uid}&file_name=${file.bucketName}`;
+
+        return fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            console.log(response.json());
+          })
+          .catch((error) => console.error("Error:", error));
       }
     } catch (error) {
       console.error("Error deleting file metadata from Firestore:", error);

@@ -387,13 +387,29 @@ export const Icons = {
     </svg>
   ),
 
-
   Expand: (props: IconProps) => (
-<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-<path d="M8.5 1H13.0022V5.5" stroke="black" stroke-opacity="0.41" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.5 13L1.00167 13L1 8.5" stroke="black" stroke-opacity="0.41" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <path
+        d="M8.5 1H13.0022V5.5"
+        stroke="black"
+        stroke-opacity="0.41"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M5.5 13L1.00167 13L1 8.5"
+        stroke="black"
+        stroke-opacity="0.41"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
   ),
-
 };

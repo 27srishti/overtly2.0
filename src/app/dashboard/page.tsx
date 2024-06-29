@@ -76,7 +76,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteObject, getStorage, listAll, ref, StorageReference } from "firebase/storage";
+import {
+  deleteObject,
+  getStorage,
+  listAll,
+  ref,
+  StorageReference,
+} from "firebase/storage";
 
 const formSchema = z.object({
   name: z
@@ -221,22 +227,32 @@ const Page = () => {
     setOpen(true);
   };
 
-  async function deleteFolder(storage: ReturnType<typeof getStorage>, authUser: { uid: string } | null, DeletedClientId: string): Promise<void> {
+  async function deleteFolder(
+    storage: ReturnType<typeof getStorage>,
+    authUser: { uid: string } | null,
+    DeletedClientId: string
+  ): Promise<void> {
     if (!authUser) {
       console.error("Error: No authenticated user");
       return;
     }
-  
+
     const folderRef = ref(storage, `users/${authUser.uid}/${DeletedClientId}`);
-  
+
     try {
       const result = await listAll(folderRef);
-      const deletePromises = result.items.map((itemRef: StorageReference) => deleteObject(itemRef));
-  
+      const deletePromises = result.items.map((itemRef: StorageReference) =>
+        deleteObject(itemRef)
+      );
+
       await Promise.all(deletePromises);
       console.log("Folder and all contents deleted successfully");
     } catch (error: any) {
-      console.error("Error deleting folder contents:", error.code, error.message);
+      console.error(
+        "Error deleting folder contents:",
+        error.code,
+        error.message
+      );
     }
   }
 
@@ -251,25 +267,33 @@ const Page = () => {
         );
         const querySnapshot = await getDocs(projectsQuery);
 
-        querySnapshot.forEach(async (doc) => {
-          await deleteDoc(doc.ref);
-          console.log(`Deleted project with ID: ${doc.id}`);
-        });
 
         await deleteDoc(
           doc(db, `users/${auth.currentUser?.uid}/clients`, DeletedClientId)
         ).then(async () => {
           deleteFolder(storage, authUser, DeletedClientId);
+
+          querySnapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+            console.log(`Deleted project with ID: ${doc.id}`);
+  
+            const url = `https://pr-ai-99.uc.r.appspot.com/client?client_id=${DeletedClientId}&user_id=${auth.currentUser?.uid}`;
+  
+            return fetch(url, {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            })
+              .then((response) => response.json())
+              .catch((error) => console.error("Error:", error));
+          });
+
         });
 
-
-
-
-
-
-
-
+        
         const updatedClients = await fetchData();
+
 
         setClients(updatedClients);
         setLoading(false);
