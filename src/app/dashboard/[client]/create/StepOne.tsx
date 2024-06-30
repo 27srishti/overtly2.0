@@ -208,24 +208,24 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
             <Label htmlFor="email">Select Files from Data Library</Label>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
-                <div className="flex gap-4 items-center file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg p-1 mt-2">
+                <div className="flex gap-4 items-center file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 grey shadow-none outline-none border-0 rounded-lg p-1 mt-2 ">
                   <div
                     role="combobox"
                     aria-expanded={open}
-                    className="flex flex-wrap w-full min-h-9 rounded-md px-1 py-1 text-sm transition-colors min-h-11 "
+                    className="flex flex-wrap w-full min-h-9 rounded-md px-1 py-1 text-sm transition-colors min-h-11"
                   >
                     {selectedValues && selectedValues.length > 0 ? (
                       <div className="  flex gap-2 items-center flex-wrap">
                         {selectedValues.map((value) => (
                           <div
                             key={value}
-                            className="bg-[#E9E7E4] bg-secondary p-2 px-4 rounded-full justify-center items-center gap-2 text-sm flex"
+                            className="bg-[#E9E7E4] p-2 px-4 rounded-full justify-center items-center gap-2 text-sm flex "
                           >
                             <div>
-                              {
-                                files.find((file) => file.bucketName === value)
-                                  ?.bucketName?.slice(0, 10).concat("...")
-                              }
+                              {files
+                                .find((file) => file.bucketName === value)
+                                ?.bucketName?.slice(0, 10)
+                                .concat("...")}
                             </div>
                             <button
                               onClick={(e) => {
@@ -303,7 +303,7 @@ const StepOne: React.FC<StepOneProps> = ({ onNext }) => {
               {chips?.map((chip, index) => (
                 <div
                   key={index}
-                  className="bg-[#E9E7E4] bg-secondary p-2 px-4 rounded-full justify-center items-center gap-2 text-sm flex"
+                  className="bg-[#E9E7E4] p-2 px-4 rounded-full justify-center items-center gap-2 text-sm flex"
                 >
                   <div>{chip}</div>
                   <button
