@@ -209,6 +209,7 @@ const Page = () => {
     }
   };
 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser && params.client) {
@@ -304,6 +305,7 @@ const Page = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${authUser?.getIdToken()}`,
           },
         })
           .then((response) => {

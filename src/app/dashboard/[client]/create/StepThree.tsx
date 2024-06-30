@@ -73,6 +73,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
+                      Authorization: `Bearer ${user?.getIdToken()}`,
                     },
                     body: JSON.stringify({
                       user_id: user.uid,
@@ -181,27 +182,6 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   </AccordionItem>
                 ))}
             </Accordion>
-            // <div>
-            //   {fetchedValues?.generatedIdeas?.map((item, index) => (
-            //     <div
-            //       key={index}
-            //       className={`${
-            //         fetchedValues.selectedGeneratedIdea.idea === `${item.idea}`
-            //           ? "border-[#5992FF] border "
-            //           : ""
-            //       } rounded-3xl border-[#B0B0B0] border bg-[#FBFBFB] mb-3 p-3 text-[#545454] cursor-pointer`}
-            //       onClick={() => {
-            //         setFetchedValues({
-            //           ...fetchedValues,
-            //           selectedGeneratedIdea: item,
-            //         });
-            //       }}
-            //     >
-            //       <div className="font-semibold mb-2">{item.idea}</div>
-            //       <div className={`text-sm`}>{item.story}</div>
-            //     </div>
-            //   ))}
-            // </div>
           )}
         </ScrollArea>
         <div className="mt-4 sm:mx-2">
