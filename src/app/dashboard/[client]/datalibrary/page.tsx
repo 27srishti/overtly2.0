@@ -86,8 +86,17 @@ const Page = () => {
   const authUser = auth.currentUser;
   const params = useParams<{ client: string }>();
   const [list, setlist] = useState(true);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const totalPages = Math.ceil(fetchedFiles.length / FILES_PER_PAGE);
+  const indexOfLastFile = currentPage * FILES_PER_PAGE;
+  const indexOfFirstFile = indexOfLastFile - FILES_PER_PAGE;
+
+  const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
+
+  const filteredFiles = currentFiles.filter((file) =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleFileClick = (): void => {
     fileInputRef.current?.click();
@@ -245,11 +254,6 @@ const Page = () => {
     }
   }, [files]);
 
-  const totalPages = Math.ceil(fetchedFiles.length / FILES_PER_PAGE);
-  const indexOfLastFile = currentPage * FILES_PER_PAGE;
-  const indexOfFirstFile = indexOfLastFile - FILES_PER_PAGE;
-  const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
-
   const handleDialogOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen) {
@@ -309,10 +313,10 @@ const Page = () => {
       }
     } catch (error) {
       console.error("Error deleting file metadata from Firestore:", error);
+    } finally {
+      const updatedFiles = await fetchData();
+      setFetchedFiles(updatedFiles);
     }
-
-    const updatedFiles = await fetchData();
-    setFetchedFiles(updatedFiles);
   };
 
   const handleUpdateFile = async (file: FileCollection, value: string) => {
@@ -352,25 +356,25 @@ const Page = () => {
             <div className="flex gap-8">
               <TabsTrigger
                 value="account"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
               >
                 Documents
               </TabsTrigger>
               <TabsTrigger
                 value="newsarticles"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
               >
                 News Articles
               </TabsTrigger>
               <TabsTrigger
                 value="knowledgegraph"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
               >
                 Knowledge Graph
               </TabsTrigger>
               <TabsTrigger
                 value="mediadatabase"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff]"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
               >
                 Media Database
               </TabsTrigger>
@@ -565,39 +569,45 @@ const Page = () => {
             className="px-0 bg-transparent border rounded-[30px]"
           >
             <div className="mx-auto overflow-hidden">
-              <div className="flex flex-row p-2 w-full justify-end gap-10 mb-4 px-6">
-                <div className="flex gap-2 bg-[#F5F6F1] rounded-full px-3 py-1 mx-6">
+              <div className="flex flex-row p-2 w-full justify-end gap-5 mb-4 px-6">
+                <div className="relative flex gap-2 bg-[#F5F6F1] rounded-full mx-6 p-1">
                   <div
-                    className={`flex-1 flex items-center justify-center gap-4  cursor-pointer rounded-full px-5 ${
-                      list
-                        ? "bg-[#3E3E3E] text-white"
-                        : "bg-transparent text-black"
+                    className={`absolute top-0 bottom-0 left-0 w-1/2 bg-[#3E3E3E] bg-opacity-80 rounded-full transition-all duration-300 ${
+                      list ? "translate-x-0" : "translate-x-full"
+                    }`}
+                    style={{ transition: "transform 0.3s" }}
+                  ></div>
+
+                  <div
+                    className={`flex-1 flex items-center justify-center gap-4 cursor-pointer rounded-full px-5 transition-all duration-300 ${
+                      list ? "text-white" : "text-black"
                     }`}
                     onClick={() => setlist(true)}
+                    style={{ flexBasis: "50%", zIndex: 1 }}
                   >
                     List <ListBulletIcon className="w-4 h-4" />
                   </div>
 
                   <div
-                    className={`flex-1 flex items-center justify-center gap-3 py-[.6rem] cursor-pointer rounded-full px-5 ${
-                      !list
-                        ? "bg-[#3E3E3E] text-white"
-                        : "bg-transparent text-black"
+                    className={`flex-1 flex items-center justify-center gap-3 cursor-pointer rounded-full px-5 transition-all duration-300 ${
+                      !list ? "text-white" : "text-black"
                     }`}
                     onClick={() => setlist(false)}
+                    style={{ flexBasis: "50%", zIndex: 1 }}
                   >
                     Folder <DashboardIcon className="w-4 h-4" />
                   </div>
                 </div>
-
-                <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
+                <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
                   <Input
                     type="search"
                     placeholder="Search Data"
                     className="shadow-none border-none"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
 
-                  <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem]">
+                  <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
                     <svg
                       viewBox="0 0 14 14"
                       fill="none"
@@ -614,17 +624,17 @@ const Page = () => {
               </div>
               {list ? (
                 <>
-                  {currentFiles.length === 0 ? (
+                  {filteredFiles.length === 0 ? (
                     <div className="text-muted-foreground text-center p-4">
                       No data
                     </div>
                   ) : (
-                    currentFiles.map((file, index) => (
+                    filteredFiles.map((file, index) => (
                       <div
                         key={index}
-                        className="bg-[#D8D8D8] bg-opacity-[20%] flex justify-between mx-6 p-2 gap-10 mb-2 rounded-2xl bg-opacity-[60%] items-center text-current font-montserrat font-[#282828]"
+                        className="bg-[#D8D8D8] bg-opacity-20 bg-opacity-[20%] flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828] "
                       >
-                        <div className="flex gap-10 text-center items-center font-medium">
+                        <div className="flex gap-10 text-center items-center font-medium ">
                           <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
                             <svg
                               width="13"
@@ -650,7 +660,7 @@ const Page = () => {
                               handleUpdateFile(file, value)
                             }
                           >
-                            <SelectTrigger className="px-12 w-[250px] bg-white border-none shadow-none rounded-xl text-center font-medium bg-opacity-60">
+                            <SelectTrigger className="px-5 w-[250px] bg-white border-none shadow-none rounded-[40px] text-center font-medium bg-opacity-60">
                               <SelectValue placeholder="Select an category" />
                             </SelectTrigger>
                             <SelectContent>
@@ -658,6 +668,7 @@ const Page = () => {
                                 <SelectItem
                                   key={option.value}
                                   value={option.value}
+                                  className="font-montserrat"
                                 >
                                   {option.value}
                                 </SelectItem>
@@ -727,7 +738,7 @@ const Page = () => {
                   )}
                 </>
               ) : (
-                <div className="mx-10 grid grid-cols-5 gap-5 mt-5 font-montserrat">
+                <div className="mx-10 grid grid-cols-4 gap-5 mt-5 font-montserrat">
                   {Filetypes.map((option) => (
                     <Dialog key={option.value}>
                       <DialogTrigger className="text-left">
@@ -768,19 +779,21 @@ const Page = () => {
           >
             <div className="mx-auto overflow-hidden">
               <div className="flex flex-row p-2 w-full justify-end px-10">
-                <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-full">
+                <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
                   <Input
                     type="search"
                     placeholder="Search Data"
                     className="shadow-none border-none"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
 
-                  <div className="bg-[#3E3E3E] rounded-full p-2">
+                  <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
                     <svg
                       viewBox="0 0 14 14"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 text-white"
+                      className="w-4 h-4 text-white"
                     >
                       <path
                         d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"

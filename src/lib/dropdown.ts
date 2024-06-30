@@ -185,7 +185,7 @@ const Industry = [
 
 const Filetypes = [
     { value: "Corporate Information", color: "bg-[#FFC8C8] bg-opacity-60", colorwheel: "bg-[#FFEBEB]" },
-    { value: "Press Releases & Announcements", color: "bg-[#FFEAB5] bg-opacity-40", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
+    { value: "Press Releases", color: "bg-[#FFEAB5] bg-opacity-40", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
     { value: "Reports", color: "bg-[#C7E3FF] bg-opacity-30", colorwheel: "bg-[#FFFFFF] bg-opacity-70" },
     { value: "Case Studies", color: "bg-[#A1FFB0] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
     { value: "Media Hits", color: "bg-[#77D7D7] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-50" },
