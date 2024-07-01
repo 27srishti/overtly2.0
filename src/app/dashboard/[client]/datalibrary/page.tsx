@@ -88,15 +88,17 @@ const Page = () => {
   const [list, setlist] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const totalPages = Math.ceil(fetchedFiles.length / FILES_PER_PAGE);
+
+  const filteredFiles = fetchedFiles.filter((file) =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredFiles.length / FILES_PER_PAGE);
+
   const indexOfLastFile = currentPage * FILES_PER_PAGE;
   const indexOfFirstFile = indexOfLastFile - FILES_PER_PAGE;
 
-  const currentFiles = fetchedFiles.slice(indexOfFirstFile, indexOfLastFile);
-
-  const filteredFiles = currentFiles.filter((file) =>
-    file.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
 
   const handleFileClick = (): void => {
     fileInputRef.current?.click();
@@ -208,7 +210,6 @@ const Page = () => {
       }
     }
   };
-
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
@@ -626,12 +627,12 @@ const Page = () => {
               </div>
               {list ? (
                 <>
-                  {filteredFiles.length === 0 ? (
+                  {currentFiles.length === 0 ? (
                     <div className="text-muted-foreground text-center p-4">
                       No data
                     </div>
                   ) : (
-                    filteredFiles.map((file, index) => (
+                    currentFiles.map((file, index) => (
                       <div
                         key={index}
                         className="bg-[#D8D8D8] bg-opacity-20 bg-opacity-[20%] flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828] "
