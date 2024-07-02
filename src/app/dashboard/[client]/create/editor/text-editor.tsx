@@ -30,16 +30,16 @@ import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import ExampleTheme from "./themes/ExampleTheme";
-
 /* Lexical Texts */
 import { textDailyStandup } from "./text-daily-standup";
 
 function Placeholder() {
     return <div className="editor-placeholder">Enter some rich text...</div>;
 }
-
-
-import "./editorstyle.css"
+import "./editorstyle.css";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { EditorState } from "lexical";
+import { copyToClipboard } from "@lexical/clipboard";
 
 const editorConfig = {
     // The editor theme
@@ -66,15 +66,44 @@ const editorConfig = {
     ],
 };
 
-export function Editor(): JSX.Element | null {
+function MyOnChangePlugin() {
+    const [editor] = useLexicalComposerContext();
 
-    const [isMounted, setIsMounted] = useState(false)
+    useEffect(() => {
+        return editor.registerUpdateListener(({ editorState }) => {
+            editorState.read(() => {
+                const json = editorState.toJSON();
+                console.log('Editor State:', json);
+            });
+        });
+    }, [editor]);
+
+    const handleCopyToClipboard = async () => {
+        try {
+            const success = await copyToClipboard(editor,null);
+            if (success) {
+                console.log('Content copied to clipboard successfully.');
+            } else {
+                console.error('Failed to copy content to clipboard.');
+            }
+        } catch (error) {
+            console.error('Error copying content to clipboard:', error);
+        }
+    };
+
+
+    return null;
+}
+
+export  function EditorPage(): JSX.Element | null {
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
         setIsMounted(true);
-    }, [])
+    }, []);
 
-    if (!isMounted) return null
+
+    if (!isMounted) return null;
 
     return (
         <LexicalComposer initialConfig={editorConfig}>
@@ -94,8 +123,10 @@ export function Editor(): JSX.Element | null {
                     <TabIndentationPlugin />
                     <AutoLinkPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+                    <MyOnChangePlugin />
                     {/* <TreeViewPlugin /> */}
                 </div>
+                <button onClick={handleCopyToClipboard}>Copy to Clipboard</button>
             </div>
         </LexicalComposer>
     );

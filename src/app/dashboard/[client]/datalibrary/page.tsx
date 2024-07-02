@@ -172,9 +172,7 @@ const Page = () => {
 
               await setDoc(docRef, data);
 
-              const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file?bucket_name=${encodeURIComponent(
-                bucketName
-              )}&file_path=${encodeURIComponent(filePath)}`;
+              const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file`;
 
               return fetch(url, {
                 method: "POST",
@@ -306,7 +304,7 @@ const Page = () => {
         );
         console.log("File metadata deleted from Firestore:", file.name);
 
-        const url = `https://pr-ai-99.uc.r.appspot.com/file?client_id=${params.client}&user_id=${authUser?.uid}&file_name=${file.bucketName}`;
+        const url = `https://pr-ai-99.uc.r.appspot.com/file`;
 
         return fetch(url, {
           method: "DELETE",
@@ -316,7 +314,6 @@ const Page = () => {
           },
           body: JSON.stringify({
             client_id: params.client,
-            user_id: authUser?.uid,
             file_name: file.bucketName,
           }),
         })

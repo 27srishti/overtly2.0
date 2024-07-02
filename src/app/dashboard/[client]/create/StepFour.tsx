@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Draggable } from "./Draggable";
-import { Editor } from "./editor/text-editor";
+import { EditorPage } from "./editor/text-editor";
 
 const StepFour = () => {
   const [gamesList, setGamesList] = useState([
@@ -75,7 +75,7 @@ const StepFour = () => {
         </ScrollArea>
       </div>
       <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat">
-      {/* <Editor onChange={handleEditorChange} /> */}
+        <EditorPage  />
       </div>
     </div>
   );
