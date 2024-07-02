@@ -73,7 +73,7 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
-                      Authorization: `Bearer ${user?.getIdToken()}`,
+                      Authorization: `Bearer ${await user?.getIdToken()}`,
                     },
                     body: JSON.stringify({
                       user_id: user.uid,

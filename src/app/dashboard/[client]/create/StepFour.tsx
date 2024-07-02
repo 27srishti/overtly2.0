@@ -7,7 +7,6 @@ import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Draggable } from "./Draggable";
 import { Editor } from "./editor/text-editor";
-// import "./editor/styles.css";
 
 const StepFour = () => {
   const [gamesList, setGamesList] = useState([
@@ -30,6 +29,13 @@ const StepFour = () => {
     }
   };
 
+
+  const handleEditorChange = (editorState: { toJSON: () => any; }) => {
+    const editorStateJSON = editorState.toJSON();
+    console.log(JSON.stringify(editorStateJSON));
+  };
+
+
   return (
     <div className="h-[78vh] py-3 mt-2 grid grid-cols-[300px,1fr] p-2 gap-5 overflow-hidden font-montserrat">
       <div className="grid grid-rows-[120px,5fr] gap-5 overflow-hidden">
@@ -37,7 +43,12 @@ const StepFour = () => {
           <div className="text-center text-[#6B6B6B] font-[15px]">Settings</div>
           <div className="w-full">
             <div className="text-[#6B6B6B] text-[10px] mb-2">Word count</div>
-            <Slider min={70} max={400} defaultValue={[250]} className="bg-[#F0F0F0] mb-2" />
+            <Slider
+              min={70}
+              max={400}
+              defaultValue={[250]}
+              className="bg-[#F0F0F0] mb-2"
+            />
             <div className="flex justify-between text-[#6B6B6B] text-[8px] mt-1 ">
               <div>70</div>
               <div>150</div>
@@ -49,7 +60,9 @@ const StepFour = () => {
         <ScrollArea className="rounded-[25px] bg-white p-2">
           <DndContext onDragEnd={reorderGamesList}>
             <div>
-              <div className="text-center pt-2 pb-4 text-[#6B6B6B]"> Customize</div>
+              <div className="text-center pt-2 pb-4 text-[#6B6B6B]">
+                Customize
+              </div>
               <div>
                 <SortableContext items={gamesList}>
                   {gamesList.map((game) => (
@@ -61,8 +74,8 @@ const StepFour = () => {
           </DndContext>
         </ScrollArea>
       </div>
-      <div className="p-5 bg-white rounded-[30px] shadow-lg font-montserrat">
-      <Editor />
+      <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat">
+      <Editor onChange={handleEditorChange} />
       </div>
     </div>
   );

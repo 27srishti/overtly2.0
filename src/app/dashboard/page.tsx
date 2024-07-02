@@ -282,7 +282,7 @@ const Page = () => {
               method: "DELETE",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${authUser?.getIdToken()}`,
+                Authorization: `Bearer ${await authUser?.getIdToken()}`,
               },
             })
               .then((response) => response.json())

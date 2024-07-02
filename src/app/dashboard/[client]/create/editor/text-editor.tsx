@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 /* Lexical Design System */
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
@@ -11,7 +11,6 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { TRANSFORMERS } from "@lexical/markdown";
 
 /* Lexical Plugins Local */
-import TreeViewPlugin from "../editor/plugins/TreeViewPlugin";
 import ToolbarPlugin from "../editor/plugins/ToolbarPlugin";
 import AutoLinkPlugin from "../editor/plugins/AutoLinkPlugin";
 import CodeHighlightPlugin from "../editor/plugins/CodeHighlightPlugin";
@@ -34,23 +33,21 @@ import ExampleTheme from "./themes/ExampleTheme";
 /* Lexical Texts */
 import { textDailyStandup } from "./text-daily-standup";
 
+
+
 function Placeholder() {
     return <div className="editor-placeholder">Enter some rich text...</div>;
 }
 
-
-import "./editorstyle.css"
+import "./editorstyle.css";
 
 const editorConfig = {
-    // The editor theme
     theme: ExampleTheme,
     namespace: "daily-standup-editor",
     editorState: textDailyStandup,
-    // Handling of errors during update
     onError(error: unknown) {
         throw error;
     },
-    // Any custom nodes go here
     nodes: [
         HeadingNode,
         ListNode,
@@ -62,19 +59,18 @@ const editorConfig = {
         TableCellNode,
         TableRowNode,
         AutoLinkNode,
-        LinkNode
+        LinkNode,
     ],
 };
 
-export function Editor(): JSX.Element | null {
+export function Editor({ onChange }: { onChange: (editorState: any) => void }): JSX.Element | null {
+    const [editorState, setEditorState] = useState();
 
-    const [isMounted, setIsMounted] = useState(false)
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, [])
-
-    if (!isMounted) return null
+    const handleChange = (editorState: { toJSON: () => any; }) => {
+        const editorStateJSON = editorState.toJSON();
+        // setEditorState(JSON.stringify(editorStateJSON));
+        onChange(editorState);
+    };
 
     return (
         <LexicalComposer initialConfig={editorConfig}>
@@ -94,7 +90,6 @@ export function Editor(): JSX.Element | null {
                     <TabIndentationPlugin />
                     <AutoLinkPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-                    {/* <TreeViewPlugin /> */}
                 </div>
             </div>
         </LexicalComposer>
