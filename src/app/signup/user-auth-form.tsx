@@ -45,6 +45,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         await fetch("/api/login", {
           method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${await result.user.getIdToken()}`,
           },
         }).then(() => {
@@ -83,6 +84,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         await fetch("/api/login", {
           method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${await result.user.getIdToken()}`,
           },
         }).then(() => {

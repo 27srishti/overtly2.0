@@ -608,7 +608,10 @@ const Page = () => {
                     placeholder="Search Data"
                     className="shadow-none border-none"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
                   />
 
                   <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">

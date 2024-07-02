@@ -267,7 +267,6 @@ const Page = () => {
         );
         const querySnapshot = await getDocs(projectsQuery);
 
-
         await deleteDoc(
           doc(db, `users/${auth.currentUser?.uid}/clients`, DeletedClientId)
         ).then(async () => {
@@ -276,9 +275,9 @@ const Page = () => {
           querySnapshot.forEach(async (doc) => {
             await deleteDoc(doc.ref);
             console.log(`Deleted project with ID: ${doc.id}`);
-  
+
             const url = `https://pr-ai-99.uc.r.appspot.com/client?client_id=${DeletedClientId}&user_id=${auth.currentUser?.uid}`;
-  
+
             return fetch(url, {
               method: "DELETE",
               headers: {
@@ -289,12 +288,9 @@ const Page = () => {
               .then((response) => response.json())
               .catch((error) => console.error("Error:", error));
           });
-
         });
 
-        
         const updatedClients = await fetchData();
-
 
         setClients(updatedClients);
         setLoading(false);
