@@ -6,6 +6,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Draggable } from "./Draggable";
+import { Editor } from "./editor/text-editor";
+// import "./editor/styles.css";
 
 const StepFour = () => {
   const [gamesList, setGamesList] = useState([
@@ -59,7 +61,9 @@ const StepFour = () => {
           </DndContext>
         </ScrollArea>
       </div>
-      <div className="p-5 bg-white rounded-[30px] shadow-lg font-montserrat"></div>
+      <div className="p-5 bg-white rounded-[30px] shadow-lg font-montserrat">
+      <Editor />
+      </div>
     </div>
   );
 };

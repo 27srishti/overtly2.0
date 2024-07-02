@@ -180,6 +180,7 @@ const Page = () => {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
+                  Authorization: `Bearer ${authUser?.getIdToken()}`,
                 },
               }).then((response) => response.json());
             })
