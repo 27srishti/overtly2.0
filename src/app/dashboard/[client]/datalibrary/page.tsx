@@ -182,6 +182,11 @@ const Page = () => {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${await authUser?.getIdToken()}`,
                 },
+                body: JSON.stringify({
+                  client_id: params.client,
+                  bucket_name: bucketName,
+                  file_path: filePath,
+                }),
               }).then((response) => response.json());
             })
             .then((data) => {
@@ -309,6 +314,11 @@ const Page = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${await authUser?.getIdToken()}`,
           },
+          body: JSON.stringify({
+            client_id: params.client,
+            user_id: authUser?.uid,
+            file_name: file.bucketName,
+          }),
         })
           .then((response) => {
             console.log(response.json());

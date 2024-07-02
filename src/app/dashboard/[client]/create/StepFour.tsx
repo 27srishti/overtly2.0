@@ -75,7 +75,7 @@ const StepFour = () => {
         </ScrollArea>
       </div>
       <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat">
-      <Editor onChange={handleEditorChange} />
+      {/* <Editor onChange={handleEditorChange} /> */}
       </div>
     </div>
   );

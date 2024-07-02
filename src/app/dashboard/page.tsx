@@ -276,7 +276,7 @@ const Page = () => {
             await deleteDoc(doc.ref);
             console.log(`Deleted project with ID: ${doc.id}`);
 
-            const url = `https://pr-ai-99.uc.r.appspot.com/client?client_id=${DeletedClientId}&user_id=${auth.currentUser?.uid}`;
+            const url = `https://pr-ai-99.uc.r.appspot.com/client`;
 
             return fetch(url, {
               method: "DELETE",
@@ -284,6 +284,10 @@ const Page = () => {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${await authUser?.getIdToken()}`,
               },
+              body: JSON.stringify({
+                client_id: DeletedClientId,
+                user_id: auth.currentUser?.uid,
+              }),
             })
               .then((response) => response.json())
               .catch((error) => console.error("Error:", error));
