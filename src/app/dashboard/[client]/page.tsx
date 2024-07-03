@@ -43,6 +43,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 import { auth, db } from "@/lib/firebase/firebase";
@@ -152,36 +153,62 @@ const Page = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setSubmitting(true);
+    const normalizedProjectName = values.name.toLowerCase();
     const projectData: project = {
-      name: values.name,
+      name: normalizedProjectName,
       description: values.description,
       currentStep: 1,
       createdAt: Date.now(),
     };
 
     try {
+      // Check if a project with the same name (case insensitive) already exists
+      const projectQuery = query(
+        collection(
+          db,
+          `users/${auth.currentUser?.uid}/clients/${clientid}/projects`
+        ),
+        where("name", "==", normalizedProjectName)
+      );
+      const projectQuerySnapshot = await getDocs(projectQuery);
+
+      const projects = projectQuerySnapshot.docs.map((doc) => doc.data());
+      const duplicateProject = projects.find(
+        (project) => project.name.toLowerCase() === normalizedProjectName
+      );
+
+      if (duplicateProject) {
+        // If a project with the same name exists, show an error and return
+        toast({
+          title: "Error",
+          description: `Project with name ${values.name} already exists!`,
+        });
+        setSubmitting(false);
+        return;
+      }
+
       if (editMode) {
         try {
-          const updatedClientData = { ...projectData, id: projecteditid };
+          const updatedProjectData = { ...projectData, id: projecteditid };
           await updateDoc(
             doc(
               db,
               `users/${auth.currentUser?.uid}/clients/${clientid}/projects`,
               projecteditid
             ),
-            updatedClientData
+            updatedProjectData
           );
           setOpen(false);
 
           toast({
-            title: "Updated Client",
-            description: `Client updated with name ${values.name}!`,
+            title: "Updated Project",
+            description: `Project updated with name ${values.name}!`,
           });
 
           setProjects(await fetchData());
           setLoading(false);
         } catch (error) {
-          console.error("Error adding client: ", error);
+          console.error("Error updating project: ", error);
         } finally {
           setSubmitting(false);
         }
@@ -205,7 +232,7 @@ const Page = () => {
           );
           setOpen(false);
         } catch (error) {
-          console.error("Error adding Project: ", error);
+          console.error("Error adding project: ", error);
         } finally {
           setSubmitting(false);
         }

@@ -67,32 +67,36 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   selectedGeneratedIdea: firebasedata.selectedGeneratedIdea,
                 });
               } else {
-                const response = await fetch(
-                  "https://pr-ai-99.uc.r.appspot.com/ideas",
-                  {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${await user?.getIdToken()}`,
-                    },
-                    body: JSON.stringify({
-                      client_id: clientid,
-                      idea_hint: firebasedata.ideaHint,
-                      keywords: firebasedata.Ideas,
-                      generatebyai: firebasedata.generatebyai,
-                      media_format: firebasedata.mediaFormat,
-                      beat: firebasedata.beat,
-                      outlet: firebasedata.outlet,
-                      objective: firebasedata.objective,
-                    }),
-                  }
-                );
-                const data = await response.json();
-                console.log(data);
-                setFetchedValues({
-                  generatedIdeas: data,
-                  selectedGeneratedIdea: { idea: "", story: "" },
-                });
+                try {
+                  const response = await fetch(
+                    "https://pr-ai-99.uc.r.appspot.com/ideas",
+                    {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${await user?.getIdToken()}`,
+                      },
+                      body: JSON.stringify({
+                        client_id: clientid,
+                        idea_hint: firebasedata.ideaHint,
+                        keywords: firebasedata.Ideas,
+                        generatebyai: firebasedata.generatebyai,
+                        media_format: firebasedata.mediaFormat,
+                        beat: firebasedata.beat,
+                        outlet: firebasedata.outlet,
+                        objective: firebasedata.objective,
+                      }),
+                    }
+                  );
+                  const data = await response.json();
+                  console.log(data);
+                  setFetchedValues({
+                    generatedIdeas: data,
+                    selectedGeneratedIdea: { idea: "", story: "" },
+                  });
+                } catch (error) {
+                  console.error("Error fetching data:", error);
+                }
               }
             }
             setLoading(false);

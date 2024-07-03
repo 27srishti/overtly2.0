@@ -38,6 +38,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { auth, db, storage } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
@@ -154,17 +155,33 @@ const Page = () => {
     return () => unsubscribe();
   }, [authUser]);
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-
     setSubmitting(true);
+
+    const normalizedProjectName = values.name.toLowerCase();
+
     const clientData: client = {
-      name: values.name,
+      name: normalizedProjectName,
       industry: values.industry,
       demographics: values.demographics,
       createdAt: Date.now(),
     };
 
     try {
+      const clientQuery = query(
+        collection(db, `users/${auth.currentUser?.uid}/clients`),
+        where("name", "==", normalizedProjectName)
+      );
+      const clientQuerySnapshot = await getDocs(clientQuery);
+
+      if (!clientQuerySnapshot.empty) {
+        toast({
+          title: "Error",
+          description: `Client with name ${values.name} already exists!`,
+        });
+        setSubmitting(false);
+        return;
+      }
+
       if (editMode) {
         try {
           const updatedClientData = { ...clientData, id: editedClientId };
@@ -183,7 +200,7 @@ const Page = () => {
           setClients(await fetchData());
           setLoading(false);
         } catch (error) {
-          console.error("Error adding client: ", error);
+          console.error("Error updating client: ", error);
         } finally {
           setSubmitting(false);
         }
