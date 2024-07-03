@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Draggable } from "./Draggable";
-import { EditorPage } from "./editor/text-editor";
+import { EditorPage } from "./editor/text-editor.jsx";
 
 const StepFour = () => {
   const [gamesList, setGamesList] = useState([
