@@ -286,7 +286,6 @@ const Page = () => {
               },
               body: JSON.stringify({
                 client_id: DeletedClientId,
-                user_id: auth.currentUser?.uid,
               }),
             })
               .then((response) => response.json())

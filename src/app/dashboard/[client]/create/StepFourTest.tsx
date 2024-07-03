@@ -87,7 +87,6 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                       Authorization: `Bearer ${await user?.getIdToken()}`,
                     },
                     body: JSON.stringify({
-                      user_id: user.uid,
                       client_id: clientid,
                       topic: {
                         idea: firebasedata.selectedGeneratedIdea.idea,
