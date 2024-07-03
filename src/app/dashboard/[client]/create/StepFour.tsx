@@ -29,12 +29,10 @@ const StepFour = () => {
     }
   };
 
-
-  const handleEditorChange = (editorState: { toJSON: () => any; }) => {
+  const handleEditorChange = (editorState: { toJSON: () => any }) => {
     const editorStateJSON = editorState.toJSON();
     console.log(JSON.stringify(editorStateJSON));
   };
-
 
   return (
     <div className="h-[78vh] py-3 mt-2 grid grid-cols-[300px,1fr] p-2 gap-5 overflow-hidden font-montserrat">
@@ -74,8 +72,8 @@ const StepFour = () => {
           </DndContext>
         </ScrollArea>
       </div>
-      <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat">
-        <EditorPage  />
+      <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat max-h-[75vh]">
+        <EditorPage />
       </div>
     </div>
   );

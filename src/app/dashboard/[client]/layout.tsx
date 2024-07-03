@@ -101,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div
                       className={`
                   ${
-                    pathname.endsWith("/research")
+                    pathname.endsWith("/research") || pathname.endsWith("/chat") || pathname.endsWith("/insights")
                       ? "bg-[#BDF294] hover:bg-[#b3f87d]"
                       : "bg-white hover:bg-[#F5F4F4]"
                   }

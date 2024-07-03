@@ -108,27 +108,30 @@ export function EditorPage() {
   if (!isMounted) return null;
 
   return (
-    <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-container">
-        <ToolbarPlugin />
-        <div className="editor-inner">
-          <RichTextPlugin
-            contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={<Placeholder />}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <ListPlugin />
-          <HistoryPlugin />
-          <AutoFocusPlugin />
-          <CodeHighlightPlugin />
-          <LinkPlugin />
-          <TabIndentationPlugin />
-          <AutoLinkPlugin />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-          <CopyPlugin />
+    <div className="h-full">
+      <LexicalComposer initialConfig={editorConfig}>
+        <div className="editor-container">
+          <ToolbarPlugin />
+          <div className="editor-inner">
+            <RichTextPlugin
+              contentEditable={<ContentEditable className="editor-input" />}
+              placeholder={<Placeholder />}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <ListPlugin />
+            <HistoryPlugin />
+            <AutoFocusPlugin />
+            <CodeHighlightPlugin />
+            <LinkPlugin />
+            <TabIndentationPlugin />
+            <AutoLinkPlugin />
+            <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          </div>
+          <div className="flex items-end justify-end mt-2">
+            <CopyPlugin />
+          </div>
         </div>
-        {/* <button onClick={selectAndCopyAll}>Copy</button> */}
-      </div>
-    </LexicalComposer>
+      </LexicalComposer>
+    </div>
   );
 }

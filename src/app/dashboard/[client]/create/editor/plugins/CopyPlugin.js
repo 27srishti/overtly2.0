@@ -41,8 +41,8 @@ const CopyPlugin = () => {
     };
 
     return (
-        <button onClick={handleCopy}>
-            Copy Content
+        <button onClick={handleCopy} className='bg-[#5C5C5C] rounded-full px-5 py-3 text-white text-sm '>
+            Copy Email
         </button>
     );
 };
