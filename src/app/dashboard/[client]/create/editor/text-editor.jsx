@@ -43,6 +43,7 @@ import {
 } from 'lexical';
 import { $selectAll } from '@lexical/selection';
 import CopyPlugin from './plugins/CopyPlugin';
+import Settext from './plugins/Settext';
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
 }
@@ -53,7 +54,7 @@ const editorConfig = {
   // The editor theme
   theme: ExampleTheme,
   namespace: "daily-standup-editor",
-  editorState: textDailyStandup,
+  // editorState: textDailyStandup,
   // Handling of errors during update
   onError(error) {
     throw error;
@@ -78,32 +79,15 @@ const editorConfig = {
   ],
 };
 
-export function EditorPage() {
+export function EditorPage(props) {
   const [isMounted, setIsMounted] = useState(false);
-  // const [editorInstance, setEditorInstance] = useState(null);
+
+  const { pitchEmail } = props
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // const onChange = (editorState, editor) => {
-  //   setEditorInstance(editor);
-  // };
-
-  // const selectAndCopyAll = () => {
-  //   if (!editorInstance) return;
-
-  //   editorInstance.update(async () => {
-  //     const root = $getRoot();
-  //     const selection = $createRangeSelection();
-  //     selection.anchor.set(root.getKey(), 0, 'element');
-  //     selection.focus.set(root.getKey(), root.getChildrenSize(), 'element');
-  //     $setSelection(selection);
-
-  //     // Copy to clipboard
-  //    await copyToClipboard(editorInstance ,null);
-  //   });
-  // };
 
   if (!isMounted) return null;
 
@@ -126,6 +110,7 @@ export function EditorPage() {
             <TabIndentationPlugin />
             <AutoLinkPlugin />
             <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+            <Settext pitchEmail={pitchEmail || "apple"} />
           </div>
           <div className="flex items-end justify-end mt-2">
             <CopyPlugin />

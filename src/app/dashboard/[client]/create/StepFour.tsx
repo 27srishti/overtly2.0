@@ -1,14 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Draggable } from "./Draggable";
 import { EditorPage } from "./editor/text-editor.jsx";
+import { useParams } from "next/navigation";
+import { auth } from "@/lib/firebase/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const StepFour = () => {
+  const params = useParams();
+  const clientid = params.client;
+  const [pitchEmail, setPitchEmail] = useState("");
   const [gamesList, setGamesList] = useState([
     "Dota 2",
     "League of Legends",
@@ -29,10 +35,48 @@ const StepFour = () => {
     }
   };
 
-  const handleEditorChange = (editorState: { toJSON: () => any }) => {
-    const editorStateJSON = editorState.toJSON();
-    console.log(JSON.stringify(editorStateJSON));
-  };
+  useEffect(() => {
+    const fetchIdeas = async () => {
+      try {
+        const user = auth.currentUser;
+        if (user) {
+          const response = await fetch(
+            "https://pr-ai-99.uc.r.appspot.com/pitch",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${await user.getIdToken()}`,
+              },
+              body: JSON.stringify({
+                client_id: clientid,
+                topic: {
+                  idea: "AI-driven personalization for mental health exercises",
+                },
+              }),
+            }
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch ideas");
+          }
+          const data = await response.json();
+          console.log(data);
+          setPitchEmail(data.email);
+        }
+      } catch (error) {
+        console.error("Error fetching ideas:", error);
+      } finally {
+      }
+    };
+
+    fetchIdeas();
+
+    const unsubscribe = onAuthStateChanged(auth, fetchIdeas);
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="h-[78vh] py-3 mt-2 grid grid-cols-[300px,1fr] p-2 gap-5 overflow-hidden font-montserrat">
@@ -56,7 +100,7 @@ const StepFour = () => {
         </div>
 
         <ScrollArea className="rounded-[25px] bg-white p-2">
-          <DndContext onDragEnd={reorderGamesList}>
+          <DndContext onDragEnd={reorderGamesList} id="dnd-container">
             <div>
               <div className="text-center pt-2 pb-4 text-[#6B6B6B]">
                 Customize
@@ -73,7 +117,7 @@ const StepFour = () => {
         </ScrollArea>
       </div>
       <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat max-h-[75vh]">
-        <EditorPage />
+        <EditorPage pitchEmail={"apple"} />
       </div>
     </div>
   );
