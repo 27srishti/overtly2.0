@@ -293,7 +293,7 @@ const Page = () => {
             await deleteDoc(doc.ref);
             console.log(`Deleted project with ID: ${doc.id}`);
 
-            const url = `https://pr-ai-99.uc.r.appspot.com/client`;
+            const url = `/api/client`;
 
             return fetch(url, {
               method: "DELETE",

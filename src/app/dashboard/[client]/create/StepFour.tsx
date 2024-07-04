@@ -7,14 +7,21 @@ import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Draggable } from "./Draggable";
 import { EditorPage } from "./editor/text-editor.jsx";
-import { useParams } from "next/navigation";
-import { auth } from "@/lib/firebase/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useParams, useSearchParams } from "next/navigation";
+import { auth, db } from "@/lib/firebase/firebase";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { toast } from "@/components/ui/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const StepFour = () => {
   const params = useParams();
   const clientid = params.client;
+  const [loading, setLoading] = useState(false);
   const [pitchEmail, setPitchEmail] = useState("");
+  const searchParams = useSearchParams();
+  const projectDocId = searchParams.get("projectid");
+  const [fetchedValues, setFetchedValues] = useState("");
 
   const [gamesList, setGamesList] = useState([
     "Dota 2",
@@ -37,13 +44,21 @@ const StepFour = () => {
   };
 
   useEffect(() => {
-    const fetchIdeas = async () => {
+    const fetchData = async (user: User) => {
+      setLoading(true);
       try {
-        const user = auth.currentUser;
-        if (user) {
-          const response = await fetch(
-            "https://pr-ai-99.uc.r.appspot.com/pitch",
-            {
+        const docRef = doc(
+          db,
+          `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
+        );
+        const docSnap = await getDoc(docRef);
+        console.log(docSnap.exists());
+        if (docSnap.exists()) {
+          const firebasedata = docSnap.data();
+          if (firebasedata.generatedMail) {
+            setFetchedValues(firebasedata.generatedMail);
+          } else {
+            const response = await fetch("/api/pitch", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -52,34 +67,43 @@ const StepFour = () => {
               body: JSON.stringify({
                 client_id: clientid,
                 topic: {
-                  idea: "AI-driven personalization for mental health exercises",
-                  story:
-                    "AI-driven personalization for mental health exercises",
+                  idea: firebasedata.selectedGeneratedIdea.idea,
+                  story: firebasedata.selectedGeneratedIdea.story,
+                  media_format: firebasedata.mediaFormat,
+                  beat: firebasedata.beat,
+                  outlet: firebasedata.outlet,
+                  objective: firebasedata.objective,
                 },
               }),
+            });
+
+            if (!response.ok) {
+              toast({
+                title: "Error",
+                description: "Something went wrong",
+                variant: "destructive",
+              });
             }
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch ideas");
+
+            const data = await response.json();
+            setFetchedValues(data.email);
           }
-          const data = await response.json();
-          console.log(data);
-          setPitchEmail(data.email);
         }
       } catch (error) {
-        console.error("Error fetching ideas:", error);
+        console.error("Error fetching data:", error);
       } finally {
+        setLoading(false);
       }
     };
 
-    fetchIdeas();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchData(user);
+      }
+    });
 
-    const unsubscribe = onAuthStateChanged(auth, fetchIdeas);
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    return () => unsubscribe();
+  }, [clientid, projectDocId]);
 
   return (
     <div className="h-[78vh] py-3 mt-2 grid grid-cols-[300px,1fr] p-2 gap-5 overflow-hidden font-montserrat">
@@ -120,7 +144,15 @@ const StepFour = () => {
         </ScrollArea>
       </div>
       <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat max-h-[75vh]">
-        <EditorPage pitchEmail={"apple"} />
+        {!loading ? (
+          <EditorPage pitchEmail={fetchedValues} />
+        ) : (
+          <div className="h-[75vh] p-5 flex items-center justify-between flex-col gap-5">
+            <Skeleton className="h-full w-full" />
+            <Skeleton className="h-full  w-full" />
+            <Skeleton className="h-full  w-full" />
+          </div>
+        )}
       </div>
     </div>
   );

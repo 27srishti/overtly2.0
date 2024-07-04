@@ -87,6 +87,7 @@ export function EditorPage(props) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+console.log(pitchEmail)
 
 
   if (!isMounted) return null;
@@ -110,7 +111,7 @@ export function EditorPage(props) {
             <TabIndentationPlugin />
             <AutoLinkPlugin />
             <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-            <Settext pitchEmail={pitchEmail || "apple"} />
+            <Settext pitchEmail={pitchEmail} />
           </div>
           <div className="flex items-end justify-end mt-2">
             <CopyPlugin />

@@ -17,7 +17,7 @@ import {
 } from "@/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useParams } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { auth, db } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -45,71 +45,67 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (user: User) => {
       setLoading(true);
       try {
-        const unsubscribe = auth.onAuthStateChanged(async (user) => {
-          if (user) {
-            const docRef = doc(
-              db,
-              `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
-            );
-            const docSnap = await getDoc(docRef);
-            console.log(docSnap.exists());
-            if (docSnap.exists()) {
-              const firebasedata = docSnap.data();
-              if (
-                firebasedata.generatedIdeas &&
-                firebasedata.selectedGeneratedIdea
-              ) {
-                setFetchedValues({
-                  generatedIdeas: firebasedata.generatedIdeas,
-                  selectedGeneratedIdea: firebasedata.selectedGeneratedIdea,
-                });
-              } else {
-                try {
-                  const response = await fetch(
-                    "https://pr-ai-99.uc.r.appspot.com/ideas",
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${await user?.getIdToken()}`,
-                      },
-                      body: JSON.stringify({
-                        client_id: clientid,
-                        idea_hint: firebasedata.ideaHint,
-                        keywords: firebasedata.Ideas,
-                        generatebyai: firebasedata.generatebyai,
-                        media_format: firebasedata.mediaFormat,
-                        beat: firebasedata.beat,
-                        outlet: firebasedata.outlet,
-                        objective: firebasedata.objective,
-                      }),
-                    }
-                  );
-                  const data = await response.json();
-                  console.log(data);
-                  setFetchedValues({
-                    generatedIdeas: data,
-                    selectedGeneratedIdea: { idea: "", story: "" },
-                  });
-                } catch (error) {
-                  console.error("Error fetching data:", error);
-                }
-              }
+        const docRef = doc(
+          db,
+          `users/${user.uid}/clients/${clientid}/projects/${projectDocId}`
+        );
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const firebasedata = docSnap.data();
+          if (
+            firebasedata.generatedIdeas &&
+            firebasedata.selectedGeneratedIdea
+          ) {
+            setFetchedValues({
+              generatedIdeas: firebasedata.generatedIdeas,
+              selectedGeneratedIdea: firebasedata.selectedGeneratedIdea,
+            });
+          } else {
+            try {
+              const response = await fetch("/api/ideas", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${await user.getIdToken()}`,
+                },
+                body: JSON.stringify({
+                  client_id: clientid,
+                  idea_hint: firebasedata.ideaHint,
+                  keywords: firebasedata.Ideas,
+                  generatebyai: firebasedata.generatebyai,
+                  media_format: firebasedata.mediaFormat,
+                  beat: firebasedata.beat,
+                  outlet: firebasedata.outlet,
+                  objective: firebasedata.objective,
+                }),
+              });
+              const data = await response.json();
+              setFetchedValues({
+                generatedIdeas: data,
+                selectedGeneratedIdea: { idea: "", story: "" },
+              });
+            } catch (error) {
+              console.error("Error fetching data:", error);
             }
-            setLoading(false);
           }
-        });
-
-        return () => unsubscribe();
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
         setLoading(false);
       }
     };
-    fetchData();
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchData(user);
+      }
+    });
+
+    return () => unsubscribe();
   }, [clientid, projectDocId]);
 
   const updateFormData = async (formData: {

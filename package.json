@@ -33,6 +33,7 @@
     "@tanstack/react-table": "^8.13.2",
     "@tinymce/tinymce-react": "^5.0.0",
     "@types/react-beautiful-dnd": "^13.1.8",
+    "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
