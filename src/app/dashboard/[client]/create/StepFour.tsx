@@ -69,11 +69,11 @@ const StepFour = () => {
                 topic: {
                   idea: firebasedata.selectedGeneratedIdea.idea,
                   story: firebasedata.selectedGeneratedIdea.story,
+                },
                   media_format: firebasedata.mediaFormat,
                   beat: firebasedata.beat,
                   outlet: firebasedata.outlet,
-                  objective: firebasedata.objective,
-                },
+                  objective: firebasedata.objective
               }),
             });
 
