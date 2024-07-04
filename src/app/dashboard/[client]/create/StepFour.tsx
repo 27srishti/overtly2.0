@@ -15,6 +15,7 @@ const StepFour = () => {
   const params = useParams();
   const clientid = params.client;
   const [pitchEmail, setPitchEmail] = useState("");
+
   const [gamesList, setGamesList] = useState([
     "Dota 2",
     "League of Legends",
@@ -52,6 +53,8 @@ const StepFour = () => {
                 client_id: clientid,
                 topic: {
                   idea: "AI-driven personalization for mental health exercises",
+                  story:
+                    "AI-driven personalization for mental health exercises",
                 },
               }),
             }
