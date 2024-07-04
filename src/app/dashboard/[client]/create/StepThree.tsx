@@ -75,7 +75,6 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   client_id: clientid,
                   idea_hint: firebasedata.ideaHint,
                   keywords: firebasedata.Ideas,
-                  generatebyai: firebasedata.generatebyai,
                   media_format: firebasedata.mediaFormat,
                   beat: firebasedata.beat,
                   outlet: firebasedata.outlet,
