@@ -177,7 +177,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   </FormItem>
                 )}
               />
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="beat"
                 render={({ field }) => (
@@ -209,7 +209,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
               <FormField
                 control={form.control}
                 name="outlet"
