@@ -277,56 +277,57 @@ const Page = () => {
     const storageRef = ref(storage, file.url);
 
     try {
-      await deleteObject(storageRef);
-      console.log("File deleted from storage:", file.name);
+      await fetch("/api/file/", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await authUser?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          client_id: params.client,
+          file_name: file.bucketName,
+        }),
+      })
+        .then(async (response) => {
+          if (response.status === 200) {
+            await deleteObject(storageRef);
+            console.log("File deleted from storage:", file.name);
+
+            try {
+              const docRef = collection(
+                db,
+                `users/${authUser?.uid}/clients/${params.client}/files`
+              );
+              const querySnapshot = await getDocs(docRef);
+              const docIdToDelete = querySnapshot.docs.find(
+                (doc) => doc.data().name === file.name
+              )?.id;
+
+              if (docIdToDelete) {
+                await deleteDoc(
+                  doc(
+                    db,
+                    `users/${authUser?.uid}/clients/${params.client}/files`,
+                    docIdToDelete
+                  )
+                );
+                console.log("File metadata deleted from Firestore:", file.name);
+              }
+            } catch (error) {
+              console.error(
+                "Error deleting file metadata from Firestore:",
+                error
+              );
+            } finally {
+              const updatedFiles = await fetchData();
+              setFetchedFiles(updatedFiles);
+            }
+          }
+        })
+        .catch((error) => console.error("Error:", error));
     } catch (error) {
       console.error("Error deleting file from storage:", error);
       return;
-    }
-
-    try {
-      const docRef = collection(
-        db,
-        `users/${authUser?.uid}/clients/${params.client}/files`
-      );
-      const querySnapshot = await getDocs(docRef);
-      const docIdToDelete = querySnapshot.docs.find(
-        (doc) => doc.data().name === file.name
-      )?.id;
-
-      if (docIdToDelete) {
-        await deleteDoc(
-          doc(
-            db,
-            `users/${authUser?.uid}/clients/${params.client}/files`,
-            docIdToDelete
-          )
-        );
-        console.log("File metadata deleted from Firestore:", file.name);
-
-        const url = `https://pr-ai-99.uc.r.appspot.com/file`;
-
-        return fetch(url, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${await authUser?.getIdToken()}`,
-          },
-          body: JSON.stringify({
-            client_id: params.client,
-            file_name: file.bucketName,
-          }),
-        })
-          .then((response) => {
-            console.log(response.json());
-          })
-          .catch((error) => console.error("Error:", error));
-      }
-    } catch (error) {
-      console.error("Error deleting file metadata from Firestore:", error);
-    } finally {
-      const updatedFiles = await fetchData();
-      setFetchedFiles(updatedFiles);
     }
   };
 

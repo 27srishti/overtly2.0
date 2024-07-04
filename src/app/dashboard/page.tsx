@@ -84,6 +84,7 @@ import {
   ref,
   StorageReference,
 } from "firebase/storage";
+import { response } from "express";
 
 const formSchema = z.object({
   name: z
@@ -276,48 +277,59 @@ const Page = () => {
   const handleDeleteClient = async () => {
     if (DeletedClientId !== "" && deleteMode) {
       try {
-        const projectsQuery = query(
-          collection(
-            db,
-            `users/${auth.currentUser?.uid}/clients/${DeletedClientId}/projects`
-          )
-        );
-        const querySnapshot = await getDocs(projectsQuery);
+        const url = `/api/client`;
 
-        await deleteDoc(
-          doc(db, `users/${auth.currentUser?.uid}/clients`, DeletedClientId)
-        ).then(async () => {
-          deleteFolder(storage, authUser, DeletedClientId);
+        return fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await authUser?.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            client_id: DeletedClientId,
+          }),
+        })
+          .then(async (response) => {
+            if (response.status === 200) {
+              const projectsQuery = query(
+                collection(
+                  db,
+                  `users/${auth.currentUser?.uid}/clients/${DeletedClientId}/projects`
+                )
+              );
+              const querySnapshot = await getDocs(projectsQuery);
 
-          querySnapshot.forEach(async (doc) => {
-            await deleteDoc(doc.ref);
-            console.log(`Deleted project with ID: ${doc.id}`);
+              querySnapshot.forEach(async (doc) => {
+                await deleteDoc(doc.ref);
+                console.log(`Deleted project with ID: ${doc.id}`);
+              });
 
-            const url = `/api/client`;
+              await deleteDoc(
+                doc(
+                  db,
+                  `users/${auth.currentUser?.uid}/clients`,
+                  DeletedClientId
+                )
+              ).then(async () => {
+                deleteFolder(storage, authUser, DeletedClientId);
+              });
 
-            return fetch(url, {
-              method: "DELETE",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${await authUser?.getIdToken()}`,
-              },
-              body: JSON.stringify({
-                client_id: DeletedClientId,
-              }),
-            })
-              .then((response) => response.json())
-              .catch((error) => console.error("Error:", error));
+              const updatedClients = await fetchData();
+
+              setClients(updatedClients);
+              setLoading(false);
+              toast({
+                title: "Client Deleted",
+                description: "Client has been successfully deleted.",
+              });
+            }
+          })
+          .catch((error) => {
+            toast({
+              title: "Error",
+              description: "An error occurred while deleting the client.",
+            });
           });
-        });
-
-        const updatedClients = await fetchData();
-
-        setClients(updatedClients);
-        setLoading(false);
-        toast({
-          title: "Client Deleted",
-          description: "Client has been successfully deleted.",
-        });
       } catch (error) {
         console.error("Error deleting client:", error);
         toast({
