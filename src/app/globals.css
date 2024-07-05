@@ -74,7 +74,9 @@
   body {
     @apply bg-background text-foreground;
     height: 100%; /* Ensure the body takes full height */
-    margin: 0; /* Remove default margin */
+  }
+  html {
+    scrollbar-gutter: stable;
   }
 }
 
@@ -114,25 +116,86 @@
     background: rgba(213, 213, 213, 0.25);
   }
   .border-gradient {
-    border-image: linear-gradient(to right, #CBCBCB, #297BC6);
+    border-image: linear-gradient(to right, #cbcbcb, #297bc6);
     border-image-slice: 1;
   }
   .box {
-    background-image: repeating-linear-gradient(-30deg, #333333, #333333 30px, transparent 30px, transparent 38px, #333333 38px), repeating-linear-gradient(60deg, #333333, #333333 30px, transparent 30px, transparent 38px, #333333 38px), repeating-linear-gradient(150deg, #333333, #333333 30px, transparent 30px, transparent 38px, #333333 38px), repeating-linear-gradient(240deg, #333333, #333333 30px, transparent 30px, transparent 38px, #333333 38px);
-    background-size: 3px 100%, 100% 3px, 3px 100% , 100% 3px;
+    background-image: repeating-linear-gradient(
+        -30deg,
+        #333333,
+        #333333 30px,
+        transparent 30px,
+        transparent 38px,
+        #333333 38px
+      ),
+      repeating-linear-gradient(
+        60deg,
+        #333333,
+        #333333 30px,
+        transparent 30px,
+        transparent 38px,
+        #333333 38px
+      ),
+      repeating-linear-gradient(
+        150deg,
+        #333333,
+        #333333 30px,
+        transparent 30px,
+        transparent 38px,
+        #333333 38px
+      ),
+      repeating-linear-gradient(
+        240deg,
+        #333333,
+        #333333 30px,
+        transparent 30px,
+        transparent 38px,
+        #333333 38px
+      );
+    background-size: 3px 100%, 100% 3px, 3px 100%, 100% 3px;
     background-position: 0 0, 0 0, 100% 0, 0 100%;
     background-repeat: no-repeat;
-    }
-
-    .custom-dashed-border {
-      border: 2px dashed black;   /* Standard dashed border */
-      border-style: dashed;       /* Ensure border is dashed */
-      border-width: 1px;          /* Border width */
-      border-color: black;        /* Border color */
-      border-spacing: 50px;
-      border-radius: 100px;
-
-      border-image: repeating-linear-gradient(0deg, #5b6fa4, #5b6fa4 11px, transparent 11px, transparent 21px, #5b6fa4 21px), repeating-linear-gradient(90deg, #5b6fa4, #5b6fa4 11px, transparent 11px, transparent 21px, #5b6fa4 21px), repeating-linear-gradient(180deg, #5b6fa4, #5b6fa4 11px, transparent 11px, transparent 21px, #5b6fa4 21px), repeating-linear-gradient(270deg, #5b6fa4, #5b6fa4 11px, transparent 11px, transparent 21px, #5b6fa4 21px);
   }
 
+  .custom-dashed-border {
+    border: 2px dashed black; /* Standard dashed border */
+    border-style: dashed; /* Ensure border is dashed */
+    border-width: 1px; /* Border width */
+    border-color: black; /* Border color */
+    border-spacing: 50px;
+    border-radius: 100px;
+
+    border-image: repeating-linear-gradient(
+        0deg,
+        #5b6fa4,
+        #5b6fa4 11px,
+        transparent 11px,
+        transparent 21px,
+        #5b6fa4 21px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        #5b6fa4,
+        #5b6fa4 11px,
+        transparent 11px,
+        transparent 21px,
+        #5b6fa4 21px
+      ),
+      repeating-linear-gradient(
+        180deg,
+        #5b6fa4,
+        #5b6fa4 11px,
+        transparent 11px,
+        transparent 21px,
+        #5b6fa4 21px
+      ),
+      repeating-linear-gradient(
+        270deg,
+        #5b6fa4,
+        #5b6fa4 11px,
+        transparent 11px,
+        transparent 21px,
+        #5b6fa4 21px
+      );
+  }
 }
