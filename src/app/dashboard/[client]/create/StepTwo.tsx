@@ -52,9 +52,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
     mediaFormat: z.string().min(1, {
       message: "Please select Media Formats.",
     }),
-    beat: z.string().min(1, {
-      message: "Please select Beat.",
-    }),
+    // beat: z.string().min(1, {
+    //   message: "Please select Beat.",
+    // }),
     outlet: z.string().min(1, {
       message: "Please select Outlet.",
     }),
@@ -65,12 +65,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
 
   const [fetchedValues, setFetchedValues] = useState<{
     mediaFormat: string;
-    beat: string;
+    // beat: string;
     outlet: string;
     objective: string;
   }>({
     mediaFormat: "",
-    beat: "",
+    // beat: "",
     outlet: "",
     objective: "",
   });
@@ -95,14 +95,14 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
 
             setFetchedValues({
               mediaFormat: data.mediaFormat,
-              beat: data.beat,
+              // beat: data.beat,
               outlet: data.outlet,
               objective: data.objective,
             });
 
             // Set form values here
             form.setValue("mediaFormat", data.mediaFormat);
-            form.setValue("beat", data.beat);
+            // form.setValue("beat", data.beat);
             form.setValue("outlet", data.outlet);
             form.setValue("objective", data.objective);
           }
@@ -117,7 +117,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
 
   const updateFormData = async (formData: {
     mediaFormat: string;
-    beat: string;
+    // beat: string;
     outlet: string;
     objective: string;
     currentStep: number;
