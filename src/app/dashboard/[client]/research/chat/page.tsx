@@ -91,68 +91,67 @@ const Page: React.FC = () => {
 
       if (sessionId) {
         // update existing session
-        await updateDoc(
-          doc(db, `users/${authUser.uid}/clients/${clientId}/chats`, sessionId),
-          {
-            messages: [
-              ...userSessions.filter(
-                (session) => session.docid === sessionId
-              )[0].messages,
-              message,
-            ],
-          }
-        );
+        // await updateDoc(
+        //   doc(db, `users/${authUser.uid}/clients/${clientId}/chats`, sessionId),
+        //   {
+        //     messages: [
+        //       ...userSessions.filter(
+        //         (session) => session.docid === sessionId
+        //       )[0].messages,
+        //       message,
+        //     ],
+        //   }
+        // );
         const session = await getUserSessions();
         setUserSessions(session);
         setMessage("");
-        // try {
-        //   return fetch("/api/chat", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //       Authorization: `Bearer ${await authUser?.getIdToken()}`,
-        //     },
-        //     body: JSON.stringify({
-        //       client_id: clientId,
-        //       user_message: message,
-        //       session_id: sessionId,
-        //     }),
-        //   }).then(async (response) => {
-        //     if (response.status === 200) {
-        //       const session = await getUserSessions();
-        //       setUserSessions(session);
-        //       setMessage("");
-        //     }
-        //   });
-        // } catch (error) {
-        //   console.error("Error sending message");
-        // }
+        try {
+          return fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${await authUser?.getIdToken()}`,
+            },
+            body: JSON.stringify({
+              client_id: clientId,
+              user_message: message,
+              session_id: sessionId,
+            }),
+          }).then(async (response) => {
+            if (response.status === 200) {
+              const session = await getUserSessions();
+              setUserSessions(session);
+              setMessage("");
+            }
+          });
+        } catch (error) {
+          console.error("Error sending message");
+        }
       } else {
         createNewSession();
-        // try {
-        //   return fetch("/api/chat", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //       Authorization: `Bearer ${await authUser?.getIdToken()}`,
-        //     },
-        //     body: JSON.stringify({
-        //       client_id: clientId,
-        //       user_message: message,
-        //       session_id: sessionId,
-        //     }),
-        //   }).then(async (response) => {
-        //     if (response.status === 200) {
-        //       const session = await getUserSessions();
-        //       setUserSessions(session);
-        //       setMessage("");
-        //     }
-        //   });
-        // } catch (error) {
-        //   console.error("Error sending message");
-        // }
+        try {
+          return fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${await authUser?.getIdToken()}`,
+            },
+            body: JSON.stringify({
+              client_id: clientId,
+              user_message: message,
+              session_id: sessionId,
+            }),
+          }).then(async (response) => {
+            if (response.status === 200) {
+              const session = await getUserSessions();
+              setUserSessions(session);
+              setMessage("");
+            }
+          });
+        } catch (error) {
+          console.error("Error sending message");
+        }
       }
-
       const sessions = await getUserSessions();
       setUserSessions(sessions);
       setMessage("");
