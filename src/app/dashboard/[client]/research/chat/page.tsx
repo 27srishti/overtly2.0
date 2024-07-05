@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/ui/Icons";
 import { Textarea } from "@/components/ui/textarea";
+// @ts-ignore
+import base64 from "base-64";
 import { auth, db } from "@/lib/firebase/firebase";
 import {
   addDoc,
@@ -20,10 +22,14 @@ import { useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
 
+interface chat {
+  _byteString: string;
+}
+
 interface UserSession {
   docid: string;
   name: string;
-  messages: string[];
+  messages: chat[];
   created_at: string;
 }
 
@@ -197,16 +203,22 @@ const Page: React.FC = () => {
       );
       console.log(session);
       if (session) {
-        return session.messages.map((message, index) => (
-          <div
-            key={index}
-            className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${
-              message === session.messages[0] ? "self-start" : "self-end"
-            }`}
-          >
-            {message}
-          </div>
-        ));
+        return session.messages.map((message, index) => {
+          const m: any = message._byteString;
+          console.log(m); // Log the value of m to inspect it
+          const jsonmessage = JSON.parse(m.binaryString);
+          console.log(jsonmessage);
+          return (
+            <div
+              key={index}
+              className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${
+                index === 0 ? "self-start" : "self-end"
+              }`}
+            >
+              {jsonmessage.content}
+            </div>
+          );
+        });
       }
     } else {
       return null;
