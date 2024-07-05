@@ -52,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             Start a Thread
         </div>
       </div>
-      <div className="w-full rounded-[30px] p-5 flex flex-col bg-opacity-25">
+      <div className="w-full rounded-[30px] flex flex-col bg-opacity-25">
         {children}
       </div>
     </div>

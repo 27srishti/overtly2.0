@@ -24,7 +24,7 @@ const Page = () => {
   });
 
   return (
-    <Tabs defaultValue="Trends" className="w-full font-normal">
+    <Tabs defaultValue="Trends" className="w-full font-normal p-5">
       <TabsList className="mb-5 flex flex-row justify-between ml-3">
         <div className="flex gap-8">
           <TabsTrigger
