@@ -1,48 +1,72 @@
 "use client";
 
-import React, { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  KeyboardEvent,
+  ChangeEvent,
+  UIEvent,
+} from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/ui/Icons";
+import { EosIconsThreeDotsLoading, Icons } from "@/components/ui/Icons";
 import { Textarea } from "@/components/ui/textarea";
-// @ts-ignore
-import base64 from "base-64";
 import { auth, db } from "@/lib/firebase/firebase";
 import {
   addDoc,
   collection,
   getDocs,
   query,
-  where,
+  limit,
+  startAfter,
+  DocumentSnapshot,
+  orderBy,
   updateDoc,
   doc,
   Timestamp,
+  getDoc,
+  setDoc,
 } from "firebase/firestore";
 import { useParams } from "next/navigation";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, User } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
+import { CheckIcon } from "lucide-react";
 
-interface chat {
-  _byteString: string;
+interface ChatMessage {
+  _byteString: {
+    binaryString: string;
+  };
 }
 
 interface UserSession {
   docid: string;
   name: string;
-  messages: chat[];
+  sessionname: string;
+  sessionId: string;
   created_at: string;
 }
 
 const Page: React.FC = () => {
+  const [user, setUser] = useState<User | null>(null);
   const [message, setMessage] = useState<string>("");
   const [sessionId, setSessionId] = useState<string>("");
   const [userSessions, setUserSessions] = useState<UserSession[]>([]);
+  const [userSessionMessages, setUserSessionMessages] = useState<
+    ChatMessage[] | null
+  >(null);
+  const [lastDoc, setLastDoc] = useState<DocumentSnapshot | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fileloading, setFileloading] = useState<boolean>(false);
+  const [endReached, setEndReached] = useState<boolean>(false);
   const params = useParams();
   const clientId = params.client;
+  const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+  const [editedSessionName, setEditedSessionName] = useState<string>("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
+        setUser(authUser);
         const sessions = await getUserSessions();
         setUserSessions(sessions);
       }
@@ -50,7 +74,9 @@ const Page: React.FC = () => {
     return () => unsubscribe();
   }, []);
 
-  const getUserSessions = async (): Promise<UserSession[]> => {
+  const getUserSessions = async (
+    lastDoc: DocumentSnapshot | null = null
+  ): Promise<UserSession[]> => {
     try {
       const authUser = auth.currentUser;
 
@@ -59,11 +85,38 @@ const Page: React.FC = () => {
         return [];
       }
 
-      const q = query(
-        collection(db, `users/${authUser.uid}/clients/${clientId}/chats`)
+      let q = query(
+        collection(
+          db,
+          `users/${authUser.uid}/clients/${clientId}/chatsMetadata`
+        ),
+        orderBy("created_at", "desc"),
+        limit(10)
       );
 
+      if (lastDoc) {
+        q = query(
+          collection(
+            db,
+            `users/${authUser.uid}/clients/${clientId}/chatsMetadata`
+          ),
+          orderBy("created_at", "desc"),
+          startAfter(lastDoc),
+          limit(10)
+        );
+      }
+
       const sessionQuerySnapshot = await getDocs(q);
+
+      if (sessionQuerySnapshot.empty) {
+        setEndReached(true);
+        return [];
+      }
+
+      setLastDoc(
+        sessionQuerySnapshot.docs[sessionQuerySnapshot.docs.length - 1]
+      );
+
       return sessionQuerySnapshot.docs.map((doc) => ({
         ...doc.data(),
         docid: doc.id,
@@ -74,6 +127,22 @@ const Page: React.FC = () => {
     }
   };
 
+  const loadMoreSessions = async () => {
+    if (!fileloading && !endReached) {
+      setFileloading(true);
+      const newSessions = await getUserSessions(lastDoc);
+      setUserSessions([...userSessions, ...newSessions]);
+      setFileloading(false);
+    }
+  };
+
+  const handleScroll = async (event: UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      await loadMoreSessions();
+    }
+  };
+
   const handleKeyPress = async (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -81,11 +150,73 @@ const Page: React.FC = () => {
     }
   };
 
+  const sendMessageToSession = async (sessionId: string) => {
+    try {
+      if (!user) {
+        console.error("User is not authenticated");
+        return;
+      }
+
+      setLoading(true);
+
+      setUserSessionMessages([
+        ...(userSessionMessages || []),
+        {
+          _byteString: {
+            binaryString: JSON.stringify({
+              content: message,
+              additional_kwargs: {},
+              response_metadata: {},
+              type: "human",
+              name: null,
+              id: null,
+              example: false,
+            }),
+          },
+        },
+      ]);
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await user.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          client_id: clientId,
+          user_message: message,
+          session_id: sessionId,
+        }),
+      });
+
+      if (response.status === 200) {
+        const sessionRef = doc(
+          db,
+          `users/${user.uid}/clients/${clientId}/chats`,
+          sessionId
+        );
+        const sessionDoc = await getDoc(sessionRef);
+
+        setUserSessionMessages(sessionDoc.data()?.messages);
+        setMessage("");
+      } else {
+        console.error("Failed to send message");
+      }
+
+      setLoading(false); // Stop loading state
+    } catch (error) {
+      console.error("Error sending message: ", error);
+      setLoading(false); // Stop loading state on error
+    }
+  };
+
+  const handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(event.target.value);
+  };
+
   const handleSendMessage = async () => {
     try {
-      const authUser = auth.currentUser;
-
-      if (!authUser) {
+      if (!user) {
         console.log("User is not authenticated");
         return;
       }
@@ -96,132 +227,175 @@ const Page: React.FC = () => {
       }
 
       if (sessionId) {
-        // update existing session
-        // await updateDoc(
-        //   doc(db, `users/${authUser.uid}/clients/${clientId}/chats`, sessionId),
-        //   {
-        //     messages: [
-        //       ...userSessions.filter(
-        //         (session) => session.docid === sessionId
-        //       )[0].messages,
-        //       message,
-        //     ],
-        //   }
-        // );
-        const session = await getUserSessions();
-        setUserSessions(session);
-        setMessage("");
-        try {
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${await authUser?.getIdToken()}`,
-            },
-            body: JSON.stringify({
-              client_id: clientId,
-              user_message: message,
-              session_id: sessionId,
-            }),
-          }).then(async (response) => {
-            if (response.status === 200) {
-              const session = await getUserSessions();
-              setUserSessions(session);
-              setMessage("");
-            }
-          });
-        } catch (error) {
-          console.error("Error sending message");
-        }
+        await sendMessageToSession(sessionId);
       } else {
-        createNewSession();
-        try {
-          return fetch("/api/chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${await authUser?.getIdToken()}`,
-            },
-            body: JSON.stringify({
-              client_id: clientId,
-              user_message: message,
-              session_id: sessionId,
-            }),
-          }).then(async (response) => {
-            if (response.status === 200) {
-              const session = await getUserSessions();
-              setUserSessions(session);
-              setMessage("");
-            }
-          });
-        } catch (error) {
-          console.error("Error sending message");
-        }
+        const newSessionId = await createNewSession();
+        await sendMessageToSession(newSessionId);
       }
-      const sessions = await getUserSessions();
-      setUserSessions(sessions);
-      setMessage("");
     } catch (error) {
       console.error("Error sending message: ", error);
     }
   };
 
-  const handleMessageChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(event.target.value);
-  };
-
   const createNewSession = async () => {
     try {
-      const authUser = auth.currentUser;
-      if (!authUser) {
+      if (!user) {
         console.error("User is not authenticated");
-        return;
+        return "";
       }
 
       const newSession = await addDoc(
-        collection(db, `users/${authUser.uid}/clients/${clientId}/chats`),
+        collection(db, `users/${user.uid}/clients/${clientId}/chatsMetadata`),
         {
-          name: `${authUser.displayName}`,
+          name: `${user.displayName}`,
+          sessionname: "Untitled Session",
           created_at: Timestamp.now(),
+          sessionId: "",
+        }
+      );
+
+      await updateDoc(newSession, {
+        sessionId: newSession.id,
+      });
+
+      await setDoc(
+        doc(db, `users/${user.uid}/clients/${clientId}/chats`, newSession.id),
+        {
           messages: [],
         }
       );
 
-      const sessions = await getUserSessions();
-      setUserSessions(sessions);
+      const newSessionId = newSession.id;
+
+      setSessionId(newSessionId);
+
+      const sessionRef = doc(
+        db,
+        `users/${user.uid}/clients/${clientId}/chats`,
+        newSessionId
+      );
+      const sessionDoc = await getDoc(sessionRef);
+
+      setUserSessionMessages(sessionDoc.data()?.messages || []);
       setMessage("");
-      setSessionId(newSession.id);
+
+      // Update userSessions
+      const updatedSessions = [
+        {
+          docid: newSessionId,
+          name: `${user.displayName}`,
+          sessionname: `Untitled Session`,
+          sessionId: newSessionId,
+          created_at: Timestamp.now().toDate().toString(),
+        },
+        ...userSessions,
+      ];
+      setUserSessions(updatedSessions);
+
+      return newSessionId;
     } catch (error) {
-      console.log("Error creating new session");
+      console.log("Error creating new session: ", error);
+      return "";
     }
   };
 
   const renderMessages = () => {
-    if (sessionId) {
-      const session = userSessions.find(
-        (session) => session.docid === sessionId
+    if (!sessionId) {
+      return (
+        <div className="p-20 flex flex-col gap-6">
+          <div className="text-[#5B5757] text-6xl">Hi {user?.displayName},</div>
+          <div className="text-[#A3A3A3] text-5xl">How can I help you?</div>
+        </div>
       );
-      console.log(session);
-      if (session) {
-        return session.messages.map((message, index) => {
-          const m: any = message._byteString;
-          console.log(m); // Log the value of m to inspect it
-          const jsonmessage = JSON.parse(m.binaryString);
-          console.log(jsonmessage);
-          return (
-            <div
-              key={index}
-              className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${
-                index === 0 ? "self-start" : "self-end"
-              }`}
-            >
-              {jsonmessage.content}
-            </div>
-          );
-        });
-      }
+    }
+
+    console.log(userSessionMessages);
+    if (userSessionMessages && userSessionMessages.length > 0) {
+      return userSessionMessages.map((message, index) => {
+        console.log(message._byteString);
+
+        const m: any = message._byteString;
+        const jsonmessage = JSON.parse(m.binaryString);
+        return (
+          <div
+            key={index}
+            className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${
+              jsonmessage.type === "ai" ? "self-start" : "self-end"
+            }`}
+          >
+            {jsonmessage.content}
+          </div>
+        );
+      });
     } else {
-      return null;
+      // if (loading) {
+      return (
+        <div className="p-20 flex flex-col gap-6">
+          <div className="text-[#5B5757] text-3xl">
+            {" "}
+            No conversation in this session.
+          </div>
+          <div className="text-[#A3A3A3] text-2xl">
+            Start typing to get started.
+          </div>
+        </div>
+      );
+      // }
+    }
+  };
+
+  const handleSessionNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setEditedSessionName(event.target.value);
+  };
+
+  const saveSessionName = async (sessionId: string) => {
+    try {
+      if (!user) {
+        console.error("User is not authenticated");
+        return;
+      }
+
+      const sessionRef = doc(
+        db,
+        `users/${user.uid}/clients/${clientId}/chatsMetadata`,
+        sessionId
+      );
+
+      await updateDoc(sessionRef, {
+        sessionname: editedSessionName,
+      });
+
+      setUserSessions((prevSessions) =>
+        prevSessions.map((session) =>
+          session.docid === sessionId
+            ? { ...session, sessionname: editedSessionName }
+            : session
+        )
+      );
+      setEditingSessionId(null);
+    } catch (error) {
+      console.error("Error saving session name: ", error);
+    }
+  };
+
+  const fetchSessionMessages = async (sessionId: string) => {
+    try {
+      if (!user) {
+        console.error("User is not authenticated");
+        return;
+      }
+
+      const sessionRef = doc(
+        db,
+        `users/${user.uid}/clients/${clientId}/chats`,
+        sessionId
+      );
+      const sessionDoc = await getDoc(sessionRef);
+
+      setUserSessionMessages(sessionDoc.data()?.messages || []);
+      setSessionId(sessionId);
+    } catch (error) {
+      console.error("Error fetching session messages: ", error);
     }
   };
 
@@ -230,9 +404,8 @@ const Page: React.FC = () => {
       <div className="w-full bg-[#DDDDDD] rounded-[30px] p-5 flex flex-col justify-between h-[83vh] py-10 bg-opacity-25">
         <div className="flex-1 overflow-auto max-h-full">
           <ScrollArea className="h-full flex flex-col w-full">
-            {renderMessages() || (
-              <div>No messages found start a new session</div>
-            )}
+            {renderMessages()}
+            {loading && <EosIconsThreeDotsLoading className="h-20 w-20 ml-2" />}
           </ScrollArea>
         </div>
         <div className="flex-none">
@@ -244,11 +417,13 @@ const Page: React.FC = () => {
               onChange={handleMessageChange}
               onKeyDown={handleKeyPress}
               className="outline-none focus:outline-none shadow-none border-none font-montserrat ring-[0px] focus:ring-0 ring-white"
+              disabled={loading} // Disable textarea while sending
             />
             <Button
               variant="outline"
               className="shadow-none border-none bg-transparent self-end"
               onClick={handleSendMessage}
+              disabled={loading} // Disable button while sending
             >
               <Icons.Send />
             </Button>
@@ -257,23 +432,59 @@ const Page: React.FC = () => {
       </div>
       <div className="w-full bg-[#DDDDDD] rounded-[30px] p-5 flex flex-col h-[83vh] bg-opacity-25">
         <div
-          onClick={() => {
-            createNewSession();
-          }}
-          className=" rounded-[30px] p-5 mb-5 self-start bg-opacity-25 cursor-pointer"
+          onClick={createNewSession}
+          className="rounded-[30px] p-5 mb-5 self-start bg-opacity-25 cursor-pointer"
         >
           Create a new session
         </div>
-        <ScrollArea className="h-full flex flex-col w-full">
+        <ScrollArea
+          className="h-[70vh] flex flex-col w-full"
+          onScroll={handleScroll}
+        >
           {userSessions.map((userSession) => (
             <div
               key={userSession.docid}
-              className="bg-[#CDCDCD] rounded-[30px] p-5 mb-5 self-start bg-opacity-25"
-              onClick={() => setSessionId(userSession.docid)}
+              className={`${
+                sessionId === userSession.docid
+                  ? "bg-[#454545]"
+                  : "bg-[#CDCDCD]"
+              } rounded-[30px] p-4 mb-5 bg-opacity-25 cursor-pointer flex`}
+              onClick={() => fetchSessionMessages(userSession.docid)}
             >
-              {userSession.docid}
+              {editingSessionId === userSession.docid ? (
+                <>
+                  <input
+                    type="text"
+                    value={editedSessionName}
+                    onChange={handleSessionNameChange}
+                    onBlur={() => saveSessionName(userSession.docid)}
+                    className="bg-transparent"
+                  />
+                  <div
+                    className="bg-transparent shadow-none border-none"
+                    onClick={() => saveSessionName(userSession.docid)}
+                  >
+                    <CheckIcon className="h-5 w-5" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span
+                    onDoubleClick={() => {
+                      setEditingSessionId(userSession.docid);
+                      setEditedSessionName(userSession.sessionname);
+                    }}
+                  >
+                    {userSession.sessionname}
+                  </span>
+                </>
+              )}
             </div>
           ))}
+
+          {fileloading && (
+            <EosIconsThreeDotsLoading className="h-20 w-20 ml-2" />
+          )}
         </ScrollArea>
       </div>
     </div>

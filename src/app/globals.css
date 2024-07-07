@@ -75,9 +75,9 @@
     @apply bg-background text-foreground;
     height: 100%; /* Ensure the body takes full height */
   }
-  html {
+  /* html {
     scrollbar-gutter: stable;
-  }
+  } */
 }
 
 @layer utilities {
