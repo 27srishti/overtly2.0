@@ -89,8 +89,10 @@ const Page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const filteredFiles = fetchedFiles.filter((file) =>
-    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFiles = fetchedFiles.filter(
+    (file) =>
+      file.name &&
+      file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredFiles.length / FILES_PER_PAGE);

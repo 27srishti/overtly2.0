@@ -303,7 +303,9 @@ const Page: React.FC = () => {
     if (!sessionId) {
       return (
         <div className="p-20 flex flex-col gap-6">
-          <div className="text-[#5B5757] text-6xl">Hi {user?.displayName},</div>
+          <div className="text-[#5B5757] text-6xl">
+            Hi {user?.displayName?.split(" ")[0]},
+          </div>
           <div className="text-[#A3A3A3] text-5xl">How can I help you?</div>
         </div>
       );
@@ -320,7 +322,9 @@ const Page: React.FC = () => {
           <div
             key={index}
             className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${
-              jsonmessage.type === "ai" ? "self-start" : "self-end"
+              jsonmessage.type === "ai"
+                ? "self-start"
+                : "self-end bg-[#CDCDCD] bg-opacity-25 rounded-[30px] max-w-[40%] mb-5"
             }`}
           >
             {jsonmessage.content}
