@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { EosIconsThreeDotsLoading, Icons } from "@/components/ui/Icons";
 import { Textarea } from "@/components/ui/textarea";
 import { auth, db } from "@/lib/firebase/firebase";
+import ReactMarkdown from "react-markdown";
 import {
   addDoc,
   collection,
@@ -327,7 +328,8 @@ const Page: React.FC = () => {
                 : "self-end bg-[#CDCDCD] bg-opacity-25 rounded-[30px] max-w-[40%] mb-5"
             }`}
           >
-            {jsonmessage.content}
+            {/* {jsonmessage.content} */}
+            <ReactMarkdown>{jsonmessage.content}</ReactMarkdown>
           </div>
         );
       });
