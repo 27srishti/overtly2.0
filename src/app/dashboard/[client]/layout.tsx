@@ -57,18 +57,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="gradientbg">
       <div className="sticky top-0 backdrop-filter backdrop-blur-lg border-b pb-2">
-        <div className="z-50 pt-4 px-10 font-montserrat">
-          <div className=" bg-opacity-20   py-2">
-            <div className="container flex justify-between px-2 items-center">
+        <div className="z-50 pt-4 px-4 sm:px-6 md:px-10 font-montserrat">
+          <div className="bg-opacity-20 py-2">
+            <div className="container flex flex-wrap justify-center xl:justify-between items-center">
               <Link href={`/dashboard`}>
                 <div className="flex items-center justify-center text-lg cursor-pointer">
-                  <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
+                  <img
+                    src="/fullimage.png"
+                    className="w-24 sm:w-28 md:w-36 ml-3"
+                    alt="Logo"
+                  />
                 </div>
               </Link>
-
-              <div className="flex gap-5">
+              <div className="flex gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0">
                 <Link href={`/dashboard`}>
-                  <div className="rounded-full p-3 bg-[#E8E8E8] flex items-center">
+                  <div className="rounded-full p-2 sm:p-3 bg-[#E8E8E8] flex items-center">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       height="24px"
@@ -84,41 +87,38 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </svg>
                   </div>
                 </Link>
-                <div className="flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer bg-white">
+                <div className="flex gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer bg-white">
                   <Link href={`/dashboard/${client?.id}`}>
                     <div
-                      className={`rounded-full items-center p-2 px-5 ${
+                      className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${
                         pathname.endsWith(params.client) ||
                         pathname.endsWith("create")
                           ? "bg-[#BDF294] hover:bg-[#b3f87d]"
                           : "hover:bg-[#F5F4F4]"
-                      } rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
+                      } cursor-pointer transition-all`}
                     >
                       Pitch gen
                     </div>
                   </Link>
                   <Link href={`/dashboard/${client?.id}/research`}>
                     <div
-                      className={`
-                  ${
-                    pathname.endsWith("/research") || pathname.endsWith("/chat") || pathname.endsWith("/insights")
-                      ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                      : "bg-white hover:bg-[#F5F4F4]"
-                  }
-                  
-                  rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
+                      className={`${
+                        pathname.endsWith("/research") ||
+                        pathname.endsWith("/chat") ||
+                        pathname.endsWith("/insights")
+                          ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                          : "bg-white hover:bg-[#F5F4F4]"
+                      } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
                     >
                       Research
                     </div>
                   </Link>
                   <div
-                    className={`
-                ${
-                  pathname.endsWith("/analytics")
-                    ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                    : "bg-white hover:bg-[#F5F4F4]"
-                }
-                rounded-full items-center  p-2 px-5 cursor-pointer transition-all`}
+                    className={`${
+                      pathname.endsWith("/analytics")
+                        ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                        : "bg-white hover:bg-[#F5F4F4]"
+                    } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
                   >
                     Analytics
                   </div>
@@ -128,12 +128,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     pathname.endsWith("/datalibrary")
                       ? "bg-[#BDF294] hover:bg-[#b3f87d]"
                       : "bg-white hover:bg-[#F5F4F4]"
-                  } flex gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all`}
+                  } flex gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all`}
                 >
                   <Link href={`/dashboard/${params.client}/datalibrary`}>
-                    <div
-                      className={`rounded-full items-center p-2 px-5 cursor-pointer flex gap-2  `}
-                    >
+                    <div className="rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer flex gap-2">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         enableBackground="new 0 0 24 24"
@@ -155,8 +153,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </div>
               </div>
-              <div className="flex items-center gap-5">
-                <div className="bg-secondary p-[0.8rem] rounded-full">
+              <div className="flex items-center gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0">
+                <div className="bg-secondary p-2 sm:p-3 rounded-full">
                   <svg
                     width="22"
                     height="22"
@@ -183,7 +181,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </defs>
                   </svg>
                 </div>
-                <div className="bg-secondary p-3 rounded-full">
+                <div className="bg-secondary p-2 sm:p-3 rounded-full">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
@@ -202,7 +200,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="relative h-8 w-8 rounded-full mr-4"
+                      className="relative h-8 w-8 rounded-full"
                     >
                       <Avatar className="h-10 w-10">
                         <AvatarImage
