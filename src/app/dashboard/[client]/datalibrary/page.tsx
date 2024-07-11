@@ -8,6 +8,10 @@ import {
   DocumentData,
 } from "firebase-admin/firestore";
 import { cookies } from "next/headers";
+import Client from "./client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Uploadbtn from "./uploadbtn";
+import Newsarticle from "./newsarticle";
 
 customInitApp();
 
@@ -107,15 +111,80 @@ export default async function Page({
     name as string
   );
 
-  console.log("Data:", data);
+  // console.log("Data:", data);
 
   return (
-    <div className="container mx-auto py-10">
-      <DataTable
-        columns={columns}
-        data={data}
-        pageCount={Math.ceil(total / perPage)}
-      />
+    <div className="w-full px-16 mt-4 font-montserrat">
+      <div className="flex gap-16 mt-6 mb-10">
+        <div className="text-[23px] mt-4  font-montserrat capitalize">
+          <Client />
+        </div>
+      </div>
+      <div>
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList className="mb-5 flex flex-row justify-between ml-3">
+            <div className="flex gap-8">
+              <TabsTrigger
+                value="account"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+              >
+                Documents
+              </TabsTrigger>
+              <TabsTrigger
+                value="newsarticles"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+              >
+                News Articles
+              </TabsTrigger>
+              <TabsTrigger
+                value="knowledgegraph"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+              >
+                Knowledge Graph
+              </TabsTrigger>
+              <TabsTrigger
+                value="mediadatabase"
+                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+              >
+                Media Database
+              </TabsTrigger>
+            </div>
+            <div>
+              <Uploadbtn />
+            </div>
+          </TabsList>
+          <TabsContent
+            value="account"
+            className="px-0 bg-transparent border rounded-[30px]"
+          >
+            <div className="mx-auto overflow-hidden">
+              <div className="container mx-auto py-10">
+                <DataTable
+                  columns={columns}
+                  data={data}
+                  pageCount={Math.ceil(total / perPage)}
+                />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent
+            value="newsarticles"
+            className="px-0 bg-transparent border rounded-[30px]"
+          >
+<Newsarticle/>
+          </TabsContent>
+          <TabsContent value="knowledgegraph"> knowledge graph</TabsContent>
+          <TabsContent value="mediadatabase">media database</TabsContent>
+        </Tabs>
+      </div>
     </div>
+
+    // <div className="container mx-auto py-10">
+    //   <DataTable
+    //     columns={columns}
+    //     data={data}
+    //     pageCount={Math.ceil(total / perPage)}
+    //   />
+    // </div>
   );
 }
