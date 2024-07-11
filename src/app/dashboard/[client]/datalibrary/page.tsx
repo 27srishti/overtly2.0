@@ -2,7 +2,11 @@ import { Payment, columns } from "./columns";
 import { DataTable } from "./data-table";
 import { auth } from "firebase-admin";
 import { customInitApp } from "@/lib/firebase/firebase-admin-config";
-import { getFirestore, CollectionReference, DocumentData } from "firebase-admin/firestore";
+import {
+  getFirestore,
+  CollectionReference,
+  DocumentData,
+} from "firebase-admin/firestore";
 import { cookies } from "next/headers";
 
 customInitApp();
@@ -11,7 +15,8 @@ async function getData(
   page: number,
   perPage: number,
   sort: string,
-  client: string
+  client: string,
+  name: string
 ): Promise<{ data: Payment[]; total: number }> {
   try {
     const assignmentData: Payment[] = [];
@@ -33,14 +38,29 @@ async function getData(
       `users/${decodedClaims.uid}/clients/${client}/files`
     );
 
+    // Add sorting if provided
     if (sort) {
       const [sortField, sortOrder] = sort.split(".");
-      cityRef = cityRef.orderBy(sortField, sortOrder as any) as CollectionReference<DocumentData>;
+      cityRef = cityRef.orderBy(
+        sortField,
+        sortOrder as any
+      ) as CollectionReference<DocumentData>;
     }
 
+    // Add filtering by name if provided
+    if (name) {
+      cityRef = cityRef.where(
+        "name",
+        "==",
+        name
+      ) as CollectionReference<DocumentData>;
+    }
+
+    // Get total count of documents
     const totalSnapshot = await cityRef.get();
     const total = totalSnapshot.size;
 
+    // Get paginated documents
     const querySnapshot = await cityRef
       .offset((page - 1) * perPage)
       .limit(perPage)
@@ -75,10 +95,17 @@ export default async function Page({
   const page = parseInt(searchParams.page as string, 10) || 1;
   const perPage = parseInt(searchParams.per_page as string, 10) || 10;
   const sort = searchParams.sort || "";
+  const name = searchParams.name || "";
 
   console.log("Params:", searchParams);
 
-  const { data, total } = await getData(page, perPage, sort as string, params.client);
+  const { data, total } = await getData(
+    page,
+    perPage,
+    sort as string,
+    params.client,
+    name as string
+  );
 
   console.log("Data:", data);
 
