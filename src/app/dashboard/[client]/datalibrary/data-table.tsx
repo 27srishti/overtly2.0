@@ -7,6 +7,8 @@ import {
   useReactTable,
   getPaginationRowModel,
   SortingState,
+  ColumnFiltersState,
+  getFilteredRowModel,
   getSortedRowModel,
   PaginationState,
 } from "@tanstack/react-table";
@@ -22,6 +24,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -34,16 +37,19 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   pageCount,
-  defaultPerPage = 2,
+  defaultPerPage = 5,
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
 
   // Search params
   const page = parseInt(searchParams.get("page") as string, 10) || 1;
   const perPage =
-    parseInt(searchParams.get("per_page") as string, 2) || defaultPerPage;
+    parseInt(searchParams.get("per_page") as string, 10) || defaultPerPage;
   const sort = searchParams.get("sort") || "";
   const [column, order] = sort.split(".") ?? [];
 
@@ -86,12 +92,13 @@ export function DataTable<TData, TValue>({
   ]);
 
   const table = useReactTable({
-    data: data.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
+    data,
     columns,
     pageCount,
     state: {
       pagination,
       sorting,
+      columnFilters,
     },
     manualPagination: true,
     manualSorting: true,
@@ -100,6 +107,8 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   React.useEffect(() => {
@@ -113,7 +122,15 @@ export function DataTable<TData, TValue>({
       })}`,
       { scroll: false }
     );
-  }, [pageIndex, pageSize, sorting, createQueryString, pathname, router]);
+  }, [
+    pageIndex,
+    pageSize,
+    sorting,
+    columnFilters,
+    createQueryString,
+    pathname,
+    router,
+  ]);
 
   const handleChangeRowsPerPage = (newPerPage: number) => {
     setPagination({ pageIndex: 0, pageSize: newPerPage });
@@ -121,23 +138,31 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <div className="flex items-center py-4">
+        {/* <Input
+          placeholder="Filter name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        /> */}
+      </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>

@@ -1,40 +1,50 @@
 import { Payment, columns } from "./columns";
 import { DataTable } from "./data-table";
-import { auth } from 'firebase-admin';
-import { customInitApp } from '@/lib/firebase/firebase-admin-config';
-import { getFirestore } from "firebase-admin/firestore";
+import { auth } from "firebase-admin";
+import { customInitApp } from "@/lib/firebase/firebase-admin-config";
+import { getFirestore, CollectionReference, DocumentData } from "firebase-admin/firestore";
 import { cookies } from "next/headers";
 
-// Initialize Firebase app
 customInitApp();
 
-// Function to fetch data from Firestore
-async function getData(page: number, perPage: number, sort: string, client: string): Promise<Payment[]> {
+async function getData(
+  page: number,
+  perPage: number,
+  sort: string,
+  client: string
+): Promise<{ data: Payment[]; total: number }> {
   try {
     const assignmentData: Payment[] = [];
-
     const session = cookies().get("session")?.value || "";
 
     if (!session) {
       console.log("No session cookie found");
-      return assignmentData;
+      return { data: assignmentData, total: 0 };
     }
 
     const decodedClaims = await auth().verifySessionCookie(session, true);
     if (!decodedClaims) {
       console.log("Invalid session cookie");
-      return assignmentData;
+      return { data: assignmentData, total: 0 };
     }
-    const [sortField, sortOrder] = sort.split(".");
-    console.log(sortField, sortOrder);
+
     const db = getFirestore();
-    const cityRef = db.collection(`users/${decodedClaims.uid}/clients/${client}/files`)
-                      .orderBy("type" , sortOrder as any) // Apply sorting
+    let cityRef: CollectionReference<DocumentData> = db.collection(
+      `users/${decodedClaims.uid}/clients/${client}/files`
+    );
 
-                      .offset((page - 1) * perPage) // Calculate offset
-                      .limit(perPage); // Limit per page
+    if (sort) {
+      const [sortField, sortOrder] = sort.split(".");
+      cityRef = cityRef.orderBy(sortField, sortOrder as any) as CollectionReference<DocumentData>;
+    }
 
-    const querySnapshot = await cityRef.get();
+    const totalSnapshot = await cityRef.get();
+    const total = totalSnapshot.size;
+
+    const querySnapshot = await cityRef
+      .offset((page - 1) * perPage)
+      .limit(perPage)
+      .get();
 
     const files = querySnapshot.docs.map((doc) => ({
       id: doc.id,
@@ -48,14 +58,13 @@ async function getData(page: number, perPage: number, sort: string, client: stri
     }));
 
     console.log("Fetch successful:", files);
-    return files;
+    return { data: files, total };
   } catch (error) {
     console.error("Error fetching data:", error);
-    return [];
+    return { data: [], total: 0 };
   }
 }
 
-// Next.js API route handler
 export default async function Page({
   params,
   searchParams,
@@ -69,14 +78,17 @@ export default async function Page({
 
   console.log("Params:", searchParams);
 
-  // Fetch data using parameters
-  const data = await getData(page, perPage, sort as string, params.client);
+  const { data, total } = await getData(page, perPage, sort as string, params.client);
 
   console.log("Data:", data);
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} pageCount={5}/>
+      <DataTable
+        columns={columns}
+        data={data}
+        pageCount={Math.ceil(total / perPage)}
+      />
     </div>
   );
 }
