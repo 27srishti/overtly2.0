@@ -121,7 +121,7 @@ export default async function Page({
         </div>
       </div>
       <div>
-        <Tabs defaultValue="account" className="w-full">
+        <Tabs defaultValue="account" className="w-full pb-5">
           <TabsList className="mb-5 flex flex-row justify-between ml-3">
             <div className="flex gap-8">
               <TabsTrigger
@@ -155,10 +155,10 @@ export default async function Page({
           </TabsList>
           <TabsContent
             value="account"
-            className="px-0 bg-transparent border rounded-[30px]"
+            className="bg-transparent border rounded-[30px] p-0"
           >
-            <div className="mx-auto overflow-hidden">
-              <div className="container mx-auto py-10">
+            <div className="mx-auto overflow-hidden ">
+              <div className="container mx-auto py-10 pb-0">
                 <DataTable
                   columns={columns}
                   data={data}
@@ -171,7 +171,7 @@ export default async function Page({
             value="newsarticles"
             className="px-0 bg-transparent border rounded-[30px]"
           >
-<Newsarticle/>
+            <Newsarticle />
           </TabsContent>
           <TabsContent value="knowledgegraph"> knowledge graph</TabsContent>
           <TabsContent value="mediadatabase">media database</TabsContent>

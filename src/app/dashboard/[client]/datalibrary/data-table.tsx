@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -149,21 +150,44 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter name..."
-          value={filterInput}
-          onChange={(event) => setFilterInput(event.target.value)}
-          className="max-w-sm"
-        />
+      <div className="mb-4 flex justify-end">
+        <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
+          <Input
+            placeholder="Filter name..."
+            value={filterInput}
+            onChange={(event) => setFilterInput(event.target.value)}
+            className="shadow-none border-none"
+          />
+
+          <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
+            <svg
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4 text-white"
+            >
+              <path
+                d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
+
+      <div>
+        <Table className="border-separate border-spacing-y-4">
+          <TableHeader className="bg-[#F7F7F7]">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+              <TableRow key={headerGroup.id} className="border-none">
+                {headerGroup.headers.map((header, index) => (
+                  <TableHead
+                    key={header.id}
+                    className={cn("border-none p-1", {
+                      "rounded-l-xl": index === 0,
+                      "rounded-r-xl": index === headerGroup.headers.length - 1,
+                    })}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -181,9 +205,17 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="border-none "
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                  {row.getVisibleCells().map((cell, index) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(" p-2 bg-[#D8D8D8] bg-opacity-20", {
+                        "rounded-tl-xl rounded-bl-xl": index === 0,
+                        "rounded-tr-xl rounded-br-xl":
+                          index === row.getVisibleCells().length - 1,
+                      })}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -211,6 +243,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
+            className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => handleChangeRowsPerPage(10)}
             disabled={pageSize === 10}
           >
@@ -219,6 +252,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
+             className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => handleChangeRowsPerPage(20)}
             disabled={pageSize === 20}
           >
@@ -227,16 +261,18 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
+             className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => handleChangeRowsPerPage(50)}
             disabled={pageSize === 50}
           >
             50
           </Button>
         </div>
-        <div>
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
-            size="sm"
+          size="lg"
+            className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -244,7 +280,8 @@ export function DataTable<TData, TValue>({
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            className="rounded-[30px] bg-[#636363] text-white"
+            size="lg"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >

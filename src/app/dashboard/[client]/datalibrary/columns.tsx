@@ -1,6 +1,19 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
@@ -40,6 +53,33 @@ export const columns: ColumnDef<Payment>[] = [
         >
           Type
           <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "Delete",
+    header: "Delete",
+    id: "actions",
+    cell: ({ row }) => {
+      const data = row.original;
+
+      return (
+        <Button
+          variant="outline"
+          className="w-10 h-10 rounded-full border bg-transparent shadow-none border-[#797979] border-opacity-30"
+        >
+          <svg
+            viewBox="0 0 8 8"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="min-w-[.6rem]"
+          >
+            <path
+              d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"
+              fill="black"
+            />
+          </svg>
         </Button>
       );
     },
