@@ -27,7 +27,7 @@ const Page = () => {
   const { project } = useProjectStore();
   console.log(pathname);
 
-  const totalSteps = 3; // Total number of steps excluding the last step
+  const totalSteps = 4; // Total number of steps excluding the last step
   const progressBarWidth = ((currentStep - 1) / totalSteps) * 100;
 
   let transitionDuration = "0.3s";
