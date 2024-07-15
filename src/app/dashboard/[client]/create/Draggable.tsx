@@ -1,6 +1,4 @@
 import { useSortable } from "@dnd-kit/sortable";
-import { FC } from "react";
-import styles from "./GameItem.module.css";
 import { CSS } from "@dnd-kit/utilities";
 import {
   Accordion,
@@ -8,11 +6,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/customdrop";
-import { DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { DragHandleDots2Icon, DotFilledIcon } from "@radix-ui/react-icons";
 
-export function Draggable(props: any) {
+export function Draggable({ children, fixedIndex }: { children: string; fixedIndex: number | null }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props.children });
+    useSortable({ id: children, disabled: fixedIndex !== null });
 
   return (
     <div
@@ -28,12 +26,16 @@ export function Draggable(props: any) {
           <AccordionTrigger className="">
             <div className="flex items-center gap-2 text-sm text-[#6B6B6B]">
               <div {...listeners}>
-                <DragHandleDots2Icon className="w-5 h-5 fill-[#BBBBBB] text-[#BBBBBB] cursor-grab" />
+                {fixedIndex !== null ? (
+                  <DotFilledIcon className="w-4 h-4 fill-[#BBBBBB] text-[#BBBBBB]" />
+                ) : (
+                  <DragHandleDots2Icon className="w-5 h-5 fill-[#BBBBBB] text-[#BBBBBB] cursor-grab" />
+                )}
               </div>
-              <div className="text-[12px]">{props.children}</div>
+              <div className="text-[12px]">{children}</div>
             </div>
           </AccordionTrigger>
-          <AccordionContent>{props.children}</AccordionContent>
+          <AccordionContent>{children}</AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>

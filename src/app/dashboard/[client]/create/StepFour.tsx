@@ -24,11 +24,12 @@ const StepFour = () => {
   const [fetchedValues, setFetchedValues] = useState("");
 
   const [gamesList, setGamesList] = useState([
-    "Dota 2",
-    "League of Legends",
-    "CS:GO",
-    "World of Warcraft",
-    "The Witcher 3",
+    { name: "Subject Line", fixedIndex: 0 },
+    { name: "Greeting", fixedIndex: 1 },
+    { name: "Intro", fixedIndex: null },
+    { name: "Data Backing", fixedIndex: null },
+    { name: "Hooks", fixedIndex: 4 },
+    { name: "Topic", fixedIndex: null },
   ]);
 
   const reorderGamesList = (e: DragEndEvent) => {
@@ -36,9 +37,32 @@ const StepFour = () => {
 
     if (e.active.id !== e.over.id) {
       setGamesList((gamesList) => {
-        const oldIdx = gamesList.indexOf(e.active.id.toString());
-        const newIdx = gamesList.indexOf(e.over!.id.toString());
-        return arrayMove(gamesList, oldIdx, newIdx);
+        const oldIdx = gamesList.findIndex(
+          (item) => item.name === e.active.id.toString()
+        );
+        const newIdx = gamesList.findIndex(
+          (item) => item.name === e.over!.id.toString()
+        );
+
+        // Skip reordering if either item is fixed
+        if (
+          gamesList[oldIdx].fixedIndex !== null ||
+          gamesList[newIdx].fixedIndex !== null
+        ) {
+          return gamesList;
+        }
+
+        const newGamesList = arrayMove(gamesList, oldIdx, newIdx);
+
+        // Ensure fixed items stay in their designated positions
+        newGamesList.forEach((item, index) => {
+          if (item.fixedIndex !== null && index !== item.fixedIndex) {
+            newGamesList.splice(index, 1);
+            newGamesList.splice(item.fixedIndex, 0, item);
+          }
+        });
+
+        return newGamesList;
       });
     }
   };
@@ -70,10 +94,10 @@ const StepFour = () => {
                   idea: firebasedata.selectedGeneratedIdea.idea,
                   story: firebasedata.selectedGeneratedIdea.story,
                 },
-                  media_format: firebasedata.mediaFormat,
-                  beat: firebasedata.beat,
-                  outlet: firebasedata.outlet,
-                  objective: firebasedata.objective
+                media_format: firebasedata.mediaFormat,
+                beat: firebasedata.beat,
+                outlet: firebasedata.outlet,
+                objective: firebasedata.objective,
               }),
             });
 
@@ -133,9 +157,11 @@ const StepFour = () => {
                 Customize
               </div>
               <div>
-                <SortableContext items={gamesList}>
-                  {gamesList.map((game) => (
-                    <Draggable key={game}>{game}</Draggable>
+                <SortableContext items={gamesList.map((game) => game.name)}>
+                  {gamesList.map((game, index) => (
+                    <Draggable key={game.name} fixedIndex={game.fixedIndex}>
+                      {game.name}
+                    </Draggable>
                   ))}
                 </SortableContext>
               </div>
