@@ -244,6 +244,15 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="sm"
             className="rounded-[30px] bg-[#636363] text-white"
+            onClick={() => handleChangeRowsPerPage(5)}
+            disabled={pageSize === 5}
+          >
+            5
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => handleChangeRowsPerPage(10)}
             disabled={pageSize === 10}
           >
@@ -252,7 +261,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-             className="rounded-[30px] bg-[#636363] text-white"
+            className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => handleChangeRowsPerPage(20)}
             disabled={pageSize === 20}
           >
@@ -261,7 +270,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-             className="rounded-[30px] bg-[#636363] text-white"
+            className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => handleChangeRowsPerPage(50)}
             disabled={pageSize === 50}
           >
@@ -271,7 +280,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
-          size="lg"
+            size="lg"
             className="rounded-[30px] bg-[#636363] text-white"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}

@@ -131,7 +131,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   } flex gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all`}
                 >
                   <Link
-                    href={`/dashboard/${params.client}/datalibrary?page=1&per_page=50&sort=type.desc`}
+                    href={`/dashboard/${params.client}/datalibrary?page=1&per_page=5&sort=type.desc`}
                   >
                     <div className="rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer flex gap-2">
                       <svg

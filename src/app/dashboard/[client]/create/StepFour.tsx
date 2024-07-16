@@ -28,8 +28,10 @@ const StepFour = () => {
     { name: "Greeting", fixedIndex: 1 },
     { name: "Intro", fixedIndex: null },
     { name: "Data Backing", fixedIndex: null },
-    { name: "Hooks", fixedIndex: 4 },
-    { name: "Topic", fixedIndex: null },
+    { name: "Hooks", fixedIndex: null },
+    { name: "Topics", fixedIndex: null },
+    { name: "Key Talk Points", fixedIndex: null },
+    { name: "Closing", fixedIndex: 7 },
   ]);
 
   const reorderGamesList = (e: DragEndEvent) => {
