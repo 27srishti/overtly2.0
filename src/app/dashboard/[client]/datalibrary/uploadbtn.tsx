@@ -12,8 +12,9 @@ import { auth, db, storage } from "@/lib/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import clearCachesByServerAction from "@/lib/revalidation";
 
 interface FileCollection {
   id: string;
@@ -36,6 +37,8 @@ const Uploadbtn = () => {
   const [fakeProgress, setFakeProgress] = useState<number>(0);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const params = useParams<{ client: string }>();
+  const pathname = usePathname();
+
   const handleDialogOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen) {
@@ -65,35 +68,6 @@ const Uploadbtn = () => {
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       setFiles(Array.from(e.dataTransfer.files));
       e.dataTransfer.clearData();
-    }
-  };
-
-  const fetchData = async () => {
-    if (!authUser?.uid) {
-      return [];
-    }
-
-    try {
-      const docRef = collection(
-        db,
-        `users/${authUser.uid}/clients/${params.client}/files`
-      );
-      const querySnapshot = await getDocs(docRef);
-      const files = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        url: doc.data().url,
-        name: doc.data().name,
-        originalName: doc.data().originalName,
-        type: doc.data().type,
-        createdAt: doc.data().createdAt,
-        bucketName: doc.data().bucketName,
-        filesCategory: doc.data().filesCategory,
-      }));
-      console.log("Fetch successful:", files);
-      return files;
-    } catch (error) {
-      console.error("Error retrieving files:", error);
-      return [];
     }
   };
 
@@ -179,8 +153,7 @@ const Uploadbtn = () => {
 
       try {
         await Promise.all(uploadPromises);
-        const projectsData = await fetchData();
-        setFetchedFiles(projectsData);
+        clearCachesByServerAction(pathname)
       } catch (error: any) {
         console.error("Error uploading files:", error);
       } finally {

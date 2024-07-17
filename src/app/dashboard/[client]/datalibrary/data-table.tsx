@@ -12,8 +12,19 @@ import {
   getSortedRowModel,
   PaginationState,
 } from "@tanstack/react-table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import * as React from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
   Table,
@@ -27,16 +38,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
+import { ArrowUpDown } from "lucide-react";
+import clearCachesByServerAction from "@/lib/revalidation";
+import { auth, db, storage } from "@/lib/firebase/firebase";
+import { deleteObject, ref } from "firebase/storage";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+
+export type FilesData = {
+  id: string;
+  url: string;
+  name: string;
+  originalName: string;
+  type: string;
+  createdAt: string;
+  bucketName: string;
+  filesCategory: string;
+};
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
   defaultPerPage?: number;
 }
 
-export function DataTable<TData, TValue>({
-  columns,
+export function DataTable<TData extends FilesData, TValue>({
   data,
   pageCount,
   defaultPerPage = 5,
@@ -44,9 +69,154 @@ export function DataTable<TData, TValue>({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const params = useParams<{ client: string }>();
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
+  const handleDeleteFile = async (file: FilesData) => {
+    const authUser = auth.currentUser;
+
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    const storageRef = ref(storage, file.url);
+
+    try {
+      await deleteObject(storageRef);
+      console.log("File deleted from storage:", file.name);
+    } catch (error) {
+      console.error("Error deleting file from storage:", error);
+      return;
+    }
+
+    try {
+      const docRef = collection(
+        db,
+        `users/${authUser?.uid}/clients/${params.client}/files`
+      );
+      const querySnapshot = await getDocs(docRef);
+      const docIdToDelete = querySnapshot.docs.find(
+        (doc) => doc.data().name === file.name
+      )?.id;
+
+      if (docIdToDelete) {
+        await deleteDoc(
+          doc(
+            db,
+            `users/${authUser?.uid}/clients/${params.client}/files`,
+            docIdToDelete
+          )
+        );
+        console.log("File metadata deleted from Firestore:", file.name);
+
+        const url = `https://pr-ai-99.uc.r.appspot.com/file`;
+
+        return fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await authUser?.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            client_id: params.client,
+            file_name: file.bucketName,
+          }),
+        })
+          .then((response) => {
+            console.log(response.json());
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    } catch (error) {
+      console.error("Error deleting file metadata from Firestore:", error);
+    } finally {
+      clearCachesByServerAction(pathname);
+    }
+  };
+
+  const columns: ColumnDef<FilesData>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "type",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Type
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "Delete",
+      header: "Delete",
+      id: "actions",
+      cell: ({ row }) => {
+        const data = row.original;
+
+        return (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-10 h-10 rounded-full border bg-transparent shadow-none border-[#797979] border-opacity-30"
+              >
+                <svg
+                  viewBox="0 0 8 8"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="min-w-[.6rem]"
+                >
+                  <path
+                    d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"
+                    fill="black"
+                  />
+                </svg>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your file
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => {
+                    handleDeleteFile(data);
+                  }}
+                >
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        );
+      },
+    },
+  ];
 
   // Search params
   const page = parseInt(searchParams.get("page") as string, 10) || 1;

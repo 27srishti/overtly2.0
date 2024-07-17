@@ -1,8 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { auth, db, storage } from "@/lib/firebase/firebase";
+import clearCachesByServerAction from "@/lib/revalidation";
 import { ColumnDef } from "@tanstack/react-table";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { deleteObject, ref } from "firebase/storage";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { useParams } from "next/navigation";
 
 export type Payment = {
   id: string;
@@ -14,6 +19,9 @@ export type Payment = {
   bucketName: string;
   filesCategory: string;
 };
+
+
+
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -55,6 +63,7 @@ export const columns: ColumnDef<Payment>[] = [
         <Button
           variant="outline"
           className="w-10 h-10 rounded-full border bg-transparent shadow-none border-[#797979] border-opacity-30"
+          onClick={()=>{console.log(data)}}
         >
           <svg
             viewBox="0 0 8 8"

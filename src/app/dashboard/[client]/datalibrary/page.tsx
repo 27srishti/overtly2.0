@@ -1,5 +1,4 @@
-import { Payment, columns } from "./columns";
-import { DataTable } from "./data-table";
+import { DataTable, FilesData } from "./data-table";
 import { auth } from "firebase-admin";
 import { customInitApp } from "@/lib/firebase/firebase-admin-config";
 import {
@@ -15,15 +14,16 @@ import Newsarticle from "./newsarticle";
 
 customInitApp();
 
+
 async function getData(
   page: number,
   perPage: number,
   sort: string,
   client: string,
   name: string
-): Promise<{ data: Payment[]; total: number }> {
+): Promise<{ data: FilesData[]; total: number }> {
   try {
-    const assignmentData: Payment[] = [];
+    const assignmentData: FilesData[] = [];
     const session = cookies().get("session")?.value || "";
 
     if (!session) {
@@ -160,7 +160,6 @@ export default async function Page({
             <div className="mx-auto overflow-hidden ">
               <div className="container mx-auto py-10 pb-0">
                 <DataTable
-                  columns={columns}
                   data={data}
                   pageCount={Math.ceil(total / perPage)}
                 />
