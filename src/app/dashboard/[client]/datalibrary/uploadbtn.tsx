@@ -12,7 +12,7 @@ import { auth, db, storage } from "@/lib/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 
@@ -38,7 +38,11 @@ const Uploadbtn = () => {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const params = useParams<{ client: string }>();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
+  const tab = searchParams.get("tab");
+
+  console.log("tab", tab);
   const handleDialogOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen) {
@@ -126,18 +130,34 @@ const Uploadbtn = () => {
 
               const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file`;
 
-              return fetch(url, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${await authUser?.getIdToken()}`,
-                },
-                body: JSON.stringify({
-                  client_id: params.client,
-                  bucket_name: bucketName,
-                  file_path: filePath,
-                }),
-              }).then((response) => response.json());
+              if (tab === "mediadatabase") {
+                return fetch(url, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
+                  },
+                  body: JSON.stringify({
+                    client_id: params.client,
+                    bucket_name: bucketName,
+                    file_path: filePath,
+                    file_type : tab
+                  }),
+                }).then((response) => response.json());
+              } else {
+                return fetch(url, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
+                  },
+                  body: JSON.stringify({
+                    client_id: params.client,
+                    bucket_name: bucketName,
+                    file_path: filePath,
+                  }),
+                }).then((response) => response.json());
+              }
             })
             .then((data) => {
               uploadedCount++;
@@ -153,7 +173,7 @@ const Uploadbtn = () => {
 
       try {
         await Promise.all(uploadPromises);
-        clearCachesByServerAction(pathname)
+        clearCachesByServerAction(pathname);
       } catch (error: any) {
         console.error("Error uploading files:", error);
       } finally {

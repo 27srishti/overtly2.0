@@ -11,9 +11,9 @@ import Client from "./client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Uploadbtn from "./uploadbtn";
 import Newsarticle from "./newsarticle";
+import Link from "next/link";
 
 customInitApp();
-
 
 async function getData(
   page: number,
@@ -111,8 +111,6 @@ export default async function Page({
     name as string
   );
 
-  // console.log("Data:", data);
-
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-6 mb-10">
@@ -121,15 +119,19 @@ export default async function Page({
         </div>
       </div>
       <div>
-        <Tabs defaultValue="account" className="w-full pb-5">
+        <Tabs defaultValue="documents" className="w-full pb-5">
           <TabsList className="mb-5 flex flex-row justify-between ml-3">
             <div className="flex gap-8">
-              <TabsTrigger
-                value="account"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+              <Link
+                href={`/dashboard/${params.client}/datalibrary?tab=documents`}
               >
-                Documents
-              </TabsTrigger>
+                <TabsTrigger
+                  value="documents"
+                  className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+                >
+                  Documents
+                </TabsTrigger>
+              </Link>
               <TabsTrigger
                 value="newsarticles"
                 className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
@@ -142,12 +144,17 @@ export default async function Page({
               >
                 Knowledge Graph
               </TabsTrigger>
-              <TabsTrigger
-                value="mediadatabase"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+
+              <Link
+                href={`/dashboard/${params.client}/datalibrary?tab=mediadatabase`}
               >
-                Media Database
-              </TabsTrigger>
+                <TabsTrigger
+                  value="mediadatabase"
+                  className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+                >
+                  Media Database
+                </TabsTrigger>
+              </Link>
             </div>
             <div>
               <Uploadbtn />
@@ -159,10 +166,7 @@ export default async function Page({
           >
             <div className="mx-auto overflow-hidden ">
               <div className="container mx-auto py-10 pb-0">
-                <DataTable
-                  data={data}
-                  pageCount={Math.ceil(total / perPage)}
-                />
+                <DataTable data={data} pageCount={Math.ceil(total / perPage)} />
               </div>
             </div>
           </TabsContent>
@@ -177,13 +181,5 @@ export default async function Page({
         </Tabs>
       </div>
     </div>
-
-    // <div className="container mx-auto py-10">
-    //   <DataTable
-    //     columns={columns}
-    //     data={data}
-    //     pageCount={Math.ceil(total / perPage)}
-    //   />
-    // </div>
   );
 }
