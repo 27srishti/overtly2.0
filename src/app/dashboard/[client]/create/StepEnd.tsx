@@ -1,6 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { toast } from "@/components/ui/use-toast";
 import { ArrowLeftIcon } from "lucide-react";
 
@@ -16,12 +22,24 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
             <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
               Ai Recomendede
             </div>
+
             <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
-              Add
+              <Dialog>
+                <DialogTrigger>Add</DialogTrigger>
+                <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[35vw] min-h-[28vw] p-10 px-12 pb-8">
+                  <DialogHeader>
+                    <div className="text-xl mt-3 ml-1 font-medium">
+                      Add new Client
+                    </div>
+                  </DialogHeader>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
         </div>
-        <div className="border border-[#EAEAE8] w-full rounded-[30px] items-center flex justify-center min-h-[300px]">Table</div>
+        <div className="border border-[#EAEAE8] w-full rounded-[30px] items-center flex justify-center min-h-[300px]">
+          Table
+        </div>
         <div className="w-full">
           <div className="mt-4 sm:mx-2">
             <div className="flex items-center justify-between">
