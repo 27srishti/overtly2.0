@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Uploadbtn from "./uploadbtn";
 import Newsarticle from "./newsarticle";
 import Link from "next/link";
+import { MediaTable } from "./media-table";
 
 customInitApp();
 
@@ -81,8 +82,44 @@ async function getData(
       filesCategory: doc.data().filesCategory,
     }));
 
-    console.log("Fetch successful:", files);
+    // console.log("Fetch successful:", files);
     return { data: files, total };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return { data: [], total: 0 };
+  }
+}
+
+async function getJournalists(
+  page: number,
+  perPage: number,
+  sort: string,
+  client: string,
+  name: string
+) {
+  try {
+    const assignmentData: FilesData[] = [];
+    const session = cookies().get("session")?.value || "";
+
+    if (!session) {
+      console.log("No session cookie found");
+      return { data: assignmentData, total: 0 };
+    }
+
+    const decodedClaims = await auth().verifySessionCookie(session, true);
+    if (!decodedClaims) {
+      console.log("Invalid session cookie");
+      return { data: assignmentData, total: 0 };
+    }
+
+    const db = getFirestore();
+    let cityRef = db
+      .collection(`users/${decodedClaims.uid}/clients`)
+      .doc(client);
+
+    const totalSnapshot = await cityRef.get();
+
+    return { data: totalSnapshot.data()?.journalists, total: 0 };
   } catch (error) {
     console.error("Error fetching data:", error);
     return { data: [], total: 0 };
@@ -101,9 +138,15 @@ export default async function Page({
   const sort = searchParams.sort || "";
   const name = searchParams.name || "";
 
-  console.log("Params:", searchParams);
-
   const { data, total } = await getData(
+    page,
+    perPage,
+    sort as string,
+    params.client,
+    name as string
+  );
+
+  const { data: journalistData, total: totalJournalists } = await getJournalists(
     page,
     perPage,
     sort as string,
@@ -161,7 +204,7 @@ export default async function Page({
             </div>
           </TabsList>
           <TabsContent
-            value="account"
+            value="documents"
             className="bg-transparent border rounded-[30px] p-0"
           >
             <div className="mx-auto overflow-hidden ">
@@ -177,7 +220,19 @@ export default async function Page({
             <Newsarticle />
           </TabsContent>
           <TabsContent value="knowledgegraph"> knowledge graph</TabsContent>
-          <TabsContent value="mediadatabase">media database</TabsContent>
+          <TabsContent
+            value="mediadatabase"
+            className="bg-transparent border rounded-[30px] p-0"
+          >
+            <div className="mx-auto overflow-hidden ">
+              <div className="container mx-auto py-10 pb-0">
+                <MediaTable
+                  data={journalistData}
+                  pageCount={Math.ceil(total / perPage)}
+                />
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
