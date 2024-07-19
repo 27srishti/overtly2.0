@@ -12,6 +12,7 @@ import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { ArrowLeftIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Table,
   TableBody,
