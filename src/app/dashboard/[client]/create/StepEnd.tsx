@@ -12,7 +12,7 @@ import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { ArrowLeftIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox"
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -22,6 +22,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Journalist {
   email: string;
@@ -67,6 +68,7 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
       if (clientSnapshot.exists()) {
         const journalistsData = clientSnapshot.data()?.journalists || [];
         setJournalists(journalistsData);
+        setJournalists(journalistsData);
       } else {
         setJournalists([]);
       }
@@ -103,74 +105,80 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                       Add new Client
                     </div>
                   </DialogHeader>
-                  <div>
-                    {journalists.length > 0 ? (
-                      <Table className="border-separate border-spacing-y-4">
-                        <TableHeader className="bg-[#F7F7F7]">
-                          <TableRow className="rounded-xl">
-                            <TableHead className="rounded-l-xl">
-                              Select
-                            </TableHead>
-                            <TableHead>Profile</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Industry</TableHead>
-                            <TableHead>Location</TableHead>
-                            <TableHead>Outlet</TableHead>
-                            <TableHead>Phone</TableHead>
-                            <TableHead>Publication</TableHead>
-                            <TableHead className="rounded-r-xl">
-                              Title
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {journalists.map((journalist) => (
-                            <TableRow
-                              key={journalist.email}
-                              className="bg-[#F7F7F7]"
-                            >
-                              <TableCell className="rounded-l-xl ">
-                                <input
-                                  type="checkbox"
-                                  className="ml-2"
-                                  checked={selectedJournalists.some(
-                                    (j) => j.email === journalist.email
-                                  )}
-                                  onChange={() =>
-                                    handleSelectJournalist(journalist)
-                                  }
-                                />
-                              </TableCell>
-                              <TableCell>
-                                {" "}
-                                <Avatar className="h-10 w-10">
-                                  <AvatarImage
-                                    src={"/avatar.png"}
-                                    alt="profileimage"
-                                    className="h-10 w-10"
-                                  />
-                                  <AvatarFallback>CH</AvatarFallback>
-                                </Avatar>
-                              </TableCell>
-                              <TableCell>{journalist.name}</TableCell>
-                              <TableCell>{journalist.email}</TableCell>
-                              <TableCell>{journalist.industry}</TableCell>
-                              <TableCell>{journalist.location}</TableCell>
-                              <TableCell>{journalist.outlet}</TableCell>
-                              <TableCell>{journalist.phone}</TableCell>
-                              <TableCell>{journalist.publication}</TableCell>
-                              <TableCell className="rounded-r-xl">
-                                {journalist.title}
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    ) : (
-                      <div>No data available</div>
-                    )}
-                  </div>
+                  <ScrollArea className="h-72 w-full">
+                    <div>
+                      <div>
+                        {journalists.length > 0 ? (
+                          <Table className="border-separate border-spacing-y-4">
+                            <TableHeader className="bg-[#F7F7F7]">
+                              <TableRow className="rounded-xl">
+                                <TableHead className="rounded-l-xl">
+                                  Select
+                                </TableHead>
+                                <TableHead>Profile</TableHead>
+                                <TableHead>Name</TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead>Industry</TableHead>
+                                <TableHead>Location</TableHead>
+                                <TableHead>Outlet</TableHead>
+                                <TableHead>Phone</TableHead>
+                                <TableHead>Publication</TableHead>
+                                <TableHead className="rounded-r-xl">
+                                  Title
+                                </TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {journalists.map((journalist) => (
+                                <TableRow
+                                  key={journalist.email}
+                                  className="bg-[#F7F7F7]"
+                                >
+                                  <TableCell className="rounded-l-xl ">
+                                    <input
+                                      type="checkbox"
+                                      className="ml-2"
+                                      checked={selectedJournalists.some(
+                                        (j) => j.email === journalist.email
+                                      )}
+                                      onChange={() =>
+                                        handleSelectJournalist(journalist)
+                                      }
+                                    />
+                                  </TableCell>
+                                  <TableCell>
+                                    {" "}
+                                    <Avatar className="h-10 w-10">
+                                      <AvatarImage
+                                        src={"/avatar.png"}
+                                        alt="profileimage"
+                                        className="h-10 w-10"
+                                      />
+                                      <AvatarFallback>CH</AvatarFallback>
+                                    </Avatar>
+                                  </TableCell>
+                                  <TableCell>{journalist.name}</TableCell>
+                                  <TableCell>{journalist.email}</TableCell>
+                                  <TableCell>{journalist.industry}</TableCell>
+                                  <TableCell>{journalist.location}</TableCell>
+                                  <TableCell>{journalist.outlet}</TableCell>
+                                  <TableCell>{journalist.phone}</TableCell>
+                                  <TableCell>
+                                    {journalist.publication}
+                                  </TableCell>
+                                  <TableCell className="rounded-r-xl">
+                                    {journalist.title}
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        ) : (
+                          <div>No data available</div>
+                        )}
+                      </div>
+                    </div>
+                  </ScrollArea>
                 </DialogContent>
               </Dialog>
             </div>
