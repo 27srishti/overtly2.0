@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, LucideSparkles, SparklesIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 interface Journalist {
   email: string;
@@ -94,11 +95,17 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
           <div>Media Data</div>
           <div className="flex gap-4">
             <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
-              Ai Recommended
+              <div className="text-[#545454] flex flex-row gap-3 items-center">
+                <div> Ai Recommended</div> <SparklesIcon className="h-5 w-5"/>
+              </div>
             </div>
             <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
               <Dialog>
-                <DialogTrigger>Add</DialogTrigger>
+                <DialogTrigger>
+                  <div className="text-[#545454] flex flex-row gap-2 items-center">
+                    <div>Add</div> <PlusIcon className="h-5 w-5"/>
+                  </div>
+                </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[52vw] min-h-[20vw] p-10 px-12 pb-8">
                   <DialogHeader>
                     <div className="text-xl mt-3 ml-1 font-medium">
