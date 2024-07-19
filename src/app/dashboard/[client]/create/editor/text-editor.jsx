@@ -81,7 +81,7 @@ const editorConfig = {
 
 export function EditorPage(props) {
   const [isMounted, setIsMounted] = useState(false);
-
+console.log(props)
   const { pitchEmail } = props
 
   useEffect(() => {
@@ -114,7 +114,7 @@ console.log(pitchEmail)
             <Settext pitchEmail={pitchEmail} />
           </div>
           <div className="flex items-end justify-end mt-2">
-            <CopyPlugin />
+            <CopyPlugin onNext={props.onNext} />
           </div>
         </div>
       </LexicalComposer>

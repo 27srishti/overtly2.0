@@ -112,7 +112,7 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                       Add new Client
                     </div>
                   </DialogHeader>
-                  <ScrollArea className="h-72 w-full">
+                  <ScrollArea className="h-72 w-[45vw]">
                     <div>
                       <div>
                         {journalists.length > 0 ? (

@@ -14,7 +14,14 @@ import { doc, getDoc } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const StepFour = () => {
+
+interface StepTwoProps {
+  onPrevious: () => void;
+  onNext: () => void;
+}
+
+
+const StepFour: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
   const params = useParams();
   const clientid = params.client;
   const [loading, setLoading] = useState(false);
@@ -173,7 +180,7 @@ const StepFour = () => {
       </div>
       <div className=" bg-white rounded-[30px] [box-shadow:2px_4px_19px_-1px_rgba(143,_184,_232,_0.26)] font-montserrat max-h-[75vh]">
         {!loading ? (
-          <EditorPage pitchEmail={fetchedValues} />
+          <EditorPage pitchEmail={fetchedValues} onNext={onNext} />
         ) : (
           <div className="h-[75vh] p-5 flex items-center justify-between flex-col gap-5">
             <Skeleton className="h-full w-full" />
