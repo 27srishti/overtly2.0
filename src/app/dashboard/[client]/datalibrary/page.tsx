@@ -227,7 +227,7 @@ export default async function Page({
             <div className="mx-auto overflow-hidden ">
               <div className="container mx-auto py-10 pb-0">
                 <MediaTable
-                  data={journalistData}
+                  data={journalistData || []}
                   pageCount={Math.ceil(total / perPage)}
                 />
               </div>
