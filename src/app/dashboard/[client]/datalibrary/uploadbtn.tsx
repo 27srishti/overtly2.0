@@ -61,7 +61,7 @@ const Uploadbtn = () => {
       setFiles(Array.from(e.target.files));
     }
   };
-
+//try this
   const handleFileClick = (): void => {
     fileInputRef.current?.click();
   };
