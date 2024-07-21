@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import * as React from "react";
+import { DashboardIcon, DashIcon, ListBulletIcon } from "@radix-ui/react-icons";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
@@ -70,6 +71,7 @@ export function DataTable<TData extends FilesData, TValue>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const params = useParams<{ client: string }>();
+  const [list, setlist] = React.useState(true);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -317,10 +319,49 @@ export function DataTable<TData extends FilesData, TValue>({
   const handleChangeRowsPerPage = (newPerPage: number) => {
     setPagination({ pageIndex: 0, pageSize: newPerPage });
   };
+  const handleViewModeChange = (isListView: boolean) => {
+    if (list !== isListView) {
+      // Prevent unnecessary updates
+      setlist(isListView);
+      const queryString = createQueryString({
+        view: isListView ? "list" : "folder",
+      });
+      router.push(`${pathname}?${queryString}`, { scroll: false });
+    }
+  };
 
   return (
     <div>
       <div className="mb-4 flex justify-end">
+        <div className="relative flex gap-2 bg-[#F5F6F1] rounded-full mx-6 p-1">
+          <div
+            className={`absolute top-0 bottom-0 left-0 w-1/2 bg-[#3E3E3E] bg-opacity-80 rounded-full transition-all duration-1000 ${
+              list ? "translate-x-0" : "translate-x-full"
+            }`}
+            style={{ transition: "transform 0.3s" }}
+          ></div>
+
+          <div
+            className={`flex-1 flex items-center justify-center gap-4 cursor-pointer rounded-full px-5 transition-all duration-300 ${
+              list ? "text-white" : "text-black"
+            }`}
+            onClick={() => handleViewModeChange(true)}
+            style={{ flexBasis: "50%", zIndex: 1 }}
+          >
+            List <ListBulletIcon className="w-4 h-4" />
+          </div>
+
+          <div
+            className={`flex-1 flex items-center justify-center gap-3 cursor-pointer rounded-full px-5 transition-all duration-300 ${
+              !list ? "text-white" : "text-black"
+            }`}
+            onClick={() => handleViewModeChange(false)}
+            style={{ flexBasis: "50%", zIndex: 1 }}
+          >
+            Folder <DashboardIcon className="w-4 h-4" />
+          </div>
+        </div>
+
         <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
           <Input
             placeholder="Filter name..."

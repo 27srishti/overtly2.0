@@ -13,6 +13,10 @@ import Uploadbtn from "./uploadbtn";
 import Newsarticle from "./newsarticle";
 import Link from "next/link";
 import { MediaTable } from "./media-table";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Filetypes } from "@/lib/dropdown";
+import { Icons } from "@/components/ui/Icons";
+import FolderView from "./folderview";
 
 customInitApp();
 
@@ -137,6 +141,7 @@ export default async function Page({
   const perPage = parseInt(searchParams.per_page as string, 10) || 10;
   const sort = searchParams.sort || "";
   const name = searchParams.name || "";
+  const list = searchParams.view || "";
 
   const { data, total } = await getData(
     page,
@@ -146,13 +151,14 @@ export default async function Page({
     name as string
   );
 
-  const { data: journalistData, total: totalJournalists } = await getJournalists(
-    page,
-    perPage,
-    sort as string,
-    params.client,
-    name as string
-  );
+  const { data: journalistData, total: totalJournalists } =
+    await getJournalists(
+      page,
+      perPage,
+      sort as string,
+      params.client,
+      name as string
+    );
 
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
@@ -209,7 +215,14 @@ export default async function Page({
           >
             <div className="mx-auto overflow-hidden ">
               <div className="container mx-auto py-10 pb-0">
-                <DataTable data={data} pageCount={Math.ceil(total / perPage)} />
+                {list === "list" ? (
+                  <DataTable
+                    data={data}
+                    pageCount={Math.ceil(total / perPage)}
+                  />
+                ) : (
+                  <FolderView />
+                )}
               </div>
             </div>
           </TabsContent>
