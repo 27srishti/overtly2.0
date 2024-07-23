@@ -8,11 +8,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { ArrowLeftIcon, LucideSparkles, SparklesIcon } from "lucide-react";
-import { useParams } from "next/navigation";
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { ArrowLeftIcon, SparklesIcon } from "lucide-react";
+import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -24,6 +23,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusIcon } from "@radix-ui/react-icons";
+import { auth, db } from "@/lib/firebase/firebase";
+import { toast } from "@/components/ui/use-toast";
 
 interface Journalist {
   email: string;
@@ -41,6 +42,8 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
   const [selectedJournalists, setSelectedJournalists] = useState<Journalist[]>(
     []
   );
+  const searchParams = useSearchParams();
+  const projectDocId = searchParams.get("projectid");
   const [user, setUser] = useState<User | null>(null);
   const params = useParams();
   const clientid = params.client;
@@ -68,8 +71,10 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
 
       if (clientSnapshot.exists()) {
         const journalistsData = clientSnapshot.data()?.journalists || [];
+        const selectedJournalists =
+          clientSnapshot.data()?.selectedJournalists || [];
         setJournalists(journalistsData);
-        setJournalists(journalistsData);
+        setSelectedJournalists(selectedJournalists);
       } else {
         setJournalists([]);
       }
@@ -88,6 +93,35 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
     });
   };
 
+  const updateFormDataInDB = async (formData: {
+    selectedJournalists: Journalist[];
+    currentStep: number;
+  }) => {
+    try {
+      const docRef = doc(
+        db,
+        `users/${auth.currentUser?.uid}/clients/${clientid}`
+      );
+      await updateDoc(docRef, formData).then(() => {
+        toast({
+          description: "Form data updated successfully in the database",
+          title: "Success",
+        });
+      });
+      console.log("Form data updated successfully in the database");
+    } catch (error) {
+      console.error("Error updating form data:", error);
+    }
+  };
+
+  function clickNext() {
+    const formData = {
+      selectedJournalists,
+      currentStep: 5,
+    };
+    updateFormDataInDB(formData);
+  }
+
   return (
     <div className="w-full mt-4 xl:px-52 font-montserrat">
       <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center w-full">
@@ -96,23 +130,23 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
           <div className="flex gap-4">
             <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
               <div className="text-[#545454] flex flex-row gap-3 items-center">
-                <div> Ai Recommended</div> <SparklesIcon className="h-5 w-5"/>
+                <div> Ai Recommended</div> <SparklesIcon className="h-5 w-5" />
               </div>
             </div>
             <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
               <Dialog>
                 <DialogTrigger>
                   <div className="text-[#545454] flex flex-row gap-2 items-center">
-                    <div>Add</div> <PlusIcon className="h-5 w-5"/>
+                    <div>Add</div> <PlusIcon className="h-5 w-5" />
                   </div>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[52vw] min-h-[20vw] p-10 px-12 pb-8">
+                <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[60vw] min-h-[20vw] p-10 px-12 pb-8">
                   <DialogHeader>
                     <div className="text-xl mt-3 ml-1 font-medium">
                       Add new Client
                     </div>
                   </DialogHeader>
-                  <ScrollArea className="h-72 w-[45vw]">
+                  <ScrollArea className="h-72 w-[55vw]">
                     <div>
                       <div>
                         {journalists.length > 0 ? (
@@ -248,8 +282,11 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
               >
                 <ArrowLeftIcon className="mr-3" />
               </Button>
-              <Button className="items-center rounded-full px-14 bg-[#5C5C5C] py-5">
-                Next
+              <Button
+                className="items-center rounded-full px-14 bg-[#5C5C5C] py-5"
+                onClick={clickNext}
+              >
+                Save
               </Button>
             </div>
           </div>
