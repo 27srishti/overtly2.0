@@ -140,15 +140,16 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                     <div>Add</div> <PlusIcon className="h-5 w-5" />
                   </div>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[60vw] min-h-[20vw] p-10 px-12 pb-8">
+                <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[70vw] min-h-[40vh] p-10 px-12 pb-8">
                   <DialogHeader>
                     <div className="text-xl mt-3 ml-1 font-medium">
                       Add new Client
                     </div>
                   </DialogHeader>
-                  <ScrollArea className="h-72 w-[55vw]">
-                    <div>
-                      <div>
+                  <div className="w-full flex flex-col items-center justify-center">
+                  <ScrollArea className="h-[40vh] w-[60vw]">
+                    <div >
+                      <div >
                         {journalists.length > 0 ? (
                           <Table className="border-separate border-spacing-y-4">
                             <TableHeader className="bg-[#F7F7F7]">
@@ -220,6 +221,8 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                       </div>
                     </div>
                   </ScrollArea>
+                  </div>
+
                 </DialogContent>
               </Dialog>
             </div>
