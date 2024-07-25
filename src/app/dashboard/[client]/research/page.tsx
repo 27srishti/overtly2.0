@@ -275,7 +275,7 @@ const Page = () => {
                   <DialogContent className="min-w-[80vw] min-h-[90vh] p-10 px-12 pb-8 font-montserrat">
                     <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden gap-10">
                       <div>
-                        <div className=" flex flex gap-6 p-2 rounded-[21px]  items-center">
+                        <div className="flex flex gap-6 p-2 rounded-[21px]  items-center">
                           <img
                             src="/placeholder.png"
                             className="w-[100px] h-[100px]"
@@ -310,7 +310,7 @@ const Page = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="text-[13px] px-10 py-10 font-medium leading-5 text-[#6F6F6F]">
+                        <div className="text-[13px] px-4 py-10 font-medium leading-5 text-[#6F6F6F]">
                           This week, Ilya Sutskever launched a new AI
                           company, Safe Superintelligence Inc. (SSI), just one
                           month after formally leaving OpenAI. Sutskever,
