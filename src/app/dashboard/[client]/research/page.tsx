@@ -29,7 +29,7 @@ import { useParams } from "next/navigation";
 import { auth } from "@/lib/firebase/firebase";
 import Link from "next/link";
 interface Article {
-  title?: string;
+  title: string;
   imageUrl?: string;
   timeAgo?: string;
   summary?: string;
@@ -215,13 +215,17 @@ const Page = () => {
                       <div className="flex flex-col gap-2 w-full">
                         <div className="flex flex-row justify-between pr-10">
                           <div className="font-semibold mt-2 text-[#2C2C2C]">
-                            {article.title}
+                            {article.title.length > 60
+                              ? article.title.slice(0, 60) + "..."
+                              : article.title}
                           </div>
+
                           <div className="flex flex-row gap-2 items-center gap-5">
                             <div className="flex flex-col gap-2">
                               <div className="flex gap-2 items-center text-[.8rem] text-center text-[#2C5694]">
                                 <Link href={article.link}>
-                                {article.source}</Link>
+                                  {article.source}
+                                </Link>
                               </div>
                             </div>
                             <div className="flex gap-1 items-center text-[.8rem] text-center">
@@ -252,7 +256,10 @@ const Page = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="text-justify text-sm pr-14">{article.summary || "This week, Ilya Sutskever launched a new AI company, Safe Superintelligence Inc. (SSI), just one month after formally leaving OpenAI. Sutskever, alongside Jan Leike, was integral to OpenAI’s efforts to improve AI safety with the rise of “superintelligent” AI systems. Yet both Sutskever and Leike left the company after a dramatic falling-out with leadership over how to approach AI safety." }</div>
+                        <div className="text-justify text-sm pr-14">
+                          {article.summary ||
+                            "This week, ilya Sutskever launched..."}
+                        </div>
                       </div>
                     </div>
                   </DialogTrigger>
