@@ -275,122 +275,135 @@ const Page = () => {
                   <DialogContent className="min-w-[80vw] min-h-[90vh] p-10 px-12 pb-8 font-montserrat">
                     <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden gap-10">
                       <div>
-                        {/* Detailed Article View */}
-                        <Tabs
-                          defaultValue="Trends"
-                          className="w-full font-normal p-5 mt-5"
-                        >
-                          <TabsList className="mb-5 flex flex-row justify-between ml-3">
-                            <div className="flex gap-8">
-                              <TabsTrigger
-                                value="Trends"
-                                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                              >
-                                Summary
-                              </TabsTrigger>
-                              <TabsTrigger
-                                value="Competition"
-                                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                              >
-                                Questions
-                              </TabsTrigger>
-                              <TabsTrigger
-                                value="EconomicNews"
-                                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                              >
-                                Related Articles
-                              </TabsTrigger>
-                              <TabsTrigger
-                                value="Industry"
-                                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                              >
-                                Industry
-                              </TabsTrigger>
+                        <div className=" flex flex gap-6 p-2 rounded-[21px]  items-center">
+                          <img
+                            src="/placeholder.png"
+                            className="w-[100px] h-[100px]"
+                          ></img>
+                          <div className="flex flex-col gap-2 w-full justify-start">
+                            <div className="flex flex-row justify-between items-center">
+                              <div className="font-semibold text-2xl text-[#2C2C2C] font-montserrat">
+                                Lorem ipsum dolor sit amet consectetur
+                                adipisicing elit.
+                              </div>
+                              <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
+                                Full Article
+                                <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
+                              </div>
                             </div>
-                          </TabsList>
-                        </Tabs>
-                        <div className="font-normal text-x">
-                          {article.detailedContent}
+                            <div className="flex gap-3 items-center text-[.8rem] text-center">
+                              <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
+                                tag 1
+                              </div>
+                              <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
+                                tag 1
+                              </div>
+                              <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
+                                tag 1
+                              </div>
+                              <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
+                                tag 1
+                              </div>
+                              <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
+                                tag 1
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-[13px] px-10 py-10 font-medium leading-5 text-[#6F6F6F]">
+                          This week, Ilya Sutskever launched a new AI
+                          company, Safe Superintelligence Inc. (SSI), just one
+                          month after formally leaving OpenAI. Sutskever,
+                          alongside Jan Leike, was integral to OpenAI’s efforts
+                          to improve AI safety with the rise of
+                          “superintelligent” AI systems. Yet both Sutskever and
+                          Leike left the company after a dramatic falling-out
+                          with leadership over how to approach AI safety. 
+                        </div>
+                        <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
+                          Summary :
+                        </div>
+                        <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E]">
+                          ` If the problem seems to be coming from your MacBook
+                          itself, here are some steps you can take to address
+                          the issue: 1. **Check the Power Adapter**: Inspect
+                          your MacBook’s power adapter for any signs of damage.
+                          If the cable or the adapter itself is damaged,
+                          consider replacing it. 2. **Use a Different Outlet**:
+                          Try plugging your MacBook into a different outlet,
+                          preferably one that you know is properly grounded. 3.
+                          **Test with a Different Power Adapter**: If possible,
+                          borrow a compatible power adapter from another MacBook
+                          to see if the issue persists. This can help determine
+                          if the problem is with the adapter or the MacBook. 4.
+                          **Use a Grounded Power Adapter**: Some power adapters
+                          come with a detachable plug. Ensure you are using the
+                          grounded plug version if available. 5. **Check for
+                          Software Updates**: Ensure your MacBook is running the
+                          latest version of macOS. Sometimes, software updates
+                          can address hardware-related issues. 6. **Reset the
+                          SMC (System Management Controller)**: Resetting the
+                          SMC can sometimes resolve power-related issues on
+                          MacBooks. Here’s how you can reset it: - Shut down
+                          your MacBook. - On the built-in keyboard, press and
+                          hold the Shift, Control, and Option keys on the left
+                          side, then press the power button at the same time. -
+                          Hold these keys and the power button for 10 seconds. -
+                          Release all keys, then press the power button to turn
+                          on your MacBook. `
                         </div>
                       </div>
                       <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-2 bg-[#D9D9D9] p-5 rounded-[30px] bg-opacity-20">
+                        <div className="flex flex-col gap-4 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">
                           <div className="flex justify-between text-center items-center">
-                            <div>{article.sourceName}</div>
-                            <div className="p-2 px-4 bg-[#ffff] rounded-full">
-                              +
+                            <div className="text-[#525252] text-[15px]">
+                              Author : Mango Ramen
                             </div>
                           </div>
-                          <div className="flex gap-2 text-xs text-center item-center">
-                            <Mail className="text-[#6B6B6B] w-5 h-5" />
-                            {article.email}
-                          </div>
-                          <div className="flex gap-2 text-xs text-center item-center">
-                            <Newspaper className="text-[#6B6B6B] w-5 h-5" />{" "}
-                            {article.timestamp}
-                          </div>
-                          <div className="text-[#6B6B6B] text-sm">
-                            {article.additionalInfo}
-                          </div>
-                          <div className="flex justify-end">
-                            <div className="flex gap-2 text-xs text-center items-center bg-[#D9D9D9] bg-opacity-45 rounded-[30px] p-2">
-                              More details{" "}
-                              <svg
-                                width="10"
-                                height="10"
-                                viewBox="0 0 7 7"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M4.59375 1H6.46968V2.875"
-                                  stroke="black"
-                                  strokeOpacity="0.41"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M3.34375 6L1.46945 6L1.46875 4.125"
-                                  stroke="black"
-                                  strokeOpacity="0.41"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
+                          <div className="flex gap-2 flex-col">
+                            <div className="flex gap-2 text-[10px] items-center">
+                              <Mail className="text-[#6B6B6B] w-3 h-3" />
+                              mangoramen@gmail.com
                             </div>
+                            <div className="flex gap-2 text-[10px] items-center">
+                              <Newspaper className="text-[#6B6B6B] w-3 h-3" />
+                              Times Stamp
+                            </div>
+                          </div>
+                          <div className="text-[#6B6B6B] text-[10px]">
+                            Works on industry domain industry, industry domain
+                            industry, industry domain industry, industry domain
+                            industry, industry domain industry, industry domain
+                            industry.
                           </div>
                         </div>
                         <div className="flex flex-col gap-10 bg-[#D9D9D9] p-5 rounded-[30px] bg-opacity-20 h-full">
                           <div className="w-full">
-                            <div className="text-[#6B6B6B] text-[10px] mb-2">
+                            <div className="text-[#6B6B6B] text-[13px] mb-2">
                               Sentiment
                             </div>
-                            <Slider
-                              min={70}
-                              max={400}
-                              defaultValue={[250]}
-                              className="bg-[#F0F0F0] mb-2"
-                            />
-                            <div className="flex justify-between text-[#6B6B6B] text-[8px] mt-1">
-                              <div>70</div>
-                              <div>150</div>
-                              <div>500</div>
+                            <div className="flex justify-center items-center w-full">
+                              <div className="relative w-full bg-[linear-gradient(90deg,_rgba(223,_223,_223,_0.2)_0%,_rgba(60,_60,_60,_0.2)_100%)] rounded-full h-2">
+                                <div className="absolute inset-y-0  top-[-10px] left-3/4 transform -translate-x-1/2 bg-white border-2 border-[#EFEFEF] rounded-full h-8 w-8 flex items-center justify-center">
+                                  <span className="text-sm font-semibold">
+                                    0.5
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <div className="w-full">
-                            <div className="text-[#6B6B6B] text-[10px] mb-2">
+                            <div className="text-[#6B6B6B] text-[13px] mb-2">
                               Social Score
                             </div>
-                            <Slider
-                              min={70}
-                              max={400}
-                              defaultValue={[250]}
-                              className="bg-[#F0F0F0] mb-2"
-                            />
-                            <div className="flex justify-between text-[#6B6B6B] text-[8px] mt-1">
-                              <div>70</div>
-                              <div>150</div>
-                              <div>500</div>
+                            <div className="flex justify-center items-center w-full">
+                              <div className="relative w-full bg-[linear-gradient(90deg,_rgba(223,_223,_223,_0.2)_0%,_rgba(60,_60,_60,_0.2)_100%)] rounded-full h-2">
+                                <div className="absolute inset-y-0  top-[-10px] left-3/4 transform -translate-x-1/2 bg-white border-2 border-[#EFEFEF] rounded-full h-8 w-8 flex items-center justify-center">
+                                  <span className="text-sm font-semibold">
+                                    9.0
+                                  </span>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -399,244 +412,6 @@ const Page = () => {
                   </DialogContent>
                 </Dialog>
               ))}
-              <Dialog>
-                <DialogTrigger>
-                  <div className="bg-[#D8D8D8] bg-opacity-20 flex flex gap-6 p-2 rounded-[21px]">
-                    <img src="/placeholder.png"></img>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex flex-row justify-between pr-10">
-                        <div className="font-semibold mt-2">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Dolore, impedit.
-                        </div>
-
-                        <div className="flex gap-2 items-center text-[.8rem] text-center">
-                          <svg
-                            width="17"
-                            height="17"
-                            viewBox="0 0 17 17"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <g clip-path="url(#clip0_1455_2103)">
-                              <path
-                                d="M8.49422 1.4165C4.58422 1.4165 1.41797 4.58984 1.41797 8.49984C1.41797 12.4098 4.58422 15.5832 8.49422 15.5832C12.4113 15.5832 15.5846 12.4098 15.5846 8.49984C15.5846 4.58984 12.4113 1.4165 8.49422 1.4165ZM8.5013 14.1665C5.37047 14.1665 2.83464 11.6307 2.83464 8.49984C2.83464 5.369 5.37047 2.83317 8.5013 2.83317C11.6321 2.83317 14.168 5.369 14.168 8.49984C14.168 11.6307 11.6321 14.1665 8.5013 14.1665Z"
-                                fill="#858383"
-                              />
-                              <path
-                                d="M8.85547 4.9585H7.79297V9.2085L11.5117 11.4397L12.043 10.5685L8.85547 8.67725V4.9585Z"
-                                fill="#858383"
-                              />
-                            </g>
-                            <defs>
-                              <clipPath id="clip0_1455_2103">
-                                <rect width="17" height="17" fill="white" />
-                              </clipPath>
-                            </defs>
-                          </svg>
-                          10 hours back
-                        </div>
-                      </div>
-                      <div className="text-justify">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Dolore, impedit. Lorem ipsum dolor sit, amet consectetur
-                        adipisicing elit. Cum, eaque quis. ue quis ue quis
-                        Quisquam eaque velit tenetur sed aliquid, alias impedit
-                        pariatur enim. Repellat minus necessitatibus voluptatem
-                        unde, delectus neque tempora voluptate!
-                      </div>
-                    </div>
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="min-w-[80vw] min-h-[90vh] p-10 px-12 pb-8 font-montserrat">
-                  <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden gap-10">
-                    <div>
-                      <div className=" flex flex gap-6 p-2 rounded-[21px]  items-center">
-                        <img
-                          src="/placeholder.png"
-                          className="w-[100px] h-[100px]"
-                        ></img>
-                        <div className="flex flex-col gap-2">
-                          <div className="flex flex-row justify-between pr-10">
-                            <div className="font-semibold  mt-2  capitalize text-2xl">
-                              Lorem ipsum dolor sit amet consectetur adipisicing
-                              elit.
-                            </div>
-                            <div className="flex gap-2 items-center text-xs text-center bg-[#6B6B6B] bg-opacity-20 py-1  px-3 rounded-[30px] ">
-                              Full article
-                              <OpenInNewWindowIcon className="w-4 stroke-[#6B6B6B]" />
-                            </div>
-                          </div>
-                          <div className="text-justify  text-xs mb-3">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Dolore, impedit. Lorem ipsum dolor sit, amet
-                            consectetur adipisicing elit. Cum, eaque quis. ue
-                            quis ue quis Quisquam eaque velit tenetur sed
-                            aliquid, alias impedit pariatur enim. consectetur
-                            adipisicing elit. Cum, eaque quis. ue quis ue quis
-                            Quisquam eaque velit tenetur sed aliquid, alias
-                            impedit pariatur enim.
-                          </div>
-                          <div className="flex gap-3 items-center text-[.8rem] text-center">
-                            <div className="bg-[#6B6B6B] bg-opacity-20 py-1  px-6 rounded-[30px] ">
-                              tag 1
-                            </div>
-                            <div className="bg-[#6B6B6B] bg-opacity-20 py-1  px-6 rounded-[30px] ">
-                              tag 1
-                            </div>
-                            <div className="bg-[#6B6B6B] bg-opacity-20 py-1  px-6 rounded-[30px] ">
-                              tag 1
-                            </div>
-                            <div className="bg-[#6B6B6B] bg-opacity-20 py-1  px-6 rounded-[30px] ">
-                              tag 1
-                            </div>
-                            <div className="bg-[#6B6B6B] bg-opacity-20 py-1  px-6 rounded-[30px] ">
-                              tag 1
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <Tabs
-                        defaultValue="Trends"
-                        className="w-full font-normal p-5 mt-5"
-                      >
-                        <TabsList className="mb-5 flex flex-row justify-between ml-3">
-                          <div className="flex gap-8">
-                            <TabsTrigger
-                              value="Trends"
-                              className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                            >
-                              Summery
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="Competition"
-                              className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                            >
-                              Questions
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="EconomicNews"
-                              className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                            >
-                              Related Articles
-                            </TabsTrigger>
-                            <TabsTrigger
-                              value="Industry"
-                              className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border"
-                            >
-                              Questions
-                            </TabsTrigger>
-                          </div>
-                        </TabsList>
-                      </Tabs>
-                      <div className="font-normal text-x\">
-                        Lorem ipsum dolor, sit amet consectetur adipisicing
-                        elit. Voluptate ipsa, fugiat, incidunt sapiente
-                        mollitia, dolor id facilis quam similique blanditiis sit
-                        eos molestias cum quasi ab sint cumque iure error itaque
-                        adipisci harum hic accusamus facere. Doloremque
-                        voluptatum, aperiam obcaecati porro consequuntur quasi
-                        earum omnis dolorem eius. Ea dignissimos, fugiat qui
-                        blanditiis facilis quaerat similique quibusdam aliquid
-                        totam? Autem sequi laborum dolor recusandae iste nobis
-                        nemo, aspernatur quaerat expedita earum, at provident
-                        magni, libero consectetur dignissimos vel atque sint
-                        quasi vitae natus totam? Sunt itaque corporis ab, ad
-                        officiis vero nihil. Laudantium ad doloribus iste
-                        aspernatur quidem magni. Illo, officia? Lorem, ipsum
-                        dolor sit amet consectetur adipisicing elit. Error
-                        repellendus minima possimus vel. Dignissimos repellendus
-                        nam molestiae aliquid? Aspernatur, commodi!
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-4">
-                      <div className="flex flex-col gap-2 bg-[#D9D9D9] p-5 rounded-[30px] bg-opacity-20">
-                        <div className="flex justify-between text-center items-center">
-                          <div> Mango Ramen</div>
-                          <div className="p-2 px-4 bg-[#ffff] rounded-full">
-                            +
-                          </div>
-                        </div>
-                        <div className="flex gap-2 text-xs text-center item-center">
-                          {" "}
-                          <Mail className="text-[#6B6B6B] w-5 h-5" />{" "}
-                          xyz.gmail.com
-                        </div>
-                        <div className="flex gap-2 text-xs text-center item-center">
-                          {" "}
-                          <Newspaper className="text-[#6B6B6B] w-5 h-5" /> Times
-                          Stamp
-                        </div>
-                        <div className="text-[#6B6B6B] text-sm">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Rerum, reprehenderit?
-                        </div>
-                        <div className="flex justify-end">
-                          <div className="flex gap-2 text-xs text-center items-center bg-[#D9D9D9] bg-opacity-45 rounded-[30px] p-2  ">
-                            More details{" "}
-                            <svg
-                              width="10"
-                              height="10"
-                              viewBox="0 0 7 7"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M4.59375 1H6.46968V2.875"
-                                stroke="black"
-                                stroke-opacity="0.41"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              />
-                              <path
-                                d="M3.34375 6L1.46945 6L1.46875 4.125"
-                                stroke="black"
-                                stroke-opacity="0.41"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-10 bg-[#D9D9D9] p-5 rounded-[30px] bg-opacity-20 h-full">
-                        <div className="w-full">
-                          <div className="text-[#6B6B6B] text-[10px] mb-2">
-                            Sentiment
-                          </div>
-                          <Slider
-                            min={70}
-                            max={400}
-                            defaultValue={[250]}
-                            className="bg-[#F0F0F0] mb-2"
-                          />
-                          <div className="flex justify-between text-[#6B6B6B] text-[8px] mt-1 ">
-                            <div>70</div>
-                            <div>150</div>
-                            <div>500</div>
-                          </div>
-                        </div>
-                        <div className="w-full">
-                          <div className="text-[#6B6B6B] text-[10px] mb-2">
-                            Social Score
-                          </div>
-                          <Slider
-                            min={70}
-                            max={400}
-                            defaultValue={[250]}
-                            className="bg-[#F0F0F0] mb-2"
-                          />
-                          <div className="flex justify-between text-[#6B6B6B] text-[8px] mt-1 ">
-                            <div>70</div>
-                            <div>150</div>
-                            <div>500</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog>
             </div>
           </div>
         </div>
