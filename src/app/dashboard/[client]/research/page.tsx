@@ -223,7 +223,7 @@ const Page = () => {
 
                       <div className="flex flex-col gap-2 w-full">
                         <div className="flex flex-row justify-between pr-10">
-                          <div className="font-semibold mt-2 text-[#2C2C2C]">
+                          <div className="font-semibold mt-2 text-[#2C2C2C] text-[15px]">
                             {article.title.length > 60
                               ? article.title.slice(0, 60) + "..."
                               : article.title}
@@ -231,7 +231,7 @@ const Page = () => {
 
                           <div className="flex flex-row gap-2 items-center gap-5">
                             <div className="flex flex-col gap-2">
-                              <div className="flex gap-2 items-center text-[.8rem] text-center text-[#2C5694]">
+                              <div className="flex gap-2 items-center text-[.8rem] text-center text-[#2C5694] ">
                                 <Link href={article.link}>
                                   {article.source}
                                 </Link>
@@ -265,7 +265,7 @@ const Page = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="text-justify text-sm pr-14">
+                        <div className="text-justify text-sm pr-14 text-[12px] text-[#6F6F6F]">
                           {article.summary ||
                             "This week, ilya Sutskever launched..."}
                         </div>
