@@ -27,6 +27,7 @@ import { toast } from "@/components/ui/use-toast";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useParams } from "next/navigation";
 import { auth } from "@/lib/firebase/firebase";
+import Link from "next/link";
 interface Article {
   title?: string;
   imageUrl?: string;
@@ -37,6 +38,9 @@ interface Article {
   email?: string;
   timestamp?: string;
   additionalInfo?: string;
+  link: string;
+  source?: string;
+  date?: string;
 }
 
 const Page = () => {
@@ -57,7 +61,7 @@ const Page = () => {
       }
     });
     return () => unsubscribe();
-  }, [authUser]);
+  }, []);
 
   async function fetchNewsArticles(user: User) {
     try {
@@ -78,6 +82,7 @@ const Page = () => {
       }
 
       const data = await response.json();
+      console.log(data);
       setArticles(data.articles);
     } catch (error) {
       toast({
@@ -204,34 +209,50 @@ const Page = () => {
                     <div className="bg-[#D8D8D8] bg-opacity-20 flex flex gap-6 p-2 rounded-[21px]">
                       <img
                         src={article.imageUrl || "/placeholder.png"}
+                        className="w-28 h-28 aspect-square rounded-[18px]  object-cover"
                         alt="Article Thumbnail"
                       />
-                      <div className="flex flex-col gap-2">
+                      <div className="flex flex-col gap-2 w-full">
                         <div className="flex flex-row justify-between pr-10">
-                          <div className="font-semibold mt-2">
-                            {article?.title}
+                          <div className="font-semibold mt-2 text-[#2C2C2C]">
+                            {article.title}
                           </div>
-                          <div className="flex gap-2 items-center text-[.8rem] text-center">
-                            <svg
-                              width="17"
-                              height="17"
-                              viewBox="0 0 17 17"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <g clipPath="url(#clip0_1455_2103)">
-                                {/* SVG Path */}
-                              </g>
-                              <defs>
-                                <clipPath id="clip0_1455_2103">
-                                  <rect width="17" height="17" fill="white" />
-                                </clipPath>
-                              </defs>
-                            </svg>
-                            {article.timeAgo}
+                          <div className="flex flex-row gap-2 items-center gap-5">
+                            <div className="flex flex-col gap-2">
+                              <div className="flex gap-2 items-center text-[.8rem] text-center text-[#2C5694]">
+                                <Link href={article.link}>
+                                {article.source}</Link>
+                              </div>
+                            </div>
+                            <div className="flex gap-1 items-center text-[.8rem] text-center">
+                              <svg
+                                width="17"
+                                height="17"
+                                viewBox="0 0 17 17"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <g clip-path="url(#clip0_1455_2103)">
+                                  <path
+                                    d="M8.49422 1.4165C4.58422 1.4165 1.41797 4.58984 1.41797 8.49984C1.41797 12.4098 4.58422 15.5832 8.49422 15.5832C12.4113 15.5832 15.5846 12.4098 15.5846 8.49984C15.5846 4.58984 12.4113 1.4165 8.49422 1.4165ZM8.5013 14.1665C5.37047 14.1665 2.83464 11.6307 2.83464 8.49984C2.83464 5.369 5.37047 2.83317 8.5013 2.83317C11.6321 2.83317 14.168 5.369 14.168 8.49984C14.168 11.6307 11.6321 14.1665 8.5013 14.1665Z"
+                                    fill="#858383"
+                                  />
+                                  <path
+                                    d="M8.85547 4.9585H7.79297V9.2085L11.5117 11.4397L12.043 10.5685L8.85547 8.67725V4.9585Z"
+                                    fill="#858383"
+                                  />
+                                </g>
+                                <defs>
+                                  <clipPath id="clip0_1455_2103">
+                                    <rect width="17" height="17" fill="white" />
+                                  </clipPath>
+                                </defs>
+                              </svg>
+                              {article.date}
+                            </div>
                           </div>
                         </div>
-                        <div className="text-justify">{article.summary}</div>
+                        <div className="text-justify text-sm pr-14">{article.summary || "This week, Ilya Sutskever launched a new AI company, Safe Superintelligence Inc. (SSI), just one month after formally leaving OpenAI. Sutskever, alongside Jan Leike, was integral to OpenAI’s efforts to improve AI safety with the rise of “superintelligent” AI systems. Yet both Sutskever and Leike left the company after a dramatic falling-out with leadership over how to approach AI safety." }</div>
                       </div>
                     </div>
                   </DialogTrigger>
