@@ -207,11 +207,20 @@ const Page = () => {
                 <Dialog key={index}>
                   <DialogTrigger>
                     <div className="bg-[#D8D8D8] bg-opacity-20 flex flex gap-6 p-2 rounded-[21px]">
-                      <img
-                        src={article.imageUrl || "/placeholder.png"}
-                        className="w-28 h-28 aspect-square rounded-[18px]  object-cover"
-                        alt="Article Thumbnail"
-                      />
+                      <div className="relative w-30 h-30 aspect-square">
+                        <img
+                          src={article.imageUrl || "/placeholder.png"}
+                          className="w-full h-full rounded-[18px] object-cover"
+                          alt="Article Thumbnail"
+                        />
+                        <div
+                          className="absolute inset-0 rounded-[18px] pointer-events-none"
+                          style={{
+                            border: "5px solid rgba(255, 255, 255, 0.5)",
+                          }}
+                        ></div>
+                      </div>
+
                       <div className="flex flex-col gap-2 w-full">
                         <div className="flex flex-row justify-between pr-10">
                           <div className="font-semibold mt-2 text-[#2C2C2C]">
