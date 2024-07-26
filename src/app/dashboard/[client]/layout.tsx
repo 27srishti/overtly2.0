@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="gradientbg">
-      <div className="sticky top-0 backdrop-filter backdrop-blur-lg border-b pb-2">
+      <div className="sticky top-0 backdrop-filter backdrop-blur-lg border-b pb-2 z-10">
         <div className="z-50 pt-4 px-4 sm:px-6 md:px-10 font-montserrat">
           <div className="bg-opacity-20 py-2">
             <div className="container flex flex-wrap justify-center xl:justify-between items-center">

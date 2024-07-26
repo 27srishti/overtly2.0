@@ -128,101 +128,100 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
         <div className="flex w-full items-center gap-3 text-[#545454] font-medium justify-between text-xl">
           <div>Media Data</div>
           <div className="flex gap-4">
-            <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
-              <div className="text-[#545454] flex flex-row gap-3 items-center">
-                <div> Ai Recommended</div> <SparklesIcon className="h-5 w-5" />
+            <div className="text-[#545454] bg-[#EAEAE8] p-[.7rem] rounded-[30px] px-3 text-sm">
+              <div className="text-[#545454] flex flex-row gap-3 items-center font-montserrat text-[12px] font-medium px-3">
+                <div> AI Recomended</div> <SparklesIcon className="h-4 w-4" />
               </div>
             </div>
-            <div className="text-[#545454] bg-[#EAEAE8] p-2 rounded-[30px] px-3 text-sm">
+            <div className="text-[#545454] bg-[#EAEAE8] p-[.7rem] rounded-[30px] px-3 text-sm">
               <Dialog>
                 <DialogTrigger>
-                  <div className="text-[#545454] flex flex-row gap-2 items-center">
-                    <div>Add</div> <PlusIcon className="h-5 w-5" />
+                  <div className="text-[#545454] flex flex-row gap-3 items-center font-montserrat text-[13px] font-medium px-3">
+                    <div>Add</div> <PlusIcon className="h-4 w-4" />
                   </div>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[70vw] min-h-[40vh] p-10 px-12 pb-8">
+                <DialogContent className="max-w-[90vw] max-h-[90vh] p-10 px-12 pb-8 font-montserrat pt-5">
                   <DialogHeader>
                     <div className="text-xl mt-3 ml-1 font-medium">
-                      Add new Client
+                      Select Jounalist
                     </div>
                   </DialogHeader>
-                  <div className="w-full flex flex-col items-center justify-center">
-                  <ScrollArea className="h-[40vh] w-[60vw]">
-                    <div >
-                      <div >
-                        {journalists.length > 0 ? (
-                          <Table className="border-separate border-spacing-y-4">
-                            <TableHeader className="bg-[#F7F7F7]">
-                              <TableRow className="rounded-xl">
-                                <TableHead className="rounded-l-xl">
-                                  Select
-                                </TableHead>
-                                <TableHead>Profile</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Industry</TableHead>
-                                <TableHead>Location</TableHead>
-                                <TableHead>Outlet</TableHead>
-                                <TableHead>Phone</TableHead>
-                                <TableHead>Publication</TableHead>
-                                <TableHead className="rounded-r-xl">
-                                  Title
-                                </TableHead>
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {journalists.map((journalist) => (
-                                <TableRow
-                                  key={journalist.email}
-                                  className="bg-[#F7F7F7]"
-                                >
-                                  <TableCell className="rounded-l-xl ">
-                                    <input
-                                      type="checkbox"
-                                      className="ml-2"
-                                      checked={selectedJournalists.some(
-                                        (j) => j.email === journalist.email
-                                      )}
-                                      onChange={() =>
-                                        handleSelectJournalist(journalist)
-                                      }
-                                    />
-                                  </TableCell>
-                                  <TableCell>
-                                    {" "}
-                                    <Avatar className="h-10 w-10">
-                                      <AvatarImage
-                                        src={"/avatar.png"}
-                                        alt="profileimage"
-                                        className="h-10 w-10"
-                                      />
-                                      <AvatarFallback>CH</AvatarFallback>
-                                    </Avatar>
-                                  </TableCell>
-                                  <TableCell>{journalist.name}</TableCell>
-                                  <TableCell>{journalist.email}</TableCell>
-                                  <TableCell>{journalist.industry}</TableCell>
-                                  <TableCell>{journalist.location}</TableCell>
-                                  <TableCell>{journalist.outlet}</TableCell>
-                                  <TableCell>{journalist.phone}</TableCell>
-                                  <TableCell>
-                                    {journalist.publication}
-                                  </TableCell>
-                                  <TableCell className="rounded-r-xl">
-                                    {journalist.title}
-                                  </TableCell>
+                  <div className="w-full flex flex-col items-center justify-center border rounded-[30px] p-6">
+                    <ScrollArea className="max-h-[70vh] w-full">
+                      <div>
+                        <div>
+                          {journalists.length > 0 ? (
+                            <Table className="border-separate border-spacing-y-4">
+                              <TableHeader className="bg-[#F7F7F7]">
+                                <TableRow className="rounded-xl">
+                                  <TableHead className="rounded-l-xl">
+                                    Select
+                                  </TableHead>
+                                  <TableHead>Profile</TableHead>
+                                  <TableHead>Name</TableHead>
+                                  <TableHead>Email</TableHead>
+                                  <TableHead>Industry</TableHead>
+                                  <TableHead>Location</TableHead>
+                                  <TableHead>Outlet</TableHead>
+                                  <TableHead>Phone</TableHead>
+                                  <TableHead>Publication</TableHead>
+                                  <TableHead className="rounded-r-xl">
+                                    Title
+                                  </TableHead>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        ) : (
-                          <div>No data available</div>
-                        )}
+                              </TableHeader>
+                              <TableBody>
+                                {journalists.map((journalist) => (
+                                  <TableRow
+                                    key={journalist.email}
+                                    className="bg-[#F7F7F7]"
+                                  >
+                                    <TableCell className="rounded-l-xl ">
+                                      <input
+                                        type="checkbox"
+                                        className="ml-2"
+                                        checked={selectedJournalists.some(
+                                          (j) => j.email === journalist.email
+                                        )}
+                                        onChange={() =>
+                                          handleSelectJournalist(journalist)
+                                        }
+                                      />
+                                    </TableCell>
+                                    <TableCell>
+                                      {" "}
+                                      <Avatar className="h-10 w-10">
+                                        <AvatarImage
+                                          src={"/profile.png"}
+                                          alt="profileimage"
+                                          className="h-10 w-10"
+                                        />
+                                        <AvatarFallback>CH</AvatarFallback>
+                                      </Avatar>
+                                    </TableCell>
+                                    <TableCell>{journalist.name}</TableCell>
+                                    <TableCell>{journalist.email}</TableCell>
+                                    <TableCell>{journalist.industry}</TableCell>
+                                    <TableCell>{journalist.location}</TableCell>
+                                    <TableCell>{journalist.outlet}</TableCell>
+                                    <TableCell>{journalist.phone}</TableCell>
+                                    <TableCell>
+                                      {journalist.publication}
+                                    </TableCell>
+                                    <TableCell className="rounded-r-xl">
+                                      {journalist.title}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          ) : (
+                            <div>No data available</div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </ScrollArea>
+                    </ScrollArea>
                   </div>
-
                 </DialogContent>
               </Dialog>
             </div>
@@ -251,7 +250,7 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                       {" "}
                       <Avatar className="h-10 w-10">
                         <AvatarImage
-                          src={"/avatar.png"}
+                          src={"/profile.png"}
                           alt="profileimage"
                           className="h-10 w-10"
                         />

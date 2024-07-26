@@ -181,12 +181,12 @@ export default async function Page({
                   Documents
                 </TabsTrigger>
               </Link>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="newsarticles"
                 className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
               >
                 News Articles
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger
                 value="knowledgegraph"
                 className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"

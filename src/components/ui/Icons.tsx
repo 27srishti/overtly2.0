@@ -414,6 +414,9 @@ export const Icons = {
       />
     </svg>
   ),
+
+
+  
 };
 
 export function EosIconsThreeDotsLoading(props: SVGProps<SVGSVGElement>) {

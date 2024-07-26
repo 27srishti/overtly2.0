@@ -10,7 +10,6 @@ import {
   ColumnFiltersState,
   getFilteredRowModel,
   getSortedRowModel,
-  PaginationState,
 } from "@tanstack/react-table";
 import {
   AlertDialog,
@@ -40,11 +39,9 @@ import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
 import { ArrowUpDown } from "lucide-react";
 import clearCachesByServerAction from "@/lib/revalidation";
-import { auth, db, storage } from "@/lib/firebase/firebase";
-import { deleteObject, ref } from "firebase/storage";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { auth, } from "@/lib/firebase/firebase";
 import { Avatar } from "@radix-ui/react-avatar";
-import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarImage } from "@/components/ui/avatar";
 
 export type FilesData = {
   email: string;
@@ -65,15 +62,11 @@ interface DataTableProps<TData, TValue> {
 export function MediaTable<TData extends FilesData, TValue>({
   data,
   pageCount,
-  defaultPerPage = 5,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const params = useParams<{ client: string }>();
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [sorting, setSorting] = React.useState<SortingState>([])
 
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
@@ -94,11 +87,10 @@ export function MediaTable<TData extends FilesData, TValue>({
         return (
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={"/avatar.png"}
+              src={"/profile.png"}
               alt="profileimage"
               className="h-10 w-10"
             />
-            <AvatarFallback>CH</AvatarFallback>
           </Avatar>
         );
       },
@@ -111,7 +103,7 @@ export function MediaTable<TData extends FilesData, TValue>({
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            name
+            Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
@@ -226,105 +218,23 @@ export function MediaTable<TData extends FilesData, TValue>({
     },
   ];
 
-  // Search params
-  const page = parseInt(searchParams.get("page") as string, 10) || 1;
-  const perPage =
-    parseInt(searchParams.get("per_page") as string, 10) || defaultPerPage;
-  const sort = searchParams.get("sort") || "";
-  const [column, order] = sort.split(".") ?? [];
-  const filterName = searchParams.get("name") || "";
-
-  const createQueryString = React.useCallback(
-    (params: Record<string, string | number | null>) => {
-      const newSearchParams = new URLSearchParams(searchParams?.toString());
-
-      for (const [key, value] of Object.entries(params)) {
-        if (value === null) {
-          newSearchParams.delete(key);
-        } else {
-          newSearchParams.set(key, String(value));
-        }
-      }
-
-      return newSearchParams.toString();
-    },
-    [searchParams]
-  );
-
-  const [{ pageIndex, pageSize }, setPagination] =
-    React.useState<PaginationState>({
-      pageIndex: page - 1,
-      pageSize: perPage,
-    });
-
-  const pagination = React.useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
-    [pageIndex, pageSize]
-  );
-
-  const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: column ?? "",
-      desc: order === "desc",
-    },
-  ]);
-
-  const [filterInput, setFilterInput] = React.useState(filterName);
-  const [debouncedFilterInput] = useDebounce(filterInput, 500);
-
-  React.useEffect(() => {
-    setColumnFilters([{ id: "name", value: debouncedFilterInput }]);
-  }, [debouncedFilterInput]);
-
-  React.useEffect(() => {
-    router.push(
-      `${pathname}?${createQueryString({
-        page: pageIndex + 1,
-        per_page: pageSize,
-        sort: sorting[0]?.id
-          ? `${sorting[0].id}.${sorting[0].desc ? "desc" : "asc"}`
-          : null,
-        name: debouncedFilterInput || null,
-      })}`,
-      { scroll: false }
-    );
-  }, [
-    pageIndex,
-    pageSize,
-    sorting,
-    columnFilters,
-    createQueryString,
-    pathname,
-    router,
-    debouncedFilterInput,
-  ]);
-
   const table = useReactTable({
     data,
     columns,
     pageCount,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     state: {
-      pagination,
-      sorting,
       columnFilters,
+      sorting,
     },
     manualPagination: true,
     manualSorting: true,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
   });
-
-  const handleChangeRowsPerPage = (newPerPage: number) => {
-    setPagination({ pageIndex: 0, pageSize: newPerPage });
-  };
 
   return (
     <div>
@@ -332,8 +242,10 @@ export function MediaTable<TData extends FilesData, TValue>({
         <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
           <Input
             placeholder="Filter name..."
-            value={filterInput}
-            onChange={(event) => setFilterInput(event.target.value)}
+            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("email")?.setFilterValue(event.target.value)
+            }
             className="shadow-none border-none"
           />
 
@@ -414,67 +326,6 @@ export function MediaTable<TData extends FilesData, TValue>({
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm">Rows per page:</span>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-[30px] bg-[#636363] text-white"
-            onClick={() => handleChangeRowsPerPage(5)}
-            disabled={pageSize === 5}
-          >
-            5
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-[30px] bg-[#636363] text-white"
-            onClick={() => handleChangeRowsPerPage(10)}
-            disabled={pageSize === 10}
-          >
-            10
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-[30px] bg-[#636363] text-white"
-            onClick={() => handleChangeRowsPerPage(20)}
-            disabled={pageSize === 20}
-          >
-            20
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="rounded-[30px] bg-[#636363] text-white"
-            onClick={() => handleChangeRowsPerPage(50)}
-            disabled={pageSize === 50}
-          >
-            50
-          </Button>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-[30px] bg-[#636363] text-white"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            className="rounded-[30px] bg-[#636363] text-white"
-            size="lg"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   );
