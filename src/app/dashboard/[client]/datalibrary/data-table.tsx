@@ -147,6 +147,7 @@ export function DataTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="pl-0"
           >
             Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -161,6 +162,7 @@ export function DataTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+               className="pl-0"
           >
             Type
             <ArrowUpDown className="ml-2 h-4 w-4" />

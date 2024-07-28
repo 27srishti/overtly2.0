@@ -25,6 +25,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { auth, db } from "@/lib/firebase/firebase";
 import { toast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 
 interface Journalist {
   email: string;
@@ -43,6 +44,7 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
     []
   );
   const searchParams = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState<string>(""); // State for search input
   const projectDocId = searchParams.get("projectid");
   const [user, setUser] = useState<User | null>(null);
   const params = useParams();
@@ -122,6 +124,10 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
     updateFormDataInDB(formData);
   }
 
+  const filteredJournalists = journalists.filter((journalist) =>
+    journalist.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="w-full mt-4 xl:px-52 font-montserrat">
       <div className="p-3 rounded-lg mt-6 flex flex-col gap-6 py-8 lg:pl-10 items-center w-full">
@@ -140,26 +146,49 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                     <div>Add</div> <PlusIcon className="h-4 w-4" />
                   </div>
                 </DialogTrigger>
-                <DialogContent className="max-w-[90vw] max-h-[90vh] p-10 px-12 pb-8 font-montserrat pt-5">
+                <DialogContent className="max-w-[90vw] max-h-[90vh] min-w-[90vw] min-h-[90vh] p-10 px-12 pb-8 font-montserrat pt-5">
                   <DialogHeader>
                     <div className="text-xl mt-3 ml-1 font-medium">
                       Select Jounalist
                     </div>
                   </DialogHeader>
                   <div className="w-full flex flex-col items-center justify-center border rounded-[30px] p-6">
-                    <ScrollArea className="max-h-[70vh] w-full">
+                    <ScrollArea className="max-h-[70vh] min-h-[70vh] w-full">
                       <div>
+                        <div className="flex flex-row p-2 w-full justify-end ">
+                          <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] ">
+                            <Input
+                              type="search"
+                              placeholder="Search Data"
+                              className="shadow-none border-none"
+                              value={searchTerm}
+                              onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                            <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
+                              <svg
+                                viewBox="0 0 14 14"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="w-4 h-4 text-white"
+                              >
+                                <path
+                                  d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
+                                  fill="white"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
                         <div>
                           {journalists.length > 0 ? (
                             <Table className="border-separate border-spacing-y-4">
                               <TableHeader className="bg-[#F7F7F7]">
                                 <TableRow className="rounded-xl">
                                   <TableHead className="rounded-l-xl">
-                                    Select
+                                    
                                   </TableHead>
-                                  <TableHead>Profile</TableHead>
+                                  <TableHead></TableHead>
                                   <TableHead>Name</TableHead>
-                                  <TableHead>Email</TableHead>
                                   <TableHead>Industry</TableHead>
                                   <TableHead>Location</TableHead>
                                   <TableHead>Outlet</TableHead>
@@ -171,48 +200,63 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                                 </TableRow>
                               </TableHeader>
                               <TableBody>
-                                {journalists.map((journalist) => (
-                                  <TableRow
-                                    key={journalist.email}
-                                    className="bg-[#F7F7F7]"
-                                  >
-                                    <TableCell className="rounded-l-xl ">
-                                      <input
-                                        type="checkbox"
-                                        className="ml-2"
-                                        checked={selectedJournalists.some(
-                                          (j) => j.email === journalist.email
-                                        )}
-                                        onChange={() =>
-                                          handleSelectJournalist(journalist)
-                                        }
-                                      />
-                                    </TableCell>
-                                    <TableCell>
-                                      {" "}
-                                      <Avatar className="h-10 w-10">
-                                        <AvatarImage
-                                          src={"/profile.png"}
-                                          alt="profileimage"
-                                          className="h-10 w-10"
+                                {filteredJournalists.map(
+                                  (journalist, index) => (
+                                    <TableRow
+                                      key={index}
+                                      className="bg-[#F7F7F7]"
+                                    >
+                                      <TableCell className="rounded-l-xl ">
+                                        <input
+                                          type="checkbox"
+                                          className="ml-2"
+                                          checked={selectedJournalists.some(
+                                            (j) => j.email === journalist.email
+                                          )}
+                                          onChange={() =>
+                                            handleSelectJournalist(journalist)
+                                          }
                                         />
-                                        <AvatarFallback>CH</AvatarFallback>
-                                      </Avatar>
-                                    </TableCell>
-                                    <TableCell>{journalist.name}</TableCell>
-                                    <TableCell>{journalist.email}</TableCell>
-                                    <TableCell>{journalist.industry}</TableCell>
-                                    <TableCell>{journalist.location}</TableCell>
-                                    <TableCell>{journalist.outlet}</TableCell>
-                                    <TableCell>{journalist.phone}</TableCell>
-                                    <TableCell>
-                                      {journalist.publication}
-                                    </TableCell>
-                                    <TableCell className="rounded-r-xl">
-                                      {journalist.title}
-                                    </TableCell>
-                                  </TableRow>
-                                ))}
+                                      </TableCell>
+                                      <TableCell>
+                                        {" "}
+                                        <Avatar className="h-10 w-10">
+                                          <AvatarImage
+                                            src={"/profile.png"}
+                                            alt="profileimage"
+                                            className="h-10 w-10"
+                                          />
+                                          <AvatarFallback>CH</AvatarFallback>
+                                        </Avatar>
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex flex-col">
+                                          <div className="text-[#3E3E3E] font-semibold text-[15px]">
+                                            {" "}
+                                            {journalist.name}
+                                          </div>
+                                          <div className="text-[#6B6B6B] font-medium textt-[10px]">
+                                            {journalist.email}
+                                          </div>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>
+                                        {journalist.industry}
+                                      </TableCell>
+                                      <TableCell>
+                                        {journalist.location}
+                                      </TableCell>
+                                      <TableCell>{journalist.outlet}</TableCell>
+                                      <TableCell>{journalist.phone}</TableCell>
+                                      <TableCell>
+                                        {journalist.publication}
+                                      </TableCell>
+                                      <TableCell className="rounded-r-xl">
+                                        {journalist.title}
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
                               </TableBody>
                             </Table>
                           ) : (
@@ -232,9 +276,8 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
             <Table className="border-separate border-spacing-y-4">
               <TableHeader className="bg-[#F7F7F7]">
                 <TableRow className="rounded-xl">
-                  <TableHead className="rounded-l-xl">Profile</TableHead>
+                  <TableHead className="rounded-l-xl"></TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
                   <TableHead>Industry</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Outlet</TableHead>
@@ -257,8 +300,17 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                         <AvatarFallback>CH</AvatarFallback>
                       </Avatar>
                     </TableCell>
-                    <TableCell>{journalist.name}</TableCell>
-                    <TableCell>{journalist.email}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <div className="text-[#3E3E3E] font-semibold text-[15px]">
+                          {" "}
+                          {journalist.name}
+                        </div>
+                        <div className="text-[#6B6B6B] font-medium textt-[10px]">
+                          {journalist.email}
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableCell>{journalist.industry}</TableCell>
                     <TableCell>{journalist.location}</TableCell>
                     <TableCell>{journalist.outlet}</TableCell>

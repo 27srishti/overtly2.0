@@ -80,7 +80,7 @@ export function MediaTable<TData extends FilesData, TValue>({
   const columns: ColumnDef<FilesData>[] = [
     {
       accessorKey: "name",
-      header: "Profile",
+      header: "",
       cell: ({ row }) => {
         const data = row.original;
 
@@ -102,6 +102,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="pl-2"
           >
             Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -116,6 +117,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="pl-2"
           >
             email
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -130,6 +132,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="pl-2"
           >
             publication
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -144,6 +147,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="pl-2"
           >
             phone
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -158,6 +162,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="pl-2"
           >
             industry
             <ArrowUpDown className="ml-2 h-4 w-4" />
