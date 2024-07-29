@@ -319,13 +319,13 @@ const Page = () => {
         </div>
 
         <Dialog
-          open={open}
-          onOpenChange={(open) => {
-            form.setValue("name", "");
-            form.setValue("description", "");
-            setEditMode(false);
-            setOpen(open);
-          }}
+        // open={open}
+        // onOpenChange={(open) => {
+        //   form.setValue("name", "");
+        //   form.setValue("description", "");
+        //   setEditMode(false);
+        //   setOpen(open);
+        // }}
         >
           <DialogTrigger asChild>
             <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
@@ -335,88 +335,156 @@ const Page = () => {
               <PlusCircle className="w-6 h-6 stroke-[#545454] stroke-1" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw] p-10 px-12">
-            <DialogHeader>
-              <DialogTitle className="text-xl mt-3 ml-1 mb-5 font-medium">
-                {editMode ? "Edit Project" : "Create Project"}
-              </DialogTitle>
-              {/* <DialogDescription>
+          <DialogContent className="sm:max-w-[800px] font-montserrat text-[#545454] min-w-[60vw] min-h-[35vw] p-10 px-12">
+            <div>
+              <div className="mb-10">
+                <div className="text-xl mt-3 ml-1 mb-5 font-medium ">
+                  Choose Workflow
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-6 gap-y-10">
+                <Dialog
+                  open={open}
+                  onOpenChange={(open) => {
+                    form.setValue("name", "");
+                    form.setValue("description", "");
+                    setEditMode(false);
+                    setOpen(open);
+                  }}
+                >
+                  <DialogTrigger asChild>
+                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                      <div>
+                        <img src="/colourbox.png" />
+                      </div>
+                      <div>
+                        <div>Pitch Generation</div>
+                        <div className="font-regular text-[13px]">
+                          Ideas {"->"} Pitch {"->"} Distribution
+                        </div>
+                      </div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw] p-10 px-12">
+                    <DialogHeader>
+                      <DialogTitle className="text-xl mt-3 ml-1 mb-5 font-medium">
+                        {editMode ? "Edit Project" : "Create Project"}
+                      </DialogTitle>
+                      {/* <DialogDescription>
                 {editMode
                   ? "Update your project by entering the name"
                   : "Create your project by entering the name"}
               </DialogDescription> */}
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-7"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Ex: Amazon"
-                          {...field}
-                          className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-7"
+                      >
+                        <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Name</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Ex: Amazon"
+                                  {...field}
+                                  className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Enter Description"
-                          {...field}
-                          className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
+                        <FormField
+                          control={form.control}
+                          name="description"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Description</FormLabel>
+                              <FormControl>
+                                <Textarea
+                                  placeholder="Enter Description"
+                                  {...field}
+                                  className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-            <div className="flex justify-end">
-              <Button
-                type="submit"
-                className="rounded-full bg-[#545454] p-5 text-white font-montserrat px-11 mr-1 mt-10"
-                disabled={submitting}
-                onClick={form.handleSubmit(onSubmit)}
-              >
-                {submitting ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    {editMode ? (
-                      <>
-                        <div>Updating..</div>
-                      </>
-                    ) : (
-                      <div>Creating..</div>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {editMode ? (
-                      <>
-                        <div>Update</div>
-                      </>
-                    ) : (
-                      <div>Create</div>
-                    )}
-                  </>
-                )}
-              </Button>
+                      </form>
+                    </Form>
+                    <div className="flex justify-end">
+                      <Button
+                        type="submit"
+                        className="rounded-full bg-[#545454] p-5 text-white font-montserrat px-11 mr-1 mt-10"
+                        disabled={submitting}
+                        onClick={form.handleSubmit(onSubmit)}
+                      >
+                        {submitting ? (
+                          <>
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                            {editMode ? (
+                              <>
+                                <div>Updating..</div>
+                              </>
+                            ) : (
+                              <div>Creating..</div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {editMode ? (
+                              <>
+                                <div>Update</div>
+                              </>
+                            ) : (
+                              <div>Create</div>
+                            )}
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                  <div>
+                    <img src="/colourbox.png" />
+                  </div>
+                  <div>
+                    <div>Press Release Gen</div>
+                    <div className="font-regular text-[13px]">
+                      Comming Soon...
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                  <div>
+                    <img src="/colourbox.png" />
+                  </div>
+                  <div>
+                    <div>White-Paper Gen</div>
+                    <div className="font-regular text-[13px]">
+                      Comming Soon...
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                  <div>
+                    <img src="/colourbox.png" />
+                  </div>
+                  <div>
+                    <div>Custom Workflow</div>
+                    <div className="font-regular text-[13px]">
+                      Comming Soon...
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </DialogContent>
         </Dialog>

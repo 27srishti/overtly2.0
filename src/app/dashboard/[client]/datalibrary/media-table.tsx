@@ -39,7 +39,7 @@ import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
 import { ArrowUpDown } from "lucide-react";
 import clearCachesByServerAction from "@/lib/revalidation";
-import { auth, } from "@/lib/firebase/firebase";
+import { auth } from "@/lib/firebase/firebase";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarImage } from "@/components/ui/avatar";
 
@@ -66,7 +66,7 @@ export function MediaTable<TData extends FilesData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
@@ -89,7 +89,7 @@ export function MediaTable<TData extends FilesData, TValue>({
             <AvatarImage
               src={"/profile.png"}
               alt="profileimage"
-              className="h-10 w-10"
+              className="h-10 w-10 opacity-50"
             />
           </Avatar>
         );
@@ -147,7 +147,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="pl-2"
+            className="pl-2"
           >
             phone
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -162,7 +162,7 @@ export function MediaTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        className="pl-2"
+            className="pl-2"
           >
             industry
             <ArrowUpDown className="ml-2 h-4 w-4" />

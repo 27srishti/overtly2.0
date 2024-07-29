@@ -97,7 +97,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           : "hover:bg-[#F5F4F4]"
                       } cursor-pointer transition-all`}
                     >
-                      Pitch gen
+                     Workflow
                     </div>
                   </Link>
                   <Link href={`/dashboard/${client?.id}/research`}>

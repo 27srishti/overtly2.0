@@ -224,7 +224,7 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                                           <AvatarImage
                                             src={"/profile.png"}
                                             alt="profileimage"
-                                            className="h-10 w-10"
+                                            className="h-10 w-10  opacity-50"
                                           />
                                           <AvatarFallback>CH</AvatarFallback>
                                         </Avatar>
@@ -295,7 +295,7 @@ const StepEnd: React.FC<{ onPrevious: () => void }> = ({ onPrevious }) => {
                         <AvatarImage
                           src={"/profile.png"}
                           alt="profileimage"
-                          className="h-10 w-10"
+                          className="h-10 w-10 opacity-50"
                         />
                         <AvatarFallback>CH</AvatarFallback>
                       </Avatar>
