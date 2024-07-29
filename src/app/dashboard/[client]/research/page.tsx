@@ -41,6 +41,7 @@ interface Article {
   link: string;
   source?: string;
   date?: string;
+  snippet?: string;
 }
 
 const Page = () => {
@@ -266,7 +267,7 @@ const Page = () => {
                           </div>
                         </div>
                         <div className="text-justify text-sm pr-14 text-[12px] text-[#6F6F6F]">
-                          {article.summary ||
+                          {article.snippet ||
                             "This week, ilya Sutskever launched..."}
                         </div>
                       </div>
