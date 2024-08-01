@@ -318,15 +318,7 @@ const Page = () => {
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
 
-        <Dialog
-        // open={open}
-        // onOpenChange={(open) => {
-        //   form.setValue("name", "");
-        //   form.setValue("description", "");
-        //   setEditMode(false);
-        //   setOpen(open);
-        // }}
-        >
+        <Dialog>
           <DialogTrigger asChild>
             <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
               <div className="ml-1 font-montserrat text-[#545454]">
@@ -353,13 +345,13 @@ const Page = () => {
                   }}
                 >
                   <DialogTrigger asChild>
-                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center cursor-pointer hover:bg-[#e8e8e8]  transition-all duration-300 ">
                       <div>
                         <img src="/colourbox.png" />
                       </div>
                       <div>
                         <div>Pitch Generation</div>
-                        <div className="font-regular text-[13px]">
+                        <div className="font-regular text-[13px] font-inter text-[#868484]">
                           Ideas {"->"} Pitch {"->"} Distribution
                         </div>
                       </div>
@@ -370,11 +362,6 @@ const Page = () => {
                       <DialogTitle className="text-xl mt-3 ml-1 mb-5 font-medium">
                         {editMode ? "Edit Project" : "Create Project"}
                       </DialogTitle>
-                      {/* <DialogDescription>
-                {editMode
-                  ? "Update your project by entering the name"
-                  : "Create your project by entering the name"}
-              </DialogDescription> */}
                     </DialogHeader>
                     <Form {...form}>
                       <form
@@ -451,35 +438,35 @@ const Page = () => {
                   </DialogContent>
                 </Dialog>
 
-                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center cursor-pointer hover:bg-[#e8e8e8]  transition-all duration-300 ">
                   <div>
                     <img src="/colourbox.png" />
                   </div>
                   <div>
                     <div>Press Release Gen</div>
-                    <div className="font-regular text-[13px]">
+                    <div className="font-regular text-[13px] font-inter text-[#868484]">
                       Comming Soon...
                     </div>
                   </div>
                 </div>
-                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center cursor-pointer hover:bg-[#e8e8e8]  transition-all duration-300 ">
                   <div>
                     <img src="/colourbox.png" />
                   </div>
                   <div>
                     <div>White-Paper Gen</div>
-                    <div className="font-regular text-[13px]">
+                    <div className="font-regular text-[13px] font-inter text-[#868484]">
                       Comming Soon...
                     </div>
                   </div>
                 </div>
-                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center">
+                <div className="bg-[#D5D5D5] bg-opacity-25 rounded-[25px] p-5 flex flex-col gap-6 max-w-[285px] h-[160px] justify-center cursor-pointer hover:bg-[#e8e8e8]  transition-all duration-300 ">
                   <div>
                     <img src="/colourbox.png" />
                   </div>
                   <div>
                     <div>Custom Workflow</div>
-                    <div className="font-regular text-[13px]">
+                    <div className="font-regular text-[13px] font-inter text-[#868484]">
                       Comming Soon...
                     </div>
                   </div>
