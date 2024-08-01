@@ -89,7 +89,7 @@ export function MediaTable<TData extends FilesData, TValue>({
             <AvatarImage
               src={"/profile.png"}
               alt="profileimage"
-              className="h-10 w-10 opacity-50"
+              className="h-10 w-10 opacity-50 ml-5"
             />
           </Avatar>
         );
