@@ -266,7 +266,7 @@ const Page = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="text-justify text-sm pr-14 text-[12px] text-[#6F6F6F]">
+                        <div className="text-justify text-sm pr-14 text-[12px] text-[#6F6F6F]  font-raleway">
                           {article.snippet ||
                             "This week, ilya Sutskever launched..."}
                         </div>
@@ -311,7 +311,7 @@ const Page = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="text-[13px] px-4 py-10 font-medium leading-5 text-[#6F6F6F]">
+                        <div className="text-[12px] px-4 py-10 font-regular leading-5 text-[#6F6F6F] font-inter ">
                           This week, Ilya Sutskever launched a new AI
                           company, Safe Superintelligence Inc. (SSI), just one
                           month after formally leaving OpenAI. Sutskever,
@@ -324,7 +324,7 @@ const Page = () => {
                         <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
                           Summary :
                         </div>
-                        <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E]">
+                        <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E] font-raleway">
                           ` If the problem seems to be coming from your MacBook
                           itself, here are some steps you can take to address
                           the issue: 1. **Check the Power Adapter**: Inspect
@@ -361,7 +361,7 @@ const Page = () => {
                               Author : Mango Ramen
                             </div>
                           </div>
-                          <div className="flex gap-2 flex-col">
+                          <div className="flex gap-2 flex-col font-raleway">
                             <div className="flex gap-2 text-[10px] items-center">
                               <Mail className="text-[#6B6B6B] w-3 h-3" />
                               mangoramen@gmail.com
@@ -371,7 +371,7 @@ const Page = () => {
                               Times Stamp
                             </div>
                           </div>
-                          <div className="text-[#6B6B6B] text-[10px]">
+                          <div className="text-[#6B6B6B] text-[10px] font-raleway">
                             Works on industry domain industry, industry domain
                             industry, industry domain industry, industry domain
                             industry, industry domain industry, industry domain

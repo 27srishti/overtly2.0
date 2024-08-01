@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Head from "next/head";
-const inter = Inter({ subsets: ["latin"] });
 import { Montserrat } from "next/font/google";
+import { Raleway } from "next/font/google";
 
 export const metadata: Metadata = {
   title: "Your AI Publist",
@@ -20,6 +20,17 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
 });
 
+const raleway = Raleway({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-raleway",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,7 +42,11 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <link rel="icon" href="/favicon.png" sizes="any" />
       </Head>
-      <body className={montserrat.variable}>
+      <body
+        className={
+          montserrat.variable + " " + raleway.variable + " " + inter.variable
+        }
+      >
         {children}
         <Toaster />
       </body>

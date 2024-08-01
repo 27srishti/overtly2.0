@@ -79,6 +79,8 @@ const config = {
       },
       fontFamily: {
         montserrat: ["var(--font-montserrat)"],
+        raleway: ["var(--font-raleway)"],
+        inter: ["var(--font-inter)"],
       },
     },
   },
