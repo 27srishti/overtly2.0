@@ -141,7 +141,7 @@ export default async function Page({
   const perPage = parseInt(searchParams.per_page as string, 10) || 10;
   const sort = searchParams.sort || "";
   const name = searchParams.name || "";
-  const list = searchParams.view || "";
+  const list = searchParams.view || "list";
 
   const { data, total } = await getData(
     page,

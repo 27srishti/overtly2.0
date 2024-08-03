@@ -97,31 +97,19 @@ export function MediaTable<TData extends FilesData, TValue>({
     },
     {
       accessorKey: "name",
-      header: ({ column }) => {
+      header: "Name",
+      cell: ({ row }) => {
+        const data = row.original;
         return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="pl-2"
-          >
-            Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-    {
-      accessorKey: "email",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="pl-2"
-          >
-            email
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
+          <div className="flex flex-col">
+          <div className="text-[#3E3E3E] font-semibold text-[15px]">
+            {" "}
+            {data.name}
+          </div>
+          <div className="text-[#6B6B6B] font-medium textt-[10px]">
+            {data.email}
+          </div>
+        </div>
         );
       },
     },
@@ -131,11 +119,11 @@ export function MediaTable<TData extends FilesData, TValue>({
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="pl-2"
           >
-            publication
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            Publication
+            {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
           </Button>
         );
       },
@@ -146,11 +134,11 @@ export function MediaTable<TData extends FilesData, TValue>({
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="pl-2"
           >
-            phone
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            Phone
+            {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
           </Button>
         );
       },
@@ -161,11 +149,11 @@ export function MediaTable<TData extends FilesData, TValue>({
         return (
           <Button
             variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            // onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="pl-2"
           >
-            industry
-            <ArrowUpDown className="ml-2 h-4 w-4" />
+            Industry
+            {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
           </Button>
         );
       },
@@ -247,9 +235,9 @@ export function MediaTable<TData extends FilesData, TValue>({
         <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
           <Input
             placeholder="Filter name..."
-            value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
-              table.getColumn("email")?.setFilterValue(event.target.value)
+              table.getColumn("name")?.setFilterValue(event.target.value)
             }
             className="shadow-none border-none"
           />
