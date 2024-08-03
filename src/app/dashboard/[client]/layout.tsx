@@ -13,21 +13,13 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  User,
-  LifeBuoy,
-  CreditCard,
-  Settings,
-  LogOut,
-  HomeIcon,
-} from "lucide-react";
+import { User, LifeBuoy, CreditCard, Settings, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "@/components/ui/use-toast";
 import Link from "next/link";
-import { CalendarIcon } from "@radix-ui/react-icons";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [mini, setMini] = useState(true);
@@ -39,6 +31,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const params = useParams<{ client: string }>();
   const user = auth.currentUser;
+
   async function signOutUser() {
     await signOut(auth).then(async () => {
       await fetch("/api/signOut", {
@@ -47,7 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         if (response.status === 200) {
           router.push("/");
           toast({
-            description: "Sign out sucessfull!",
+            description: "Sign out successful!",
           });
         }
       });
@@ -59,79 +52,84 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="sticky top-0 backdrop-filter backdrop-blur-lg border-b pb-2 z-10">
         <div className="z-50 pt-4 px-4 sm:px-6 md:px-10 font-montserrat">
           <div className="bg-opacity-20 py-2">
-            <div className="container flex flex-wrap justify-center xl:justify-between items-center">
+            <div className="container flex flex-col flex-wrap justify-center sm:justify-between items-center md:flex-row md:justify-center xl:justify-between md:gap-5
+            ">
               <Link href={`/dashboard`}>
                 <div className="flex items-center justify-center text-lg cursor-pointer">
                   <img
                     src="/fullimage.png"
-                    className="w-24 sm:w-28 md:w-36 ml-3"
+                    className="w-20 sm:w-28 md:w-36 ml-3"
                     alt="Logo"
                   />
                 </div>
               </Link>
-              <div className="flex gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0">
-                <Link href={`/dashboard`}>
-                  <div className="rounded-full p-2 sm:p-3 bg-[#E8E8E8] flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="24px"
-                      viewBox="0 0 24 24"
-                      width="24px"
-                      fill="#6d6d6e"
-                    >
-                      <path d="M0 0h24v24H0V0z" fill="none" />
-                      <path
-                        d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"
-                        className="w-6 h-6"
-                      />
-                    </svg>
-                  </div>
-                </Link>
-                <div className="flex gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer bg-white">
-                  <Link href={`/dashboard/${client?.id}`}>
-                    <div
-                      className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${
-                        pathname.endsWith(params.client) ||
-                        pathname.endsWith("create")
-                          ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                          : "hover:bg-[#F5F4F4]"
-                      } cursor-pointer transition-all`}
-                    >
-                     Workflow
+              <div className="flex flex-col sm:flex-col md:flex-row gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0 items-center">
+                <div className="flex flex-row sm:flex-row gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0 items-center">
+                  <Link href={`/dashboard`}>
+                    <div className="rounded-full p-2 sm:p-3 bg-[#E8E8E8] flex items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="24px"
+                        viewBox="0 0 24 24"
+                        width="24px"
+                        fill="#6d6d6e"
+                      >
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path
+                          d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z"
+                          className="w-6 h-6"
+                        />
+                      </svg>
                     </div>
                   </Link>
-                  <Link href={`/dashboard/${client?.id}/research`}>
-                    <div
-                      className={`${
-                        pathname.endsWith("/research") ||
-                        pathname.endsWith("/chat") ||
-                        pathname.endsWith("/insights")
-                          ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                          : "bg-white hover:bg-[#F5F4F4]"
-                      } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
-                    >
-                      Research
-                    </div>
-                  </Link>
-                  <div
-                    className={`${
-                      pathname.endsWith("/analytics")
-                        ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                        : "bg-white hover:bg-[#F5F4F4]"
-                    } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
-                  >
-                    Analytics
+                  <div className="flex flex-row sm:flex-row gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 bg-white">
+                    <Link href={`/dashboard/${client?.id}`}>
+                      <div
+                        className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${
+                          pathname.endsWith(params.client) ||
+                          pathname.endsWith("create")
+                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                            : "hover:bg-[#F5F4F4]"
+                        } cursor-pointer transition-all`}
+                      >
+                        Workflow
+                      </div>
+                    </Link>
+                    <Link href={`/dashboard/${client?.id}/research`}>
+                      <div
+                        className={`${
+                          pathname.endsWith("/research") ||
+                          pathname.endsWith("/chat") ||
+                          pathname.endsWith("/insights")
+                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                            : "bg-white hover:bg-[#F5F4F4]"
+                        } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
+                      >
+                        Research
+                      </div>
+                    </Link>
+                    <Link href={`/dashboard/${client?.id}/analytics`}>
+                      <div
+                        className={`${
+                          pathname.endsWith("/analytics")
+                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                            : "bg-white hover:bg-[#F5F4F4]"
+                        } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
+                      >
+                        Analytics
+                      </div>
+                    </Link>
                   </div>
                 </div>
-                <div
-                  className={`${
-                    pathname.endsWith("/datalibrary")
-                      ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                      : "bg-white hover:bg-[#F5F4F4]"
-                  } flex gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all`}
+                <Link
+                  href={`/dashboard/${params.client}/datalibrary?page=1&per_page=5&sort=type.desc&view=list`}
                 >
-                  <Link
-                    href={`/dashboard/${params.client}/datalibrary?page=1&per_page=5&sort=type.desc&view=list`}
+                  <div
+                    className={`${
+                      pathname.endsWith("/datalibrary")
+                        ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                        : "bg-white hover:bg-[#F5F4F4]"
+                    } flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all mt-4 sm:mt-0`}
                   >
                     <div className="rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer flex gap-2">
                       <svg
@@ -152,8 +150,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       </svg>
                       Data Library
                     </div>
-                  </Link>
-                </div>
+                  </div>
+                </Link>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0">
                 <div className="bg-secondary p-2 sm:p-3 rounded-full">
@@ -170,32 +168,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         fill="#747474"
                       />
                       <rect x="10" y="8" width="2" height="2" fill="#BBBBBB" />
-                      <rect x="4" y="8" width="2" height="2" fill="#BBBBBB" />
-                      <rect x="7" y="8" width="2" height="2" fill="#BBBBBB" />
-                      <rect x="4" y="11" width="2" height="2" fill="#BBBBBB" />
-                      <rect x="7" y="11" width="2" height="2" fill="#BBBBBB" />
-                      <rect x="10" y="11" width="2" height="2" fill="#BBBBBB" />
+                      <rect x="4" y="8" width="5" height="2" fill="#BBBBBB" />
+                      <defs>
+                        <clipPath id="clip0_1455_1874">
+                          <rect width="16.1667" height="17" fill="white" />
+                        </clipPath>
+                      </defs>
                     </g>
-                    <defs>
-                      <clipPath id="clip0_1455_1874">
-                        <rect width="17" height="17" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </div>
-                <div className="bg-secondary p-2 sm:p-3 rounded-full">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="24px"
-                    viewBox="0 0 24 24"
-                    width="24px"
-                    fill="#727272"
-                  >
-                    <path d="M0 0h24v24H0V0z" fill="none" />
-                    <path
-                      d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.89 0 1.34-1.08.71-1.71L18 16z"
-                      className="w-5 h-5"
-                    />
                   </svg>
                 </div>
                 <DropdownMenu>
@@ -204,19 +183,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       variant="ghost"
                       className="relative h-8 w-8 rounded-full"
                     >
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={
-                            user?.photoURL ??
-                            "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"
-                          }
-                          alt="profileimage"
+                          src={user?.photoURL || ""}
+                          alt={user?.displayName || ""}
                         />
-                        <AvatarFallback>CH</AvatarFallback>
+                        <AvatarFallback>
+                          {user?.displayName?.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuContent className="w-56" align="end">
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">
@@ -229,23 +207,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                      <DropdownMenuItem disabled>
+                      <DropdownMenuItem>
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                       </DropdownMenuItem>
-                      <DropdownMenuItem disabled>
+                      <DropdownMenuItem>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        <span>Billing</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Settings</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
-                    <DropdownMenuItem disabled>
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      <span>Billing</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem disabled>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Settings</span>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOutUser}>
                       <LogOut className="mr-2 h-4 w-4" />
@@ -258,7 +236,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
-      {children}
+      <div>{children}</div>
     </div>
   );
 }

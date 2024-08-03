@@ -172,7 +172,7 @@ export default async function Page({
           <TabsList className="mb-5 flex flex-row justify-between ml-3">
             <div className="flex gap-8">
               <Link
-                href={`/dashboard/${params.client}/datalibrary?tab=documents`}
+                href={`/dashboard/${params.client}/datalibrary?tab=documents&page=1&per_page=5`}
               >
                 <TabsTrigger
                   value="documents"
