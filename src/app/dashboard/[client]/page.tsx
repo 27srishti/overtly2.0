@@ -99,6 +99,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const params = useParams();
   const [projecteditid, setEditedProjectId] = useState<string>("");
+  const [maindialog , setmaindialog] = useState(false)
   const [editMode, setEditMode] = useState(false);
   const [deleteMode, setDeleteMode] = useState(false);
   const [deleteId, setDeleteId] = useState("");
@@ -318,7 +319,7 @@ const Page = () => {
           {client?.name ? client.name : <Skeleton className="h-10 w-[100px]" />}
         </div>
 
-        <Dialog>
+        <Dialog open={maindialog} onOpenChange={setmaindialog}>
           <DialogTrigger asChild>
             <Button className="mt-3 gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transc p-6 rounded-2xl grey transition-all">
               <div className="ml-1 font-montserrat text-[#545454]">
@@ -338,9 +339,11 @@ const Page = () => {
                 <Dialog
                   open={open}
                   onOpenChange={(open) => {
+                    setmaindialog(false);
                     form.setValue("name", "");
                     form.setValue("description", "");
                     setEditMode(false);
+
                     setOpen(open);
                   }}
                 >
