@@ -279,18 +279,24 @@ const Page = () => {
                         <div className="flex flex gap-6 p-2 rounded-[21px]  items-center">
                           <img
                             src="/placeholder.png"
-                            className="w-[100px] h-[100px]"
+                            className="w-[110px] h-[100px] "
                           ></img>
                           <div className="flex flex-col gap-2 w-full justify-start">
                             <div className="flex flex-row justify-between items-center">
-                              <div className="font-semibold text-2xl text-[#2C2C2C] font-montserrat">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit.
+                              <div className="font-medium text-[25px] text-[#2C2C2C] font-montserrat">
+                                Ilya Sutskever isn’t done working on AI safety
                               </div>
-                              <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
-                                Full Article
-                                <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
-                              </div>
+                            </div>
+                            <div className="text-[8px]  font-regular leading-2 text-[#6F6F6F] font-inter pr-20">
+                              This week, Ilya Sutskever launched a new AI
+                              company, Safe Superintelligence Inc. (SSI), just
+                              one month after formally leaving OpenAI.
+                              Sutskever, alongside Jan Leike, was integral to
+                              OpenAI’s efforts to improve AI safety w ith the
+                              rise of “superintelligent” AI systems. Yet both
+                              Sutskever and Leike left the company after a
+                              dramatic falling-out with leadership over how to
+                              approach AI safety. 
                             </div>
                             <div className="flex gap-3 items-center text-[.8rem] text-center">
                               <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
@@ -310,55 +316,126 @@ const Page = () => {
                               </div>
                             </div>
                           </div>
+                          <div className="flex justify-center self-start items-center">
+                            <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
+                              Full&nbsp;Article
+                              <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-[12px] px-4 py-10 font-regular leading-5 text-[#6F6F6F] font-inter ">
-                          This week, Ilya Sutskever launched a new AI
-                          company, Safe Superintelligence Inc. (SSI), just one
-                          month after formally leaving OpenAI. Sutskever,
-                          alongside Jan Leike, was integral to OpenAI’s efforts
-                          to improve AI safety with the rise of
-                          “superintelligent” AI systems. Yet both Sutskever and
-                          Leike left the company after a dramatic falling-out
-                          with leadership over how to approach AI safety. 
-                        </div>
+                        <Tabs
+                          defaultValue="Trends"
+                          className="w-full font-normal mt-5"
+                        >
+                          <TabsList className="mb-5 flex flex-row justify-between ml-3">
+                            <div className="flex gap-8">
+                              <TabsTrigger
+                                value="Trends"
+                                className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
+                              >
+                                Summary
+                              </TabsTrigger>
+                              <TabsTrigger
+                                value="Competition"
+                                className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
+                              >
+                                Questions
+                              </TabsTrigger>
+                              <TabsTrigger
+                                value="EconomicNews"
+                                className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
+                              >
+                                Related Articles
+                              </TabsTrigger>
+                              <TabsTrigger
+                                value="Industry"
+                                className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
+                              >
+                                Industry
+                              </TabsTrigger>
+                            </div>
+                          </TabsList>
+                        </Tabs>
                         <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
                           Summary :
                         </div>
                         <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E] font-raleway">
-                          ` If the problem seems to be coming from your MacBook
-                          itself, here are some steps you can take to address
-                          the issue: 1. **Check the Power Adapter**: Inspect
-                          your MacBook’s power adapter for any signs of damage.
-                          If the cable or the adapter itself is damaged,
-                          consider replacing it. 2. **Use a Different Outlet**:
-                          Try plugging your MacBook into a different outlet,
-                          preferably one that you know is properly grounded. 3.
-                          **Test with a Different Power Adapter**: If possible,
-                          borrow a compatible power adapter from another MacBook
-                          to see if the issue persists. This can help determine
-                          if the problem is with the adapter or the MacBook. 4.
-                          **Use a Grounded Power Adapter**: Some power adapters
-                          come with a detachable plug. Ensure you are using the
-                          grounded plug version if available. 5. **Check for
-                          Software Updates**: Ensure your MacBook is running the
-                          latest version of macOS. Sometimes, software updates
-                          can address hardware-related issues. 6. **Reset the
-                          SMC (System Management Controller)**: Resetting the
-                          SMC can sometimes resolve power-related issues on
-                          MacBooks. Here’s how you can reset it: - Shut down
-                          your MacBook. - On the built-in keyboard, press and
-                          hold the Shift, Control, and Option keys on the left
-                          side, then press the power button at the same time. -
-                          Hold these keys and the power button for 10 seconds. -
-                          Release all keys, then press the power button to turn
-                          on your MacBook. `
+                          <div className="container mx-auto p-4">
+                            <div className="text-2xl font-semibold mb-4">
+                              MacBook Power Issue Troubleshooting
+                            </div>
+                            <ol className="list-decimal ml-6 space-y-2">
+                              <li>
+                                <div>Check the Power Adapter:</div>
+                                <p>
+                                  Inspect your MacBook’s power adapter for any
+                                  signs of damage. If the cable or the adapter
+                                  itself is damaged, consider replacing it.
+                                </p>
+                              </li>
+                              <li>
+                                <div>Use a Different Outlet:</div>
+                                <p>
+                                  Try plugging your MacBook into a different
+                                  outlet, preferably one that you know is
+                                  properly grounded.
+                                </p>
+                              </li>
+                              <li>
+                                <div>
+                                  Test with a Different Power Adapter:
+                                </div>
+                                <p>
+                                  If possible, borrow a compatible power adapter
+                                  from another MacBook to see if the issue
+                                  persists. This can help determine if the
+                                  problem is with the adapter or the MacBook.
+                                </p>
+                              </li>
+                              <li>
+                                <div>Use a Grounded Power Adapter:</div>
+                                <p>
+                                  Some power adapters come with a detachable
+                                  plug. Ensure you are using the grounded plug
+                                  version if available.
+                                </p>
+                              </li>
+                              <li>
+                                <div>Check for Software Updates:</div>
+                                <p>
+                                  Ensure your MacBook is running the latest
+                                  version of macOS. Sometimes, software updates
+                                  can address hardware-related issues.
+                                </p>
+                              </li>
+                              <li>
+                                <div>
+                                  Reset the SMC (System Management Controller):
+                                </div>
+                                <p>
+                                  Resetting the SMC can sometimes resolve
+                                  power-related issues on MacBooks. Here’s how
+                                  you can reset it:
+                                  <ul className="list-disc ml-6 mt-2">
+                                    <li>Shut down your MacBook.</li>
+                                    <li>
+                                      On the built-in keyboard, press and hold
+                                      the Shift, Control, and Option keys on the
+                                      left side, then press the power button at
+                                      the same time.
+                                    </li>
+                                  </ul>
+                                </p>
+                              </li>
+                            </ol>
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-4 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">
+                        <div className="flex flex-col gap-3 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">
                           <div className="flex justify-between text-center items-center">
                             <div className="text-[#525252] text-[15px]">
-                              Author : Mango Ramen
+                              Mango Ramen
                             </div>
                           </div>
                           <div className="flex gap-2 flex-col font-raleway">
