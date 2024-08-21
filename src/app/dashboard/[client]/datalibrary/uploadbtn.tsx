@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
+import useDrivePicker from 'react-google-drive-picker'
 
 interface FileCollection {
   id: string;
@@ -39,6 +40,43 @@ const Uploadbtn = () => {
   const params = useParams<{ client: string }>();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+
+
+  const [openPicker, authResponse] = useDrivePicker();  
+
+
+  const handleOpenPicker = () => {
+    openPicker({
+      clientId: "xxxxxxxxxxxxxxxxx",
+      developerKey: "xxxxxxxxxxxx",
+      viewId: "DOCS",
+      // token: token, // pass oauth token in case you already have one
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: true,
+      // customViews: customViewsArray, // custom view
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button')
+        }
+        console.log(data)
+      },
+    })
+  }
+
+
+
+
+
+
+
+
+
+
+
+
 
   const tab = searchParams.get("tab");
 
@@ -333,7 +371,7 @@ const Uploadbtn = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5">
+                        <Button className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5" onClick={() => handleOpenPicker()}>
                           <svg
                             width="22"
                             height="20"
