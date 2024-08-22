@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
-import useDrivePicker from 'react-google-drive-picker'
+import useDrivePicker from "react-google-drive-picker";
 
 interface FileCollection {
   id: string;
@@ -41,42 +41,158 @@ const Uploadbtn = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-
-
-  const [openPicker, authResponse] = useDrivePicker();  
-
+  const [openPicker, authResponse] = useDrivePicker();
 
   const handleOpenPicker = () => {
-    openPicker({
-      clientId: "xxxxxxxxxxxxxxxxx",
-      developerKey: "xxxxxxxxxxxx",
-      viewId: "DOCS",
-      // token: token, // pass oauth token in case you already have one
-      showUploadView: true,
-      showUploadFolders: true,
-      supportDrives: true,
-      multiselect: true,
-      // customViews: customViewsArray, // custom view
-      callbackFunction: (data) => {
-        if (data.action === 'cancel') {
-          console.log('User clicked cancel/close button')
+    if (
+      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
+      process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+    ) {
+      openPicker({
+        clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+        viewId: "DOCS",
+        // token: token, // pass oauth token in case you already have one
+        showUploadView: true,
+        showUploadFolders: true,
+        supportDrives: true,
+        multiselect: true,
+        // customViews: customViewsArray, // custom view
+        callbackFunction: async (data) => {
+          if (data.action === "picked") {
+            const driveFiles = data.docs.map((doc) => ({
+              id: doc.id,
+              name: doc.name,
+              mimeType: doc.mimeType,
+            }));
+            await downloadAndUploadFiles(driveFiles);
+          } else if (data.action === "cancel") {
+            console.log("User clicked cancel/close button");
+          }
+        },
+      });
+    }
+  };
+  console.log(authUser?.uid);
+
+  const downloadAndUploadFiles = async (
+    driveFiles: { id: string; name: string; mimeType: string }[]
+  ) => {
+    setLoading(true);
+    setIsUploading(true);
+    const uploadPromises: Promise<string>[] = [];
+    let uploadedCount = 0;
+
+    for (const file of driveFiles) {
+      const fileBlob = await downloadFileFromDrive(file.id);
+      if (fileBlob) {
+        uploadPromises.push(uploadFileToFirebase(fileBlob, file.name));
+      }
+    }
+
+    try {
+      await Promise.all(uploadPromises);
+      clearCachesByServerAction(pathname);
+    } catch (error: any) {
+      console.error("Error uploading files:", error);
+    } finally {
+      setLoading(false);
+      setIsUploading(false);
+      setFiles([]);
+    }
+  };
+
+  const downloadFileFromDrive = async (fileId: string) => {
+    console.log(fileId, authResponse?.access_token);
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+        {
+          headers: {
+            Authorization: `Bearer ${authResponse?.access_token}`,
+          },
         }
-        console.log(data)
-      },
-    })
-  }
+      );
 
+      console.log(response);
 
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download file from Drive. Status: ${response.status}`
+        );
+      }
 
+      return await response.blob();
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      return null;
+    }
+  };
 
+  const uploadFileToFirebase = async (
+    fileBlob: Blob,
+    originalFileName: string
+  ) => {
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
 
+    const fileNameWithoutExtension = originalFileName.split(".")[0];
+    const uniqueId = uuidv4().slice(0, 6);
+    const fileExtension = originalFileName.split(".").pop();
 
+    const storageRef = ref(
+      storage,
+      `users/${authUser?.uid}/${params.client}/${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`
+    );
 
+    try {
+      const snapshot = await uploadBytes(storageRef, fileBlob);
+      const filePath = snapshot.ref.fullPath;
+      const bucketName = storageRef.bucket;
 
+      const fileUrl = await getDownloadURL(storageRef);
 
+      const docRef = doc(
+        db,
+        `users/${authUser.uid}/clients/${params.client}/files`,
+        uniqueId
+      );
 
+      console.log(`users/${authUser.uid}/clients/${params.client}/files`);
 
+      const data = {
+        url: fileUrl,
+        name: originalFileName,
+        bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+        type: fileBlob.type,
+        createdAt: Date.now(),
+      };
 
+      await setDoc(docRef, data);
+
+      const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await authUser?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          client_id: params.client,
+          bucket_name: bucketName,
+          file_path: filePath,
+        }),
+      });
+
+      return response.json();
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      return "";
+    }
+  };
 
   const tab = searchParams.get("tab");
 
@@ -179,7 +295,7 @@ const Uploadbtn = () => {
                     client_id: params.client,
                     bucket_name: bucketName,
                     file_path: filePath,
-                    file_type : tab
+                    file_type: tab,
                   }),
                 }).then((response) => response.json());
               } else {
@@ -371,7 +487,10 @@ const Uploadbtn = () => {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5" onClick={() => handleOpenPicker()}>
+                        <Button
+                          className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                          onClick={() => handleOpenPicker()}
+                        >
                           <svg
                             width="22"
                             height="20"
