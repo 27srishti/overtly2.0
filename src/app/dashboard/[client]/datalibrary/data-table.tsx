@@ -44,6 +44,7 @@ import clearCachesByServerAction from "@/lib/revalidation";
 import { auth, db, storage } from "@/lib/firebase/firebase";
 import { deleteObject, ref } from "firebase/storage";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type FilesData = {
   id: string;
@@ -75,7 +76,7 @@ export function DataTable<TData extends FilesData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
+  const [rowSelection, setRowSelection] = React.useState({});
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
 
@@ -141,6 +142,28 @@ export function DataTable<TData extends FilesData, TValue>({
 
   const columns: ColumnDef<FilesData>[] = [
     {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
       accessorKey: "name",
       header: ({ column }) => {
         return (
@@ -162,7 +185,7 @@ export function DataTable<TData extends FilesData, TValue>({
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-               className="pl-0"
+            className="pl-0"
           >
             Type
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -270,7 +293,6 @@ export function DataTable<TData extends FilesData, TValue>({
 
   const [filterInput, setFilterInput] = React.useState(filterName);
   const [debouncedFilterInput] = useDebounce(filterInput, 500);
-
   React.useEffect(() => {
     setColumnFilters([{ id: "name", value: debouncedFilterInput }]);
   }, [debouncedFilterInput]);
@@ -306,6 +328,7 @@ export function DataTable<TData extends FilesData, TValue>({
       pagination,
       sorting,
       columnFilters,
+      rowSelection,
     },
     manualPagination: true,
     manualSorting: true,
@@ -316,6 +339,7 @@ export function DataTable<TData extends FilesData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
   });
 
   const handleChangeRowsPerPage = (newPerPage: number) => {
@@ -491,6 +515,13 @@ export function DataTable<TData extends FilesData, TValue>({
           </Button>
         </div>
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="lg"
+            className="rounded-[30px] bg-[#636363] text-white"
+          >
+            Delete Selected
+          </Button>
           <Button
             variant="outline"
             size="lg"

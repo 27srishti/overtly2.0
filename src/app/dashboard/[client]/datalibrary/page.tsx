@@ -14,8 +14,6 @@ import Newsarticle from "./newsarticle";
 import Link from "next/link";
 import { MediaTable } from "./media-table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Filetypes } from "@/lib/dropdown";
-import { Icons } from "@/components/ui/Icons";
 import FolderView from "./folderview";
 
 customInitApp();
