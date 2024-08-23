@@ -143,6 +143,7 @@ export function DataTable<TData extends FilesData, TValue>({
   const columns: ColumnDef<FilesData>[] = [
     {
       id: "select",
+      accessorKey: "id",
       header: ({ table }) => (
         <Checkbox
           checked={
@@ -269,7 +270,9 @@ export function DataTable<TData extends FilesData, TValue>({
     },
     [searchParams]
   );
-
+  const [selectedRows, setSelectedRows] = React.useState<
+    Record<string, boolean>
+  >({});
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: page - 1,
@@ -309,6 +312,9 @@ export function DataTable<TData extends FilesData, TValue>({
       })}`,
       { scroll: false }
     );
+
+    // Reset row selection when the page changes
+    setRowSelection({});
   }, [
     pageIndex,
     pageSize,
@@ -319,6 +325,7 @@ export function DataTable<TData extends FilesData, TValue>({
     router,
     debouncedFilterInput,
   ]);
+
 
   const table = useReactTable({
     data,
@@ -355,6 +362,8 @@ export function DataTable<TData extends FilesData, TValue>({
       router.push(`${pathname}?${queryString}`, { scroll: false });
     }
   };
+
+  console.log("data", rowSelection);
 
   return (
     <div>
