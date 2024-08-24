@@ -29,6 +29,9 @@ interface FileCollection {
 
 const Uploadbtn = () => {
   const [files, setFiles] = useState<File[]>([]);
+  const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
+    null
+  );
   const [fetchedFiles, setFetchedFiles] = useState<FileCollection[]>([]);
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -43,7 +46,21 @@ const Uploadbtn = () => {
 
   const [openPicker, authResponse] = useDrivePicker();
 
+  const { access_token } = authResponse || {};
+
+  let token = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (access_token !== undefined) {
+      token.current = access_token;
+    }
+  }, [access_token]);
+
+  console.log("dsdsa", token);
+
   const handleOpenPicker = () => {
+    setOpen(false);
+
     if (
       process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
       process.env.NEXT_PUBLIC_GOOGLE_API_KEY
@@ -52,12 +69,10 @@ const Uploadbtn = () => {
         clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
         developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
         viewId: "DOCS",
-        // token: token, // pass oauth token in case you already have one
         showUploadView: true,
         showUploadFolders: true,
         supportDrives: true,
         multiselect: true,
-        // customViews: customViewsArray, // custom view
         callbackFunction: async (data) => {
           if (data.action === "picked") {
             const driveFiles = data.docs.map((doc) => ({
@@ -67,54 +82,93 @@ const Uploadbtn = () => {
             }));
             await downloadAndUploadFiles(driveFiles);
           } else if (data.action === "cancel") {
+            setOpen(true);
             console.log("User clicked cancel/close button");
           }
         },
       });
     }
   };
-  console.log(authUser?.uid);
 
   const downloadAndUploadFiles = async (
     driveFiles: { id: string; name: string; mimeType: string }[]
   ) => {
+    setDownloadfromDrive(driveFiles.length);
     setLoading(true);
+    setOpen(true);
     setIsUploading(true);
-    const uploadPromises: Promise<string>[] = [];
-    let uploadedCount = 0;
 
-    for (const file of driveFiles) {
-      const fileBlob = await downloadFileFromDrive(file.id);
+    setUploadProgress(0);
+    setFakeProgress(0);
+    let uploadedCount = 0;
+    const uploadPromises = driveFiles.map(async (file) => {
+      const fileBlob = await downloadFileFromDrive(file.id, file.mimeType);
       if (fileBlob) {
-        uploadPromises.push(uploadFileToFirebase(fileBlob, file.name));
+        return uploadFileToFirebase(fileBlob, file.name);
       }
-    }
+    });
+
+    const fakeProgressInterval = setInterval(() => {
+      setFakeProgress((prev) => {
+        const nextProgress = Math.min(prev + 5, 85);
+        return nextProgress;
+      });
+    }, 150);
 
     try {
-      await Promise.all(uploadPromises);
+      await Promise.all(uploadPromises).then((data) => {
+        uploadedCount++;
+        setUploadProgress((uploadedCount / files.length) * 100);
+        return data;
+      });
       clearCachesByServerAction(pathname);
     } catch (error: any) {
       console.error("Error uploading files:", error);
     } finally {
+      setDownloadfromDrive(null);
       setLoading(false);
       setIsUploading(false);
       setFiles([]);
+      clearInterval(fakeProgressInterval);
+      setUploadProgress(0);
+      setFakeProgress(0);
     }
   };
 
-  const downloadFileFromDrive = async (fileId: string) => {
-    console.log(fileId, authResponse?.access_token);
+  const downloadFileFromDrive = async (fileId: string, mimeType: string) => {
     try {
-      const response = await fetch(
-        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
+      let url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
+
+      const fileMetadataResponse = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileId}?fields=mimeType,name`,
         {
           headers: {
-            Authorization: `Bearer ${authResponse?.access_token}`,
+            Authorization: `Bearer ${token.current}`,
           },
         }
       );
+      console.log(fileMetadataResponse);
 
-      console.log(response);
+      if (!fileMetadataResponse.ok) {
+        throw new Error(
+          `Failed to retrieve file metadata. Status: ${fileMetadataResponse.status}`
+        );
+      }
+
+      const fileMetadata = await fileMetadataResponse.json();
+
+      const isGoogleDocsFile = fileMetadata.mimeType.startsWith(
+        "application/vnd.google-apps."
+      );
+
+      if (isGoogleDocsFile) {
+        url = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=application/pdf`;
+      }
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token.current}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(
@@ -124,7 +178,7 @@ const Uploadbtn = () => {
 
       return await response.blob();
     } catch (error) {
-      console.error("Error downloading file:", error);
+      console.error("Error downloading or exporting file:", error);
       return null;
     }
   };
@@ -196,7 +250,6 @@ const Uploadbtn = () => {
 
   const tab = searchParams.get("tab");
 
-  console.log("tab", tab);
   const handleDialogOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
     if (isOpen) {
@@ -391,7 +444,7 @@ const Uploadbtn = () => {
                       />
                     </svg>
                     <div className="self-center text-[#545454]">
-                      Uploading {files.length} files...
+                      Uploading {files.length || DownloadfromDriven} files...
                     </div>
                   </div>
                   <div className="w-[90%] bg-[#E8E8E8] rounded-full">
