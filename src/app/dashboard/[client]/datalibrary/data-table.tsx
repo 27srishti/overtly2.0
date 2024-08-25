@@ -313,7 +313,6 @@ export function DataTable<TData extends FilesData, TValue>({
       { scroll: false }
     );
 
-    // Reset row selection when the page changes
     setRowSelection({});
   }, [
     pageIndex,
@@ -325,7 +324,6 @@ export function DataTable<TData extends FilesData, TValue>({
     router,
     debouncedFilterInput,
   ]);
-
 
   const table = useReactTable({
     data,
@@ -363,7 +361,92 @@ export function DataTable<TData extends FilesData, TValue>({
     }
   };
 
-  console.log("data", rowSelection);
+  const handleDeleteSelected = async () => {
+    const selectedRowIds = Object.keys(rowSelection).filter(
+      (id) => rowSelection[id]
+    );
+
+    if (selectedRowIds.length === 0) {
+      console.log("No rows selected");
+      return;
+    }
+
+    const authUser = auth.currentUser;
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    console.log(selectedRowIds);
+
+    try {
+      // Delete selected files from Firebase Storage and Firestore
+      for (const rowId of selectedRowIds) {
+        const row = table.getRowModel().rows.find((row) => row.id === rowId);
+        if (!row) continue;
+
+        console.log(row.original);
+
+        const file = row.original as FilesData;
+
+        // Delete file from Firebase Storage
+        const storageRef = ref(storage, file.url);
+        await deleteObject(storageRef);
+        console.log("File deleted from storage:", file.name);
+
+        // Delete file metadata from Firestore
+        const docRef = collection(
+          db,
+          `users/${authUser.uid}/clients/${params.client}/files`
+        );
+        const querySnapshot = await getDocs(docRef);
+        const docIdToDelete = querySnapshot.docs.find(
+          (doc) => doc.data().name === file.name
+        )?.id;
+
+        if (docIdToDelete) {
+          await deleteDoc(
+            doc(
+              db,
+              `users/${authUser.uid}/clients/${params.client}/files`,
+              docIdToDelete
+            )
+          );
+          console.log("File metadata deleted from Firestore:", file.name);
+        }
+
+        const url = `https://pr-ai-99.uc.r.appspot.com/file`;
+
+        return fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await authUser?.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            client_id: params.client,
+            file_name: file.bucketName,
+          }),
+        })
+          .then((response) => {
+            console.log(response.json());
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      // Clear row selection
+      setRowSelection({});
+
+      // Refresh data or clear the selected state if needed
+      clearCachesByServerAction(pathname);
+      console.log("Selected files deleted successfully");
+    } catch (error) {
+      console.error("Error deleting selected files:", error);
+    }finally{
+      // Refresh data or clear the selected state if needed
+      clearCachesByServerAction(pathname);
+    }
+  };
 
   return (
     <div>
@@ -528,6 +611,7 @@ export function DataTable<TData extends FilesData, TValue>({
             variant="outline"
             size="lg"
             className="rounded-[30px] bg-[#636363] text-white"
+            onClick={() => handleDeleteSelected()}
           >
             Delete Selected
           </Button>
