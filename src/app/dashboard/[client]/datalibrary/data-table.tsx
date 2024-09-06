@@ -45,6 +45,7 @@ import { auth, db, storage } from "@/lib/firebase/firebase";
 import { deleteObject, ref } from "firebase/storage";
 import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Icons } from "@/components/ui/Icons";
 
 export type FilesData = {
   id: string;
@@ -73,10 +74,13 @@ export function DataTable<TData extends FilesData, TValue>({
   const searchParams = useSearchParams();
   const params = useParams<{ client: string }>();
   const [list, setlist] = React.useState(true);
+  const [deletingRows, setDeletingRows] = React.useState(false);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [selectedRows, setSelectedRows] = React.useState<
+    Record<string, boolean>
+  >({});
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
 
@@ -147,17 +151,30 @@ export function DataTable<TData extends FilesData, TValue>({
       header: ({ table }) => (
         <Checkbox
           checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
+            table
+              .getFilteredRowModel()
+              .rows.every((row) => selectedRows[row.original.id]) &&
+            table.getFilteredRowModel().rows.length > 0
           }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={(value) => {
+            const newSelectedRows = { ...selectedRows };
+            table.getFilteredRowModel().rows.forEach((row) => {
+              newSelectedRows[row.original.id] = !!value;
+            });
+            setSelectedRows(newSelectedRows);
+          }}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          checked={selectedRows[row.original.id] || false}
+          onCheckedChange={(value) => {
+            setSelectedRows((prev) => ({
+              ...prev,
+              [row.original.id]: !!value,
+            }));
+          }}
           aria-label="Select row"
         />
       ),
@@ -270,9 +287,6 @@ export function DataTable<TData extends FilesData, TValue>({
     },
     [searchParams]
   );
-  const [selectedRows, setSelectedRows] = React.useState<
-    Record<string, boolean>
-  >({});
   const [{ pageIndex, pageSize }, setPagination] =
     React.useState<PaginationState>({
       pageIndex: page - 1,
@@ -312,8 +326,6 @@ export function DataTable<TData extends FilesData, TValue>({
       })}`,
       { scroll: false }
     );
-
-    setRowSelection({});
   }, [
     pageIndex,
     pageSize,
@@ -333,7 +345,7 @@ export function DataTable<TData extends FilesData, TValue>({
       pagination,
       sorting,
       columnFilters,
-      rowSelection,
+      rowSelection: selectedRows,
     },
     manualPagination: true,
     manualSorting: true,
@@ -344,7 +356,18 @@ export function DataTable<TData extends FilesData, TValue>({
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: (updatedSelection) => {
+      setSelectedRows((prev) => {
+        const newSelection: Record<string, boolean> = {};
+        for (const [id, isSelected] of Object.entries(updatedSelection)) {
+          const row = table.getRow(id);
+          if (row) {
+            newSelection[row.original.id] = isSelected;
+          }
+        }
+        return { ...prev, ...newSelection };
+      });
+    },
   });
 
   const handleChangeRowsPerPage = (newPerPage: number) => {
@@ -362,8 +385,9 @@ export function DataTable<TData extends FilesData, TValue>({
   };
 
   const handleDeleteSelected = async () => {
-    const selectedRowIds = Object.keys(rowSelection).filter(
-      (id) => rowSelection[id]
+    setDeletingRows(true);
+    const selectedRowIds = Object.keys(selectedRows).filter(
+      (id) => selectedRows[id]
     );
 
     if (selectedRowIds.length === 0) {
@@ -382,7 +406,9 @@ export function DataTable<TData extends FilesData, TValue>({
     try {
       // Delete selected files from Firebase Storage and Firestore
       for (const rowId of selectedRowIds) {
-        const row = table.getRowModel().rows.find((row) => row.id === rowId);
+        const row = table
+          .getRowModel()
+          .rows.find((row) => row.original.id === rowId);
         if (!row) continue;
 
         console.log(row.original);
@@ -434,17 +460,16 @@ export function DataTable<TData extends FilesData, TValue>({
           .catch((error) => console.error("Error:", error));
       }
 
-      // Clear row selection
-      setRowSelection({});
-
       // Refresh data or clear the selected state if needed
       clearCachesByServerAction(pathname);
       console.log("Selected files deleted successfully");
     } catch (error) {
       console.error("Error deleting selected files:", error);
-    }finally{
-      // Refresh data or clear the selected state if needed
+    } finally {
+      // Clear row selection
+      setSelectedRows({});
       clearCachesByServerAction(pathname);
+      setDeletingRows(false);
     }
   };
 
@@ -607,14 +632,19 @@ export function DataTable<TData extends FilesData, TValue>({
           </Button>
         </div>
         <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-[30px] bg-[#636363] text-white"
-            onClick={() => handleDeleteSelected()}
-          >
-            Delete Selected
-          </Button>
+          {Object.values(selectedRows).some((isSelected) => isSelected) && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-[30px] bg-[#636363] text-white"
+              onClick={() => handleDeleteSelected()}
+            >
+              <div>Delete Selected</div>
+              {deletingRows && (
+                <Icons.spinner className="ml-2 h-4 w-4 animate-spin" />
+              )}
+            </Button>
+          )}
           <Button
             variant="outline"
             size="lg"
