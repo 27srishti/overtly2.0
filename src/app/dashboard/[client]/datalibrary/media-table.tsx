@@ -39,9 +39,19 @@ import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
 import { ArrowUpDown } from "lucide-react";
 import clearCachesByServerAction from "@/lib/revalidation";
-import { auth } from "@/lib/firebase/firebase";
+import { auth, db } from "@/lib/firebase/firebase";
 import { Avatar } from "@radix-ui/react-avatar";
 import { AvatarImage } from "@/components/ui/avatar";
+import {
+  arrayRemove,
+  collection,
+  doc,
+  getDoc,
+  updateDoc,
+  writeBatch,
+} from "firebase/firestore";
+import { toast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type FilesData = {
   email: string;
@@ -66,7 +76,15 @@ export function MediaTable<TData extends FilesData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const params = useParams<{ client: string }>();
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [selectedRows, setSelectedRows] = React.useState<
+    Record<string, boolean>
+  >({});
+
+  const getSelectedRowData = () => {
+    return table.getSelectedRowModel().rows.map((row) => row.original);
+  };
 
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
@@ -75,9 +93,96 @@ export function MediaTable<TData extends FilesData, TValue>({
       console.error("User is not authenticated");
       return;
     }
+
+    const userRef = doc(db, "users", authUser.uid);
+    const clientRef = doc(userRef, "clients", params.client);
+
+    try {
+      const clientDoc = await getDoc(clientRef);
+      if (!clientDoc.exists()) {
+        throw new Error("Client document not found");
+      }
+
+      await updateDoc(clientRef, {
+        journalists: arrayRemove(file),
+      });
+
+      clearCachesByServerAction(params.client);
+
+      toast({
+        title: "Journalist removed",
+        description:
+          "The journalist has been successfully removed from the client.",
+      });
+    } catch (error) {
+      console.error("Error deleting journalist:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while removing the journalist.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteSelectedFiles = async () => {
+    const authUser = auth.currentUser;
+
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    const userRef = doc(db, "users", authUser.uid);
+    const clientRef = doc(userRef, "clients", params.client);
+
+    try {
+      const selectedFiles = getSelectedRowData();
+      // Perform delete operation with selectedFiles
+      console.log(selectedFiles); // For debugging purposes
+
+      // Example: Deleting each selected file
+      for (const file of selectedFiles) {
+        await updateDoc(clientRef, {
+          journalists: arrayRemove(file),
+        });
+      }
+
+      clearCachesByServerAction(params.client);
+
+      toast({
+        title: "Journalists removed",
+        description: "The selected journalists have been successfully removed from the client.",
+      });
+    } catch (error) {
+      console.error("Error deleting journalists:", error);
+      toast({
+        title: "Error",
+        description: "An error occurred while removing the journalists.",
+        variant: "destructive",
+      });
+    }
   };
 
   const columns: ColumnDef<FilesData>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "name",
       header: "",
@@ -102,14 +207,14 @@ export function MediaTable<TData extends FilesData, TValue>({
         const data = row.original;
         return (
           <div className="flex flex-col">
-          <div className="text-[#3E3E3E] font-semibold text-[15px]">
-            {" "}
-            {data.name}
+            <div className="text-[#3E3E3E] font-semibold text-[15px]">
+              {" "}
+              {data.name}
+            </div>
+            <div className="text-[#6B6B6B] font-medium textt-[10px]">
+              {data.email}
+            </div>
           </div>
-          <div className="text-[#6B6B6B] font-medium textt-[10px]">
-            {data.email}
-          </div>
-        </div>
         );
       },
     },
@@ -220,7 +325,9 @@ export function MediaTable<TData extends FilesData, TValue>({
     state: {
       columnFilters,
       sorting,
+      rowSelection: selectedRows,
     },
+    onRowSelectionChange: setSelectedRows,
     manualPagination: true,
     manualSorting: true,
     getCoreRowModel: getCoreRowModel(),
@@ -229,9 +336,20 @@ export function MediaTable<TData extends FilesData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  const deleteSelectedButton = (
+    <Button
+      onClick={handleDeleteSelectedFiles}
+      disabled={Object.values(selectedRows).filter(Boolean).length === 0}
+      className="bg-red-500 hover:bg-red-600 text-white"
+    >
+      Delete Selected
+    </Button>
+  );
+
   return (
     <div>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-between">
+        {deleteSelectedButton}
         <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
           <Input
             placeholder="Filter name..."
@@ -241,7 +359,6 @@ export function MediaTable<TData extends FilesData, TValue>({
             }
             className="shadow-none border-none"
           />
-
           <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
             <svg
               viewBox="0 0 14 14"
@@ -292,7 +409,7 @@ export function MediaTable<TData extends FilesData, TValue>({
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
-                      key={cell.id}
+                      key={`${row.id}_${cell.column.id}`}
                       className={cn(" p-2 bg-[#D8D8D8] bg-opacity-20", {
                         "rounded-tl-xl rounded-bl-xl": index === 0,
                         "rounded-tr-xl rounded-br-xl":
