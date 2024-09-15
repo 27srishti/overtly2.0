@@ -54,13 +54,18 @@ async function getData(
       ) as CollectionReference<DocumentData>;
     }
 
+    console.log(name);
+
     // Add filtering by name if provided
     if (name) {
-      cityRef = cityRef.where(
-        "name",
-        "==",
-        name
-      ) as CollectionReference<DocumentData>;
+      cityRef = cityRef
+        .orderBy("name")
+        .where("name", ">=", name)
+        .where(
+          "name",
+          "<=",
+          name + "\uf8ff"
+        ) as CollectionReference<DocumentData>;
     }
 
     // Get total count of documents
