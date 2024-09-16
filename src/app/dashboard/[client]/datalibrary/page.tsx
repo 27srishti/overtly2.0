@@ -56,16 +56,39 @@ async function getData(
 
     console.log(name);
 
-    // Add filtering by name if provided
+    // Add filtering by name, email, or number if provided
     if (name) {
-      cityRef = cityRef
-        .orderBy("name")
-        .where("name", ">=", name)
-        .where(
-          "name",
-          "<=",
-          name + "\uf8ff"
-        ) as CollectionReference<DocumentData>;
+      const isEmail = name.includes("@");
+      const isNumber = !isNaN(Number(name));
+
+      if (isEmail) {
+        cityRef = cityRef
+          .orderBy("email")
+          .where("email", ">=", name)
+          .where(
+            "email",
+            "<=",
+            name + "\uf8ff"
+          ) as CollectionReference<DocumentData>;
+      } else if (isNumber) {
+        cityRef = cityRef
+          .orderBy("number")
+          .where("number", ">=", name)
+          .where(
+            "number",
+            "<=",
+            name + "\uf8ff"
+          ) as CollectionReference<DocumentData>;
+      } else {
+        cityRef = cityRef
+          .orderBy("name")
+          .where("name", ">=", name)
+          .where(
+            "name",
+            "<=",
+            name + "\uf8ff"
+          ) as CollectionReference<DocumentData>;
+      }
     }
 
     // Get total count of documents
