@@ -81,6 +81,7 @@ export function MediaTable<TData extends FilesData, TValue>({
   const [selectedRows, setSelectedRows] = React.useState<
     Record<string, boolean>
   >({});
+  const [filterValue, setFilterValue] = React.useState("");
 
   const getSelectedRowData = () => {
     return table.getSelectedRowModel().rows.map((row) => row.original);
@@ -151,7 +152,8 @@ export function MediaTable<TData extends FilesData, TValue>({
 
       toast({
         title: "Journalists removed",
-        description: "The selected journalists have been successfully removed from the client.",
+        description:
+          "The selected journalists have been successfully removed from the client.",
       });
     } catch (error) {
       console.error("Error deleting journalists:", error);
@@ -352,11 +354,26 @@ export function MediaTable<TData extends FilesData, TValue>({
         {deleteSelectedButton}
         <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
           <Input
-            placeholder="Filter name..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
-            }
+            placeholder="Filter..."
+            value={filterValue}
+            onChange={(event) => {
+              const value = event.target.value;
+              setFilterValue(value);
+
+              if (value.includes("@")) {
+                table.getColumn("email")?.setFilterValue(value);
+                table.getColumn("name")?.setFilterValue("");
+                table.getColumn("phone")?.setFilterValue("");
+              } else if (/^\d+$/.test(value)) {
+                table.getColumn("phone")?.setFilterValue(value);
+                table.getColumn("name")?.setFilterValue("");
+                table.getColumn("email")?.setFilterValue("");
+              } else {
+                table.getColumn("name")?.setFilterValue(value);
+                table.getColumn("email")?.setFilterValue("");
+                table.getColumn("phone")?.setFilterValue("");
+              }
+            }}
             className="shadow-none border-none"
           />
           <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
