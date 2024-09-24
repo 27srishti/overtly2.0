@@ -168,7 +168,7 @@ export default async function Page({
   const perPage = parseInt(searchParams.per_page as string, 10) || 10;
   const sort = searchParams.sort || "";
   const name = searchParams.name || "";
-  const list = searchParams.view || "list";
+  const list = searchParams.view || "folder";
 
   const { data, total } = await getData(
     page,
@@ -199,7 +199,7 @@ export default async function Page({
           <TabsList className="mb-5 flex flex-row justify-between ml-3">
             <div className="flex gap-8">
               <Link
-                href={`/dashboard/${params.client}/datalibrary?tab=documents&page=1&per_page=5`}
+                href={`/dashboard/${params.client}/datalibrary?tab=documents&page=1&per_page=5&view=folder`}
               >
                 <TabsTrigger
                   value="documents"

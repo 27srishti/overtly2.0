@@ -197,17 +197,14 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                   </div>
                 </div>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[30vw] min-h-[20vw] p-10 px-12">
+              <DialogContent className="sm:max-w-[425px] font-montserrat text-[#545454] min-w-[40vw] min-h-[25vw] p-10 px-12 flex flex-col justify-around">
                 <DialogHeader>
                   <DialogTitle className="text-xl mt-3 ml-1  font-medium">
-                  Guide Idea Generation
+                    Guide Idea Generation
                   </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className=""
-                  >
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="">
                     <FormField
                       control={form.control}
                       name="contextText"
@@ -217,10 +214,8 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                             <Textarea
                               placeholder="Ex: Give me ideas regarding .... With ... perspective"
                               {...field}
-                              className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11"
-                            rows={4}
-                            style={{ height: '120px', minHeight: '120px', resize: 'none' }}
-                              
+                              className="w-full grey shadow-none outline-none border-0 rounded-lg  h-11 w-full h-[25vh] resize-none"
+                              rows={4}
                             />
                           </FormControl>
                           <FormMessage />
