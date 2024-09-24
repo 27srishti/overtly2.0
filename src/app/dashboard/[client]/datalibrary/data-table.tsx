@@ -43,11 +43,26 @@ import { ArrowUpDown } from "lucide-react";
 import clearCachesByServerAction from "@/lib/revalidation";
 import { auth, db, storage } from "@/lib/firebase/firebase";
 import { deleteObject, ref } from "firebase/storage";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Icons } from "@/components/ui/Icons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Filetypes } from "@/lib/dropdown";
 
 export type FilesData = {
+  file_type: string | undefined;
   id: string;
   url: string;
   name: string;
@@ -144,6 +159,30 @@ export function DataTable<TData extends FilesData, TValue>({
     }
   };
 
+  const handleUpdateFile = async (file: FilesData, newFileType: string) => {
+    const authUser = auth.currentUser;
+
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    try {
+      const docRef = doc(
+        db,
+        `users/${authUser.uid}/clients/${params.client}/files`,
+        file.id
+      );
+
+      await updateDoc(docRef, {
+        file_type: newFileType,
+      });
+      console.log("File type updated in Firestore:", file.name);
+    } catch (error) {
+      console.error("Error updating file type in Firestore:", error);
+    }
+  };
+
   const columns: ColumnDef<FilesData>[] = [
     {
       id: "select",
@@ -197,7 +236,7 @@ export function DataTable<TData extends FilesData, TValue>({
       },
     },
     {
-      accessorKey: "type",
+      accessorKey: "filetype",
       header: ({ column }) => {
         return (
           <Button
@@ -205,9 +244,33 @@ export function DataTable<TData extends FilesData, TValue>({
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
             className="pl-0"
           >
-            Type
+            File type
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const data = row.original;
+        return (
+          <Select
+            defaultValue={data.file_type}
+            onValueChange={(value) => handleUpdateFile(data, value)} // Pass the file data and new value
+          >
+            <SelectTrigger className="px-5 w-[250px] bg-white border-none shadow-none rounded-[40px] text-center font-medium bg-opacity-60">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {Filetypes.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="font-montserrat"
+                >
+                  {option.value}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         );
       },
     },

@@ -110,6 +110,7 @@ async function getData(
       createdAt: doc.data().createdAt,
       bucketName: doc.data().bucketName,
       filesCategory: doc.data().filesCategory,
+      file_type: doc.data().file_type,
     }));
 
     // console.log("Fetch successful:", files);
