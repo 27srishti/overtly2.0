@@ -122,7 +122,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
                 <Link
-                  href={`/dashboard/${params.client}/datalibrary?page=1&per_page=5&sort=type.desc&view=list`}
+                  href={`/dashboard/${params.client}/datalibrary?page=1&per_page=5&sort=type.desc&view=folder`}
                 >
                   <div
                     className={`${
