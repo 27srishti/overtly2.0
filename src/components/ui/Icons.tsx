@@ -401,16 +401,16 @@ export const Icons = {
       <path
         d="M8.5 1H13.0022V5.5"
         stroke="black"
-        stroke-opacity="0.41"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeOpacity="0.41"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d="M5.5 13L1.00167 13L1 8.5"
         stroke="black"
-        stroke-opacity="0.41"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeOpacity="0.41"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   ),

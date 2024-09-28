@@ -14,13 +14,24 @@ import {
   useParams,
 } from "next/navigation";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Icons } from "@/components/ui/Icons";
 import { Input } from "@/components/ui/input";
 import { Filetypes } from "@/lib/dropdown";
 import { DashboardIcon, ListBulletIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { auth, db } from "@/lib/firebase/firebase";
-import { doc } from "firebase/firestore";
+import { auth, db, storage } from "@/lib/firebase/firebase";
+import { deleteDoc, doc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {
   Table,
@@ -37,6 +48,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { deleteObject, ref } from "firebase/storage";
+import clearCachesByServerAction from "@/lib/revalidation";
+import Uploadbtn from "./specificfileupload";
 
 interface File {
   name: string;
@@ -44,6 +58,18 @@ interface File {
   industry: string;
   id: string;
 }
+
+export type FilesData = {
+  file_type: string | undefined;
+  id: string;
+  url: string;
+  name: string;
+  originalName: string;
+  type: string;
+  createdAt: string;
+  bucketName: string;
+  filesCategory: string;
+};
 
 const FolderView = () => {
   const [list, setList] = useState(false);
@@ -54,7 +80,8 @@ const FolderView = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const [currentFiles, setCurrentFiles] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FilesData[]>([]);
+  const [uploadfiles, uploadsetFiles] = useState<File[]>([]);
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
@@ -78,7 +105,7 @@ const FolderView = () => {
         industry: "Default",
         id: file.name,
       }));
-      setFiles(filesArray);
+      uploadsetFiles(filesArray);
     }
   };
 
@@ -98,7 +125,7 @@ const FolderView = () => {
         industry: "Default",
         id: file.name,
       }));
-      setFiles(filesArray);
+      uploadsetFiles(filesArray);
       e.dataTransfer.clearData();
     }
   };
@@ -141,7 +168,7 @@ const FolderView = () => {
   }, [currentFiles]);
 
   const handleFileTypeSelect = (value: string) => {
-    setCurrentFiles(value); // Set currentFiles to the selected file type
+    setCurrentFiles(value);
   };
 
   const FetchcurrentFiletypefiles = async () => {
@@ -166,12 +193,76 @@ const FolderView = () => {
       const fetchedFiles = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as File[];
+      })) as FilesData[];
 
       console.log("Fetched files:", fetchedFiles); // Log fetched files
       setFiles(fetchedFiles);
     } catch (error) {
       console.error("Error fetching files from Firestore:", error);
+    }
+  };
+
+  const handleDeleteFile = async (file: FilesData) => {
+    const authUser = auth.currentUser;
+
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    const storageRef = ref(storage, file.url);
+
+    try {
+      await deleteObject(storageRef);
+      console.log("File deleted from storage:", file.name);
+    } catch (error) {
+      console.error("Error deleting file from storage:", error);
+      return;
+    }
+
+    try {
+      const docRef = collection(
+        db,
+        `users/${authUser?.uid}/clients/${params.client}/files`
+      );
+      const querySnapshot = await getDocs(docRef);
+      const docIdToDelete = querySnapshot.docs.find(
+        (doc) => doc.data().name === file.name
+      )?.id;
+
+      if (docIdToDelete) {
+        await deleteDoc(
+          doc(
+            db,
+            `users/${authUser?.uid}/clients/${params.client}/files`,
+            docIdToDelete
+          )
+        );
+        console.log("File metadata deleted from Firestore:", file.name);
+
+        const url = `https://pr-ai-99.uc.r.appspot.com/file`;
+
+        return fetch(url, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await authUser?.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            client_id: params.client,
+            file_name: file.bucketName,
+          }),
+        })
+          .then((response) => {
+            console.log(response.json());
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    } catch (error) {
+      console.error("Error deleting file metadata from Firestore:", error);
+    } finally {
+      clearCachesByServerAction(pathname);
+      FetchcurrentFiletypefiles();
     }
   };
 
@@ -234,193 +325,7 @@ const FolderView = () => {
                     </div>
                   </div>
                   <>
-                    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
-                      <DialogTrigger>
-                        <div className="gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-4 py-[.7rem]">
-                          <div className="ml-1 font-montserrat text-[#545454]">
-                            Upload files
-                          </div>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            height="24px"
-                            viewBox="0 0 24 24"
-                            width="24px"
-                            fill="#545454"
-                          >
-                            <path d="M0 0h24v24H0z" fill="none" />
-                            <path
-                              d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
-                              className="w-6 h-6"
-                            />
-                          </svg>
-                        </div>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[900px] p-0">
-                        <div className="flex items-center justify-center font-montserrat text-[#545454] p-10 py-10 flex-col gap-8">
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            onChange={handleFileChange}
-                            multiple
-                          />
-                          {isUploading ? (
-                            <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col gap-10 ">
-                              <div className="text-xl font-medium">
-                                Upload Files
-                              </div>
-                              <div className="rounded-lg flex flex-col items-center justify-center py-[5rem] cursor-pointer w-full border-spacing-[7px]">
-                                <div className="text-gray-400 flex gap-3 mb-10 pt-8">
-                                  <svg
-                                    width="25"
-                                    height="31"
-                                    viewBox="0 0 25 31"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="w-6 h-6"
-                                  >
-                                    <path
-                                      d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
-                                      fill="#545454"
-                                    />
-                                  </svg>
-                                  <div className="self-center text-[#545454]">
-                                    Uploading{" "}
-                                    {files.length || DownloadfromDriven}{" "}
-                                    files...
-                                  </div>
-                                </div>
-                                <div className="w-[90%] bg-[#E8E8E8] rounded-full">
-                                  <div
-                                    className="progressbar rounded-full p-[0.15rem]"
-                                    style={{
-                                      width: `${Math.max(
-                                        fakeProgress,
-                                        uploadProgress
-                                      )}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                              </div>
-
-                              <div className="w-full flex justify-center gap-4 mt-10">
-                                <Button
-                                  className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
-                                  onClick={handleFileClick}
-                                >
-                                  <svg
-                                    width="14"
-                                    height="14"
-                                    viewBox="0 0 14 14"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="w-4 h-6"
-                                  >
-                                    <path
-                                      d="M14 8H8V14H6V8H0V6H6V0H8V6H14V8Z"
-                                      fill="white"
-                                    />
-                                  </svg>
-                                  Choose more Files
-                                </Button>
-                                <Button
-                                  className="mt-4 text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
-                                  onClick={() => {
-                                    setOpen(false);
-                                  }}
-                                >
-                                  Done
-                                </Button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              <div className="w-full items-center justify-center font-montserrat text-[#545454] flex-col px-4">
-                                <div className="text-xl font-medium">
-                                  Upload Files
-                                </div>
-                                <div
-                                  className="mt-2 relative cursor-pointer mt-6"
-                                  onClick={handleFileClick}
-                                  onDrop={handleFileDrop}
-                                  onDragOver={(e) => e.preventDefault()}
-                                >
-                                  <svg
-                                    width="100%"
-                                    height="272"
-                                    viewBox="0 0 893 272"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <rect
-                                      x="0.5"
-                                      y="0.5"
-                                      width="892"
-                                      height="271"
-                                      rx="24.5"
-                                      stroke="#5B6FA4"
-                                      stroke-linecap="round"
-                                      stroke-dasharray="7 15"
-                                    />
-                                  </svg>
-                                  <div className="flex gap-3 font-medium font-montserrat text-lg absolute top-[47%] w-full text-center justify-center">
-                                    <svg
-                                      width="25"
-                                      height="31"
-                                      viewBox="0 0 25 31"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      className="w-6 h-6"
-                                    >
-                                      <path
-                                        d="M15.4154 0.916504H3.7487C2.14453 0.916504 0.846615 2.229 0.846615 3.83317L0.832031 27.1665C0.832031 28.7707 2.12995 30.0832 3.73411 30.0832H21.2487C22.8529 30.0832 24.1654 28.7707 24.1654 27.1665V9.6665L15.4154 0.916504ZM21.2487 27.1665H3.7487V3.83317H13.957V11.1248H21.2487V27.1665ZM6.66536 19.8894L8.72161 21.9457L11.0404 19.6415V25.7082H13.957V19.6415L16.2758 21.9603L18.332 19.8894L12.5133 14.0415L6.66536 19.8894Z"
-                                        fill="#5C5C5E"
-                                      />
-                                    </svg>
-                                    Drag and drop files
-                                  </div>
-                                </div>
-                              </div>
-                              <div>OR</div>
-                              <div
-                                onFocusCapture={(e) => {
-                                  e.stopPropagation();
-                                }}
-                              >
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
-                                        onClick={() => handleOpenPicker()}
-                                      >
-                                        <svg
-                                          width="22"
-                                          height="20"
-                                          viewBox="0 0 22 20"
-                                          fill="none"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          className="w-4 h-6"
-                                        >
-                                          <path
-                                            d="M18.9997 19V16H21.9997V14H18.9997V11H16.9997V14H13.9997V16H16.9997V19H18.9997ZM14.0297 19.5H4.65974C3.93974 19.5 3.27974 19.12 2.92974 18.5L0.56974 14.4C0.20974 13.78 0.20974 13.05 0.56974 12.43L6.91974 1.5C7.26974 0.88 7.93974 0.5 8.64974 0.5H13.3497C14.0797 0.5 14.7197 0.88 15.0797 1.49L19.5597 9.2C19.0597 9.07 18.5397 9 17.9997 9C17.7197 9 17.4397 9.02 17.1597 9.06L13.3497 2.5H8.64974L2.30974 13.41L4.65974 17.5H12.5497C12.8997 18.27 13.3997 18.95 14.0297 19.5ZM12.3397 13C12.1197 13.63 11.9997 14.3 11.9997 15H6.24974L5.51974 13.73L10.0997 5.75H11.8997L14.4297 10.17C13.8697 10.59 13.3797 11.1 12.9897 11.68L10.9897 8.19L8.24974 13H12.3397Z"
-                                            fill="white"
-                                          />
-                                        </svg>
-                                        Upload From Drive
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent className="bg-[#5C5C5C]">
-                                      <p>Comming soon</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                    <Uploadbtn data={option}/>
                   </>
                 </div>
 
@@ -451,6 +356,47 @@ const FolderView = () => {
 
                               {file.name}
                             </div>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className="w-10 h-10 rounded-full border bg-transparent shadow-none border-[#797979] border-opacity-30"
+                                >
+                                  <svg
+                                    viewBox="0 0 8 8"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="min-w-[.6rem]"
+                                  >
+                                    <path
+                                      d="M8 0.805714L7.19429 0L4 3.19429L0.805714 0L0 0.805714L3.19429 4L0 7.19429L0.805714 8L4 4.80571L7.19429 8L8 7.19429L4.80571 4L8 0.805714Z"
+                                      fill="black"
+                                    />
+                                  </svg>
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete your file
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => {
+                                      handleDeleteFile(file);
+                                    }}
+                                  >
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         ))
                       ) : (

@@ -27,7 +27,9 @@ interface FileCollection {
   filesCategory: string;
 }
 
-const Uploadbtn = () => {
+const Uploadbtn = (props: { data: any }) => {
+  console.log("prospdklsapkdisahjjdhsaj", props.data);
+
   const [files, setFiles] = useState<File[]>([]);
   const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
     null
@@ -55,7 +57,6 @@ const Uploadbtn = () => {
       token.current = access_token;
     }
   }, [access_token]);
-
 
   const handleOpenPicker = () => {
     setOpen(false);
@@ -221,6 +222,7 @@ const Uploadbtn = () => {
         bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
         type: fileBlob.type,
         createdAt: Date.now(),
+        file_type: props.data.value,
       };
 
       await setDoc(docRef, data);
@@ -330,6 +332,7 @@ const Uploadbtn = () => {
                 bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
                 type: file.type,
                 createdAt: Date.now(),
+                file_type: props.data.value,
               };
 
               await setDoc(docRef, data);
