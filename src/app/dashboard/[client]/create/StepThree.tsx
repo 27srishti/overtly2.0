@@ -238,13 +238,13 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
         </div>
         <ScrollArea className=" rounded-lg mt-6 flex flex-col gap-6 py-8 lg:px-10 px-5 max-h-[50vh] bg-white rounded-2xl w-[50vw]">
           {loading ? (
-            <>
+            <div>
               <Skeleton className="h-16 w-full mb-3" />
               <Skeleton className="h-16 w-full mb-3" />
               <Skeleton className="h-16 w-full mb-3" />
               <Skeleton className="h-16 w-full mb-3" />
               <Skeleton className="h-16 w-full mb-3" />
-            </>
+            </div>
           ) : (
             <Accordion
               type="single"
