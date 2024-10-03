@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+import dns from 'dns';
+dns.setDefaultResultOrder("ipv4first")
 const nextConfig = {
   webpack: (config, { isServer }) => {
     // Add raw-loader for HTML files
