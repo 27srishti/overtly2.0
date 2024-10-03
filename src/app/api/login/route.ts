@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ isLogged: false }, { status: 401 });
     }
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     return NextResponse.json({ isLogged: false }, { status: 401 });
   }
 }
