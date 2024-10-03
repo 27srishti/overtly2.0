@@ -4,6 +4,12 @@ import type { NextRequest } from "next/server";
 export async function middleware(request: NextRequest) {
   const session = request.cookies.get("session");
 
+  // Set origin based on environment or fallback to request origin
+  const origin =
+    process.env.APPLICATION_URL
+      ? `https://${process.env.APPLICATION_URL}`
+      : request.nextUrl.origin;
+
   // Check if the user is accessing the dashboard
   if (request.nextUrl.pathname.startsWith("/dashboard")) {
     if (!session) {
@@ -13,7 +19,7 @@ export async function middleware(request: NextRequest) {
 
     try {
       // Validate the session using the internal API
-      const responseAPI = await fetch(`${request.nextUrl.origin}/api/login`, {
+      const responseAPI = await fetch(`${origin}/api/login`, {
         headers: {
           Cookie: `session=${session?.value}`,
         },
@@ -25,10 +31,10 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       console.error("Error during session validation:", error);
-      console.log(session?.value);
-      console.log(request.nextUrl.origin);
-      console.log(request.url);
-      console.log(process.env.clientEmail);
+      console.log("Session Value:", session?.value);
+      console.log("Origin:", origin);
+      console.log("Request URL:", request.url);
+      console.log("Client Email (from env):", process.env.clientEmail);
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
@@ -40,7 +46,7 @@ export async function middleware(request: NextRequest) {
   ) {
     try {
       // Validate the session using the internal API
-      const responseAPI = await fetch(`${request.nextUrl.origin}/api/login`, {
+      const responseAPI = await fetch(`${origin}/api/login`, {
         headers: {
           Cookie: `session=${session?.value}`,
         },
@@ -52,9 +58,9 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       console.error("Error during session validation:", error);
-      console.log(session?.value);
-      console.log(request.nextUrl.origin);
-      console.log(request.url);
+      console.log("Session Value:", session?.value);
+      console.log("Origin:", origin);
+      console.log("Request URL:", request.url);
     }
   }
 
