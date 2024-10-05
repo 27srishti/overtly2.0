@@ -58,35 +58,53 @@ const Uploadbtn = (props: { data: any }) => {
     }
   }, [access_token]);
 
-  const handleOpenPicker = () => {
+  const handleOpenPicker = async () => {
     setOpen(false);
 
-    if (
-      process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
-      process.env.NEXT_PUBLIC_GOOGLE_API_KEY
-    ) {
-      openPicker({
-        clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-        developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
-        viewId: "DOCS",
-        showUploadView: true,
-        showUploadFolders: true,
-        supportDrives: true,
-        multiselect: true,
-        callbackFunction: async (data) => {
-          if (data.action === "picked") {
-            const driveFiles = data.docs.map((doc) => ({
-              id: doc.id,
-              name: doc.name,
-              mimeType: doc.mimeType,
-            }));
-            await downloadAndUploadFiles(driveFiles);
-          } else if (data.action === "cancel") {
-            setOpen(true);
-            console.log("User clicked cancel/close button");
-          }
-        },
-      });
+    try {
+      if (
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
+        process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+      ) {
+        openPicker({
+          clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+          developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+          viewId: "DOCS",
+          showUploadView: true,
+          showUploadFolders: true,
+          supportDrives: true,
+          multiselect: true,
+          callbackFunction: async (data) => {
+            try {
+              if (data.action === "picked") {
+                const driveFiles = data.docs.map((doc) => ({
+                  id: doc.id,
+                  name: doc.name,
+                  mimeType: doc.mimeType,
+                }));
+                await downloadAndUploadFiles(driveFiles);
+              } else if (data.action === "cancel") {
+                setOpen(true);
+                console.log("User clicked cancel/close button");
+              }
+            } catch (error) {
+              console.error("Error during file processing:", error);
+              setOpen(true); // Reopen picker in case of error
+              alert("An error occurred while processing the selected files.");
+            }
+          },
+        });
+      } else {
+        throw new Error(
+          "Google Client ID and API Key are required but not provided."
+        );
+      }
+    } catch (error) {
+      console.error("Error opening Google Picker:", error);
+      alert(
+        "An error occurred while opening the Google Picker. Please try again later."
+      );
+      setOpen(true); // Ensure the picker can be reopened in case of an error
     }
   };
 
@@ -101,10 +119,22 @@ const Uploadbtn = (props: { data: any }) => {
     setUploadProgress(0);
     setFakeProgress(0);
     let uploadedCount = 0;
+
     const uploadPromises = driveFiles.map(async (file) => {
-      const fileBlob = await downloadFileFromDrive(file.id, file.mimeType);
-      if (fileBlob) {
-        return uploadFileToFirebase(fileBlob, file.name);
+      try {
+        const fileBlob = await downloadFileFromDrive(file.id, file.mimeType);
+        if (fileBlob) {
+          await uploadFileToFirebase(fileBlob, file.name);
+          uploadedCount++;
+          setUploadProgress((uploadedCount / driveFiles.length) * 100);
+        } else {
+          throw new Error(`Failed to download file: ${file.name}`);
+        }
+      } catch (error) {
+        console.error(`Error with file ${file.name}:`, error);
+        alert(
+          `An error occurred while uploading ${file.name}. Please try again.`
+        );
       }
     });
 
@@ -116,14 +146,11 @@ const Uploadbtn = (props: { data: any }) => {
     }, 150);
 
     try {
-      await Promise.all(uploadPromises).then((data) => {
-        uploadedCount++;
-        setUploadProgress((uploadedCount / files.length) * 100);
-        return data;
-      });
+      await Promise.all(uploadPromises);
       clearCachesByServerAction(pathname);
     } catch (error: any) {
       console.error("Error uploading files:", error);
+      alert("An error occurred while uploading files. Please try again.");
     } finally {
       setDownloadfromDrive(null);
       setLoading(false);
@@ -139,6 +166,7 @@ const Uploadbtn = (props: { data: any }) => {
     try {
       let url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
 
+      // Fetch file metadata (mimeType and name)
       const fileMetadataResponse = await fetch(
         `https://www.googleapis.com/drive/v3/files/${fileId}?fields=mimeType,name`,
         {
@@ -147,16 +175,16 @@ const Uploadbtn = (props: { data: any }) => {
           },
         }
       );
-      console.log(fileMetadataResponse);
 
       if (!fileMetadataResponse.ok) {
         throw new Error(
-          `Failed to retrieve file metadata. Status: ${fileMetadataResponse.status}`
+          `Failed to retrieve file metadata. Status: ${fileMetadataResponse.status} - ${fileMetadataResponse.statusText}`
         );
       }
 
       const fileMetadata = await fileMetadataResponse.json();
 
+      // Check if the file is a Google Docs file that requires exporting
       const isGoogleDocsFile = fileMetadata.mimeType.startsWith(
         "application/vnd.google-apps."
       );
@@ -164,6 +192,8 @@ const Uploadbtn = (props: { data: any }) => {
       if (isGoogleDocsFile) {
         url = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=application/pdf`;
       }
+
+      // Download or export the file from Google Drive
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token.current}`,
@@ -172,14 +202,16 @@ const Uploadbtn = (props: { data: any }) => {
 
       if (!response.ok) {
         throw new Error(
-          `Failed to download file from Drive. Status: ${response.status}`
+          `Failed to download file from Drive. Status: ${response.status} - ${response.statusText}`
         );
       }
 
+      // Return the file blob
       return await response.blob();
     } catch (error) {
       console.error("Error downloading or exporting file:", error);
-      return null;
+      // Optionally provide user feedback or retry logic here
+      return null; // Return null to signal failure to the caller
     }
   };
 
