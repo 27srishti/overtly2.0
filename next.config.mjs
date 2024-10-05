@@ -19,14 +19,6 @@ const nextConfig = {
       },
     ];
   },
-  publicRuntimeConfig: {
-
-    // Your allowed origins
-
-    CORS_ORIGIN: ['https://pr-99-87008435117.us-central1.run.app/', 'http://localhost:3000' , '*'],
-
-  },
-
 };
 
 export default nextConfig;

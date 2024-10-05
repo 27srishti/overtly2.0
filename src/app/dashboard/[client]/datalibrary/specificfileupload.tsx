@@ -350,7 +350,7 @@ const Uploadbtn = (props: { data: any }) => {
                     client_id: params.client,
                     bucket_name: bucketName,
                     file_path: filePath,
-                    file_type: tab,
+                    file_type: "media_db",
                   }),
                 }).then((response) => response.json());
               } else {
@@ -364,6 +364,7 @@ const Uploadbtn = (props: { data: any }) => {
                     client_id: params.client,
                     bucket_name: bucketName,
                     file_path: filePath,
+                    file_type: "document",
                   }),
                 }).then((response) => response.json());
               }
