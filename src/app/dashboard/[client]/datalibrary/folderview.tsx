@@ -77,58 +77,10 @@ const FolderView = () => {
   const params = useParams<{ client: string }>();
   const router = useRouter();
   const pathname = usePathname();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const searchParams = useSearchParams();
   const [currentFiles, setCurrentFiles] = useState("");
   const [files, setFiles] = useState<FilesData[]>([]);
-  const [uploadfiles, uploadsetFiles] = useState<File[]>([]);
-  const [open, setOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
-    null
-  );
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [fakeProgress, setFakeProgress] = useState<number>(0);
-
-  const handleDialogOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen);
-    if (isOpen) {
-      setIsUploading(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    if (e.target.files) {
-      const filesArray = Array.from(e.target.files).map((file) => ({
-        name: file.name,
-        title: file.name,
-        industry: "Default",
-        id: file.name,
-      }));
-      uploadsetFiles(filesArray);
-    }
-  };
-
-  function handleOpenPicker() {}
-
-  const handleFileClick = (): void => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>): void => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const filesArray = Array.from(e.dataTransfer.files).map((file) => ({
-        name: file.name,
-        title: file.name,
-        industry: "Default",
-        id: file.name,
-      }));
-      uploadsetFiles(filesArray);
-      e.dataTransfer.clearData();
-    }
-  };
+  const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files); // New state for filtered files
 
   const createQueryString = useCallback(
     (params: { [s: string]: unknown } | ArrayLike<unknown>) => {
@@ -166,6 +118,14 @@ const FolderView = () => {
       FetchcurrentFiletypefiles();
     }
   }, [currentFiles]);
+
+  useEffect(() => {
+    setFilteredFiles(
+      files.filter(file =>
+        file.name.toLowerCase().includes(filterInput.toLowerCase()) // Filter logic
+      )
+    );
+  }, [filterInput, files]); // Update filtered files when filterInput or files change
 
   const handleFileTypeSelect = (value: string) => {
     setCurrentFiles(value);
@@ -325,15 +285,15 @@ const FolderView = () => {
                     </div>
                   </div>
                   <>
-                    <Uploadbtn data={option}/>
+                    <Uploadbtn data={option} />
                   </>
                 </div>
 
                 <div>
                   <Table className="border-separate border-spacing-y-4">
                     <TableBody>
-                      {files.length > 0 ? (
-                        files.map((file, index) => (
+                      {filteredFiles.length > 0 ? ( // Use filteredFiles instead of files
+                        filteredFiles.map((file, index) => (
                           <div
                             key={index}
                             className="bg-[#D8D8D8] bg-opacity-20 bg-opacity-[20%] flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828] "
