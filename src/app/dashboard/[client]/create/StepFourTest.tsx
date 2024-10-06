@@ -35,6 +35,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useSearchParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { ArrowLeftIcon } from "lucide-react";
+import { logErrorToFirestore } from "@/lib/firebase/logs";
 interface StepTwoProps {
   onPrevious: () => void;
   onNext: () => void;
@@ -121,8 +122,14 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
         });
 
         return () => unsubscribe();
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching data:", error);
+        await logErrorToFirestore(
+          auth.currentUser?.uid as string,
+          clientid as string,
+          "pitch",
+          error.message
+        ); // Log the error
         setLoading(false);
       }
     };

@@ -16,6 +16,7 @@ import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
+import { logErrorToFirestore } from "@/lib/firebase/logs";
 
 interface FileCollection {
   id: string;
@@ -220,6 +221,7 @@ const Uploadbtn = () => {
         bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
         type: fileBlob.type,
         createdAt: Date.now(),
+        size: fileBlob.size,
       };
 
       await setDoc(docRef, data);
@@ -240,9 +242,14 @@ const Uploadbtn = () => {
       });
 
       return response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading file:", error);
-      return "";
+      await logErrorToFirestore(
+        authUser.uid,
+        params.client,
+        "process-file",
+        error
+      ); // Log the error
     }
   };
 
@@ -329,6 +336,7 @@ const Uploadbtn = () => {
                 bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
                 type: file.type,
                 createdAt: Date.now(),
+                size: file.size,
               };
 
               await setDoc(docRef, data);
@@ -370,9 +378,14 @@ const Uploadbtn = () => {
               setUploadProgress((uploadedCount / files.length) * 100);
               return data;
             })
-            .catch((error) => {
+            .catch(async (error) => {
               console.error("Error uploading file:", error.message);
-              return "";
+              await logErrorToFirestore(
+                authUser.uid,
+                params.client,
+                "process-file",
+                error.message
+              ); // Log the error
             })
         );
       });
@@ -382,6 +395,12 @@ const Uploadbtn = () => {
         clearCachesByServerAction(pathname);
       } catch (error: any) {
         console.error("Error uploading files:", error);
+        await logErrorToFirestore(
+          authUser.uid,
+          params.client,
+          "process-file",
+          error.message
+        ); // Log the error
       } finally {
         clearInterval(fakeProgressInterval);
         setLoading(false);

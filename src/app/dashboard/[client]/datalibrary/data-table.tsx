@@ -60,6 +60,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Filetypes } from "@/lib/dropdown";
+import { logErrorToFirestore } from "@/lib/firebase/logs";
 
 export type FilesData = {
   file_type: string | undefined;
@@ -150,7 +151,9 @@ export function DataTable<TData extends FilesData, TValue>({
           .then((response) => {
             console.log(response.json());
           })
-          .catch((error) => console.error("Error:", error));
+          .catch(async (error) => {
+            await logErrorToFirestore(authUser.uid, params.client, "file", error.message); // Log the error
+          });
       }
     } catch (error) {
       console.error("Error deleting file metadata from Firestore:", error);
@@ -520,7 +523,9 @@ export function DataTable<TData extends FilesData, TValue>({
           .then((response) => {
             console.log(response.json());
           })
-          .catch((error) => console.error("Error:", error));
+          .catch(async (error) => {
+            await logErrorToFirestore(authUser.uid, params.client, "file", error.message); // Log the error
+          });
       }
 
       // Refresh data or clear the selected state if needed

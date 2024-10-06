@@ -16,6 +16,8 @@ import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
+import App from "./app";
+import { logErrorToFirestore } from "@/lib/firebase/logs";
 
 interface FileCollection {
   id: string;
@@ -255,6 +257,7 @@ const Uploadbtn = (props: { data: any }) => {
         type: fileBlob.type,
         createdAt: Date.now(),
         file_type: props.data.value,
+        size: fileBlob.size,
       };
 
       await setDoc(docRef, data);
@@ -275,8 +278,14 @@ const Uploadbtn = (props: { data: any }) => {
       });
 
       return response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading file:", error);
+      await logErrorToFirestore(
+        authUser.uid,
+        params.client,
+        "process-file",
+        error.message
+      ); // Log the error
       return "";
     }
   };
@@ -365,6 +374,7 @@ const Uploadbtn = (props: { data: any }) => {
                 type: file.type,
                 createdAt: Date.now(),
                 file_type: props.data.value,
+                size: file.size,
               };
 
               await setDoc(docRef, data);
@@ -406,8 +416,14 @@ const Uploadbtn = (props: { data: any }) => {
               setUploadProgress((uploadedCount / files.length) * 100);
               return data;
             })
-            .catch((error) => {
+            .catch(async (error) => {
               console.error("Error uploading file:", error.message);
+              await logErrorToFirestore(
+                authUser.uid,
+                params.client,
+                "process-file",
+                error.message
+              ); // Log the error
               return "";
             })
         );
@@ -418,6 +434,12 @@ const Uploadbtn = (props: { data: any }) => {
         clearCachesByServerAction(pathname);
       } catch (error: any) {
         console.error("Error uploading files:", error);
+        await logErrorToFirestore(
+          authUser.uid,
+          params.client,
+          "process-file",
+          error.message
+        ); // Log the error
       } finally {
         clearInterval(fakeProgressInterval);
         setLoading(false);
@@ -600,6 +622,7 @@ const Uploadbtn = (props: { data: any }) => {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
+                  <App />
                 </div>
               </>
             )}

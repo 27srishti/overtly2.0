@@ -51,6 +51,7 @@ import {
 import { deleteObject, ref } from "firebase/storage";
 import clearCachesByServerAction from "@/lib/revalidation";
 import Uploadbtn from "./specificfileupload";
+import { logErrorToFirestore } from "@/lib/firebase/logs";
 
 interface File {
   name: string;
@@ -216,7 +217,9 @@ const FolderView = () => {
           .then((response) => {
             console.log(response.json());
           })
-          .catch((error) => console.error("Error:", error));
+          .catch(async (error) => {
+            await logErrorToFirestore(authUser.uid, params.client, "file", error.message); // Log the error
+          });
       }
     } catch (error) {
       console.error("Error deleting file metadata from Firestore:", error);
