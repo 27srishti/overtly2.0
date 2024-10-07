@@ -262,7 +262,7 @@ const Uploadbtn = (props: { data: any }) => {
 
       await setDoc(docRef, data);
 
-      const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file`;
+      const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -379,7 +379,7 @@ const Uploadbtn = (props: { data: any }) => {
 
               await setDoc(docRef, data);
 
-              const url = `https://data-processing-dot-pr-ai-99.uc.r.appspot.com/process-file`;
+              const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
               if (tab === "mediadatabase") {
                 return fetch(url, {
