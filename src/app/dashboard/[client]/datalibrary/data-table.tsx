@@ -60,7 +60,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Filetypes } from "@/lib/dropdown";
-import { logErrorToFirestore } from "@/lib/firebase/logs";
+import { useState, useEffect } from "react";
+import { getDoc } from "firebase/firestore";
 
 export type FilesData = {
   file_type: string | undefined;
@@ -80,6 +81,15 @@ interface DataTableProps<TData, TValue> {
   defaultPerPage?: number;
 }
 
+interface Subtopic {
+  name: string;
+}
+
+interface Topic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
 export function DataTable<TData extends FilesData, TValue>({
   data,
   pageCount,
@@ -97,6 +107,26 @@ export function DataTable<TData extends FilesData, TValue>({
   const [selectedRows, setSelectedRows] = React.useState<
     Record<string, boolean>
   >({});
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<FilesData | null>(null);
+  const [topics, setTopics] = useState<Topic[]>([]);
+
+  const fetchTopics = async (fileId: string): Promise<Topic[]> => {
+    // Corrected Firestore path
+    const path = `users/p6ZhTzAy3eNWCRn9bkY236yUL6e2/clients/HXwYVk93Qw8YK7bOPzGt/files/${fileId}`;
+    console.log("Fetching document from path:", path);
+    const docRef = doc(db, path);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      return docSnap.data().topics || [];
+    } else {
+      console.error("No such document! ID:", fileId);
+      return [];
+    }
+  };
+
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
 
@@ -151,9 +181,7 @@ export function DataTable<TData extends FilesData, TValue>({
           .then((response) => {
             console.log(response.json());
           })
-          .catch(async (error) => {
-            await logErrorToFirestore(authUser.uid, params.client, "file", error.message); // Log the error
-          });
+          .catch((error) => console.error("Error:", error));
       }
     } catch (error) {
       console.error("Error deleting file metadata from Firestore:", error);
@@ -523,9 +551,7 @@ export function DataTable<TData extends FilesData, TValue>({
           .then((response) => {
             console.log(response.json());
           })
-          .catch(async (error) => {
-            await logErrorToFirestore(authUser.uid, params.client, "file", error.message); // Log the error
-          });
+          .catch((error) => console.error("Error:", error));
       }
 
       // Refresh data or clear the selected state if needed
@@ -540,6 +566,27 @@ export function DataTable<TData extends FilesData, TValue>({
       setDeletingRows(false);
     }
   };
+
+  const handleRowClick = (file: FilesData) => {
+    console.log("Row clicked:", file);
+    setSelectedFile(file);
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    console.log("Closing popup");
+    setIsPopupOpen(false);
+    setSelectedFile(null);
+  };
+
+  useEffect(() => {
+    if (isPopupOpen && selectedFile) {
+      fetchTopics(selectedFile.id).then((fetchedTopics) => {
+        console.log("Fetched topics:", fetchedTopics);
+        setTopics(fetchedTopics);
+      });
+    }
+  }, [isPopupOpen, selectedFile]);
 
   return (
     <div>
@@ -581,7 +628,7 @@ export function DataTable<TData extends FilesData, TValue>({
             className="shadow-none border-none"
           />
 
-          <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
+          <div className="bg-[#3E3E3E] rounded-full p-[.6rem] bg-opacity-80">
             <svg
               viewBox="0 0 14 14"
               fill="none"
@@ -627,7 +674,8 @@ export function DataTable<TData extends FilesData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="border-none "
+                  className="border-none cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleRowClick(row.original)}
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
@@ -659,6 +707,50 @@ export function DataTable<TData extends FilesData, TValue>({
           </TableBody>
         </Table>
       </div>
+      {isPopupOpen && selectedFile && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 h-3/4 mx-4 my-8 flex flex-col">
+            <div className="flex items-start mb-4">
+              <h3 className="bg-yellow-200 border  border-yellow-300 mb-2 ml-2 rounded-full px-6 py-1">
+                Topics
+              </h3>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="relative ml-4">
+                {topics.map((topic, index) => (
+                  <div
+                    key={index}
+                    className="flex flex-col items-start mb-6 ml-8"
+                  >
+                    <div className="flex items-center">
+                      <div className="w-40 h-4 border-b-[1px] border-l-[1px] border-dashed border-gray-400"></div>
+                      <a className="border border-yellow-500 mb-2 ml-2 rounded-full px-4 py-1 ">
+                        {topic.name}
+                      </a>
+                    </div>
+                    {topic.subtopics && topic.subtopics.length > 0 && (
+                      <div className="ml-8">
+                        {topic.subtopics.map((subtopic, subIndex) => (
+                          <div key={subIndex} className="flex items-center">
+                            <div className="w-60 h-4 border-b-[1px] border-l-[1px] border-dashed border-gray-400"></div>
+                            <a className="border border-yellow-500 mb-2 ml-2 rounded-full px-4 py-1 ">
+                              {subtopic.name}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Button onClick={closePopup} className="mt-4 self-center">
+              Close
+            </Button>{" "}
+            {/* Center the button */}
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Rows per page:</span>
