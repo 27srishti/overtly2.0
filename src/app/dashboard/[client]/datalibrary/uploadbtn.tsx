@@ -9,11 +9,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { auth, db, storage } from "@/lib/firebase/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
@@ -386,6 +397,26 @@ const Uploadbtn = () => {
                 "process-file",
                 error.message
               ); // Log the error
+
+              await deleteObject(storageRef).catch((deleteError) => {
+                console.error("Error deleting file from storage:", deleteError);
+              });
+              // Remove the document from Firestore
+              await deleteDoc(
+                doc(
+                  db,
+                  `users/${authUser.uid}/clients/${params.client}/files`,
+                  uniqueId
+                )
+              ).catch((deleteError) => {
+                console.error(
+                  "Error deleting document from Firestore:",
+                  deleteError
+                );
+              });
+
+              // Inform the user about the error
+              alert("File uploaded, but processing failed: " + error.message);
             })
         );
       });
