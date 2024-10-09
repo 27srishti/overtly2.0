@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {TopicsPopup }from "@/components/Customcomponent/topics"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
@@ -62,6 +63,7 @@ import {
 import { Filetypes } from "@/lib/dropdown";
 import { useState, useEffect } from "react";
 import { getDoc } from "firebase/firestore";
+
 
 export type FilesData = {
   file_type: string | undefined;
@@ -112,8 +114,14 @@ export function DataTable<TData extends FilesData, TValue>({
   const [topics, setTopics] = useState<Topic[]>([]);
 
   const fetchTopics = async (fileId: string): Promise<Topic[]> => {
-    // Corrected Firestore path
-    const path = `users/p6ZhTzAy3eNWCRn9bkY236yUL6e2/clients/HXwYVk93Qw8YK7bOPzGt/files/${fileId}`;
+    const authUser = auth.currentUser;
+
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return [];
+    }
+
+    const path = `users/${authUser.uid}/clients/${params.client}/files/${fileId}`;
     console.log("Fetching document from path:", path);
     const docRef = doc(db, path);
     const docSnap = await getDoc(docRef);
@@ -707,50 +715,11 @@ export function DataTable<TData extends FilesData, TValue>({
           </TableBody>
         </Table>
       </div>
-      {isPopupOpen && selectedFile && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center backdrop-blur-sm z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-3/4 h-3/4 mx-4 my-8 flex flex-col">
-            <div className="flex items-start mb-4">
-              <h3 className="bg-yellow-200 border  border-yellow-300 mb-2 ml-2 rounded-full px-6 py-1">
-                Topics
-              </h3>
-            </div>
-            <div className="flex-1 overflow-y-auto">
-              <div className="relative ml-4">
-                {topics.map((topic, index) => (
-                  <div
-                    key={index}
-                    className="flex flex-col items-start mb-6 ml-8"
-                  >
-                    <div className="flex items-center">
-                      <div className="w-40 h-4 border-b-[1px] border-l-[1px] border-dashed border-gray-400"></div>
-                      <a className="border border-yellow-500 mb-2 ml-2 rounded-full px-4 py-1 ">
-                        {topic.name}
-                      </a>
-                    </div>
-                    {topic.subtopics && topic.subtopics.length > 0 && (
-                      <div className="ml-8">
-                        {topic.subtopics.map((subtopic, subIndex) => (
-                          <div key={subIndex} className="flex items-center">
-                            <div className="w-60 h-4 border-b-[1px] border-l-[1px] border-dashed border-gray-400"></div>
-                            <a className="border border-yellow-500 mb-2 ml-2 rounded-full px-4 py-1 ">
-                              {subtopic.name}
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Button onClick={closePopup} className="mt-4 self-center">
-              Close
-            </Button>{" "}
-            {/* Center the button */}
-          </div>
-        </div>
-      )}
+      <TopicsPopup
+        topics={topics}
+        isOpen={isPopupOpen && selectedFile !== null}
+        onClose={closePopup}
+      />
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Rows per page:</span>
