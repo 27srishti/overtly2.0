@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Toaster2 } from "@/components/ui/sonner"
 import Head from "next/head";
 import { Montserrat } from "next/font/google";
 import { Raleway } from "next/font/google";
@@ -49,6 +50,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster />
+        <Toaster2 />
       </body>
     </html>
   );

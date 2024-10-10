@@ -18,6 +18,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import {
   collection,
   deleteDoc,
@@ -354,8 +355,8 @@ const Uploadbtn = () => {
 
               const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
-              if (tab === "mediadatabase") {
-                return fetch(url, {
+              try {
+                const response = await fetch(url, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -365,23 +366,57 @@ const Uploadbtn = () => {
                     client_id: params.client,
                     bucket_name: bucketName,
                     file_path: filePath,
-                    file_type: "media_db",
+                    file_type:
+                      tab === "mediadatabase" ? "media_db" : "document",
                   }),
-                }).then((response) => response.json());
-              } else {
-                return fetch(url, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
-                  },
-                  body: JSON.stringify({
-                    client_id: params.client,
-                    bucket_name: bucketName,
-                    file_path: filePath,
-                    file_type: "document",
-                  }),
-                }).then((response) => response.json());
+                });
+
+                if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(
+                    `Error ${response.status}: ${
+                      errorData.message || "Unknown error"
+                    }`
+                  );
+                }
+
+                return response.json();
+              } catch (error) {
+                console.error("Error during data extraction:", error);
+                await logErrorToFirestore(
+                  authUser.uid,
+                  params.client,
+                  "process-file",
+                  error as string,
+                  {
+                    message: error,
+                    fileName: originalFileName,
+                    fileSize: file.size,
+                    fileType: file.type,
+                  }
+                ); // Log the error
+                await deleteObject(storageRef).catch((deleteError) => {
+                  console.error(
+                    "Error deleting file from storage:",
+                    deleteError
+                  );
+                });
+                await deleteDoc(
+                  doc(
+                    db,
+                    `users/${authUser.uid}/clients/${params.client}/files`,
+                    uniqueId
+                  )
+                ).catch((deleteError) => {
+                  console.error(
+                    "Error deleting document from Firestore:",
+                    deleteError
+                  );
+                });
+                toast("Error during data extraction", {
+                  description: "An error occurred during data extraction",
+                });
+                throw error;
               }
             })
             .then((data) => {
@@ -395,28 +430,36 @@ const Uploadbtn = () => {
                 authUser.uid,
                 params.client,
                 "process-file",
-                error.message
-              ); // Log the error
+                error.message,
+                {
+                  message: error.message,
+                  fileName: originalFileName,
+                  fileSize: file.size,
+                  fileType: file.type,
+                }
+              );
 
-              await deleteObject(storageRef).catch((deleteError) => {
-                console.error("Error deleting file from storage:", deleteError);
-              });
-              // Remove the document from Firestore
-              await deleteDoc(
-                doc(
-                  db,
-                  `users/${authUser.uid}/clients/${params.client}/files`,
-                  uniqueId
-                )
-              ).catch((deleteError) => {
-                console.error(
-                  "Error deleting document from Firestore:",
-                  deleteError
-                );
-              });
+              // await deleteObject(storageRef).catch((deleteError) => {
+              //   console.error("Error deleting file from storage:", deleteError);
+              // });
+              // // Remove the document from Firestore
+              // await deleteDoc(
+              //   doc(
+              //     db,
+              //     `users/${authUser.uid}/clients/${params.client}/files`,
+              //     uniqueId
+              //   )
+              // ).catch((deleteError) => {
+              //   console.error(
+              //     "Error deleting document from Firestore:",
+              //     deleteError
+              //   );
+              // });
 
               // Inform the user about the error
-              alert("File uploaded, but processing failed: " + error.message);
+              toast("Error during data extraction", {
+                description: "An error occurred during data extraction",
+              });
             })
         );
       });
