@@ -284,7 +284,10 @@ const Uploadbtn = (props: { data: any }) => {
         authUser.uid,
         params.client,
         "process-file",
-        error.message
+        error.message,
+        {
+          client_id: params.client,
+        }
       ); // Log the error
       return "";
     }
@@ -422,7 +425,11 @@ const Uploadbtn = (props: { data: any }) => {
                 authUser.uid,
                 params.client,
                 "process-file",
-                error.message
+                error.message,
+                {
+                  client_id: params.client,
+                  file_type: "document",
+                }
               ); // Log the error
               return "";
             })

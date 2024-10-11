@@ -5,8 +5,8 @@ export const logErrorToFirestore = async (
     userId: string,
     clientId: string,
     functionName: string,
-    errorDetails: string | Error, // Accept Error type as well
-    requestdetails? : any
+    errorDetails: string | Error,
+    requestdetails?: { [key: string]: any }
 ) => {
     const timestamp = Date.now();
     const docId = `${userId}_${timestamp}`;
@@ -17,7 +17,7 @@ export const logErrorToFirestore = async (
         client_id: clientId,
         function_name: functionName,
         error_details: typeof errorDetails === 'string' ? errorDetails : errorDetails.message,
-        request_details: requestdetails ? JSON.stringify(requestdetails) : "{}"
+        request_details: requestdetails ? requestdetails : {},
     };
 
     try {

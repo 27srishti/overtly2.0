@@ -218,7 +218,10 @@ const FolderView = () => {
             console.log(response.json());
           })
           .catch(async (error) => {
-            await logErrorToFirestore(authUser.uid, params.client, "file", error.message); // Log the error
+            await logErrorToFirestore(authUser.uid, params.client, "file", error.message ,{
+              client_id: params.client,
+              file_name: file.bucketName,
+            } ); // Log the error
           });
       }
     } catch (error) {

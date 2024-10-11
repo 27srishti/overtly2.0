@@ -260,8 +260,15 @@ const Uploadbtn = () => {
         authUser.uid,
         params.client,
         "process-file",
-        error
-      ); // Log the error
+        error,
+        {
+          name: originalFileName,
+          bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+          type: fileBlob.type,
+          createdAt: Date.now(),
+          size: fileBlob.size,
+        }
+      );
     }
   };
 
@@ -388,13 +395,8 @@ const Uploadbtn = () => {
                   params.client,
                   "process-file",
                   error as string,
-                  {
-                    message: error,
-                    fileName: originalFileName,
-                    fileSize: file.size,
-                    fileType: file.type,
-                  }
-                ); // Log the error
+                  data
+                );
                 await deleteObject(storageRef).catch((deleteError) => {
                   console.error(
                     "Error deleting file from storage:",
@@ -432,10 +434,11 @@ const Uploadbtn = () => {
                 "process-file",
                 error.message,
                 {
-                  message: error.message,
-                  fileName: originalFileName,
-                  fileSize: file.size,
-                  fileType: file.type,
+                  name: originalFileName,
+                  bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+                  type: file.type,
+                  createdAt: Date.now(),
+                  size: file.size,
                 }
               );
 
@@ -474,7 +477,7 @@ const Uploadbtn = () => {
           params.client,
           "process-file",
           error.message
-        ); // Log the error
+        );
       } finally {
         clearInterval(fakeProgressInterval);
         setLoading(false);
