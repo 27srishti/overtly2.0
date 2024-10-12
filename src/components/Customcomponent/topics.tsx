@@ -50,7 +50,7 @@ export const TopicsPopup: React.FC<TopicsPopupProps> = ({
               Topics
             </h3>
           </div>
-          <div id="wrapper" className="relative ml-12">
+          <div id="wrapper" className="  relative ml-12">
             {topics.map((topic, index) => (
               <div key={index} className="entry">
                 <span className="label">{topic.name}</span>
