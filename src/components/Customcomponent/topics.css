@@ -13,32 +13,31 @@
 .entry:before {
   content: "";
   position: absolute;
-  width: 100px; /* Adjust width for horizontal line */
-  height: 40px; /* Adjust height for vertical line */
-  border: 1px dashed #9c9c9c; /* Dashed border */
-  border-radius: 0 0 0 10px; /* Curved bottom-left corner */
-  border-right: none; /* Remove right border */
-  border-top: none; /* Remove top border */
+  width: 100px; 
+  height: 40px;
+  border: 1px dashed #9c9c9c; 
+  border-radius: 0 0 0 10px;
+  border-right: none;
+  border-top: none; 
  
   top: 0;
 
-  /* Adjust to connect to parent */
+
 }.entry:not(:last-child):after {
   content: "";
   position: absolute;
-  width: 1px; /* Thickness of the vertical line */
-  height: 100%; /* Full height for vertical line */
-  border-left: 1px dashed #9c9c9c; /* Dashed border for vertical line */
-  top: 0; /* Start from the top */
-  left: 0; /* Align with the entry */
+  width: 1px; 
+  height: 100%; 
+  border-left: 1px dashed #9c9c9c; 
+  top: 0;
+  left: 0; 
 }
 .label {
   display: inline-block;
-  background-color: rgba(242, 216, 148, 0.2); /* 20% opacity */
-  border: 1px solid #ffeb99;
+  background-color: rgba(242, 216, 148, 0.2); 
   border-radius: 20px;
   padding: 10px;
-  margin-top: 20px; /* Gap above label */
+  margin-top: 20px; 
   margin-left: 100px;
 }
 h3 {
