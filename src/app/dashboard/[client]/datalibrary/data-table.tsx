@@ -35,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {TopicsPopup }from "@/components/Customcomponent/topics"
+import { TopicsPopup } from "@/components/Customcomponent/topics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
@@ -63,7 +63,6 @@ import {
 import { Filetypes } from "@/lib/dropdown";
 import { useState, useEffect } from "react";
 import { getDoc } from "firebase/firestore";
-
 
 export type FilesData = {
   file_type: string | undefined;
@@ -683,16 +682,21 @@ export function DataTable<TData extends FilesData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="border-none cursor-pointer hover:bg-gray-200"
-                  onClick={() => handleRowClick(row.original)}
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
                       key={cell.id}
-                      className={cn(" p-2 bg-[#D8D8D8] bg-opacity-20", {
+                      className={cn("p-2 bg-[#D8D8D8] bg-opacity-20", {
                         "rounded-tl-xl rounded-bl-xl": index === 0,
                         "rounded-tr-xl rounded-br-xl":
                           index === row.getVisibleCells().length - 1,
+                        "hover:text-blue-500": cell.column.id === "name", // Add this line
                       })}
+                      onClick={() => {
+                        if (cell.column.id === "name") {
+                          handleRowClick(row.original);
+                        }
+                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -715,7 +719,7 @@ export function DataTable<TData extends FilesData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <TopicsPopup
+      <TopicsPopup 
         topics={topics}
         isOpen={isPopupOpen && selectedFile !== null}
         onClose={closePopup}
