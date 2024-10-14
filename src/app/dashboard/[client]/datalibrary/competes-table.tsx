@@ -315,7 +315,7 @@ export function CompetesTable<TData extends FilesData, TValue>({
                 table.getColumn("name")?.setFilterValue("");
                 table.getColumn("email")?.setFilterValue("");
               } else {
-                table.getColumn("name")?.setFilterValue(value);
+                table.getColumn("companyName")?.setFilterValue(value);
                 table.getColumn("email")?.setFilterValue("");
                 table.getColumn("phone")?.setFilterValue("");
               }

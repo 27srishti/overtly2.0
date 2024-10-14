@@ -312,11 +312,18 @@ export default async function Page({
           >
             <Newsarticle />
           </TabsContent>
-          <TabsContent value="Competes">
-            <CompetesTable
-              data={competes || []}
-              pageCount={Math.ceil(total / perPage)}
-            />
+          <TabsContent
+            value="Competes"
+            className="bg-transparent border rounded-[30px] p-0"
+          >
+            <div className="mx-auto overflow-hidden ">
+              <div className="container mx-auto py-10 pb-0">
+                <CompetesTable
+                  data={competes || []}
+                  pageCount={Math.ceil(total / perPage)}
+                />
+              </div>
+            </div>
           </TabsContent>
           <TabsContent value="knowledgegraph"> knowledge graph</TabsContent>
           <TabsContent
