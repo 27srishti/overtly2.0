@@ -107,6 +107,21 @@ const StepThree: React.FC<StepTwoProps> = ({ onPrevious, onNext }) => {
                     description: "Something went wrong",
                     variant: "destructive",
                   });
+
+                  await logErrorToFirestore(
+                    auth.currentUser?.uid as string,
+                    clientid as string,
+                    "pitch",
+                    response.statusText,
+                    {
+                      idea: firebasedata.selectedGeneratedIdea.idea,
+                      story: firebasedata.selectedGeneratedIdea.story,
+                      media_format: firebasedata.mediaFormat,
+                      beat: firebasedata.beat,
+                      outlet: firebasedata.outlet,
+                      objective: firebasedata.objective,
+                    }
+                  ); // Log the error
                 }
 
                 const data = await response.json();

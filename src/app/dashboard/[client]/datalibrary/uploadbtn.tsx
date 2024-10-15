@@ -9,11 +9,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { auth, db, storage } from "@/lib/firebase/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { toast } from "sonner";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
@@ -248,8 +260,15 @@ const Uploadbtn = () => {
         authUser.uid,
         params.client,
         "process-file",
-        error
-      ); // Log the error
+        error,
+        {
+          name: originalFileName,
+          bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+          type: fileBlob.type,
+          createdAt: Date.now(),
+          size: fileBlob.size,
+        }
+      );
     }
   };
 
@@ -343,8 +362,8 @@ const Uploadbtn = () => {
 
               const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
-              if (tab === "mediadatabase") {
-                return fetch(url, {
+              try {
+                const response = await fetch(url, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -354,23 +373,52 @@ const Uploadbtn = () => {
                     client_id: params.client,
                     bucket_name: bucketName,
                     file_path: filePath,
-                    file_type: "media_db",
+                    file_type:
+                      tab === "mediadatabase" ? "media_db" : "document",
                   }),
-                }).then((response) => response.json());
-              } else {
-                return fetch(url, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
-                  },
-                  body: JSON.stringify({
-                    client_id: params.client,
-                    bucket_name: bucketName,
-                    file_path: filePath,
-                    file_type: "document",
-                  }),
-                }).then((response) => response.json());
+                });
+
+                if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(
+                    `Error ${response.status}: ${
+                      errorData.message || "Unknown error"
+                    }`
+                  );
+                }
+
+                return response.json();
+              } catch (error) {
+                console.error("Error during data extraction:", error);
+                await logErrorToFirestore(
+                  authUser.uid,
+                  params.client,
+                  "process-file",
+                  error as string,
+                  data
+                );
+                await deleteObject(storageRef).catch((deleteError) => {
+                  console.error(
+                    "Error deleting file from storage:",
+                    deleteError
+                  );
+                });
+                await deleteDoc(
+                  doc(
+                    db,
+                    `users/${authUser.uid}/clients/${params.client}/files`,
+                    uniqueId
+                  )
+                ).catch((deleteError) => {
+                  console.error(
+                    "Error deleting document from Firestore:",
+                    deleteError
+                  );
+                });
+                toast("Error during data extraction", {
+                  description: "An error occurred during data extraction",
+                });
+                throw error;
               }
             })
             .then((data) => {
@@ -384,8 +432,37 @@ const Uploadbtn = () => {
                 authUser.uid,
                 params.client,
                 "process-file",
-                error.message
-              ); // Log the error
+                error.message,
+                {
+                  name: originalFileName,
+                  bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+                  type: file.type,
+                  createdAt: Date.now(),
+                  size: file.size,
+                }
+              );
+
+              // await deleteObject(storageRef).catch((deleteError) => {
+              //   console.error("Error deleting file from storage:", deleteError);
+              // });
+              // // Remove the document from Firestore
+              // await deleteDoc(
+              //   doc(
+              //     db,
+              //     `users/${authUser.uid}/clients/${params.client}/files`,
+              //     uniqueId
+              //   )
+              // ).catch((deleteError) => {
+              //   console.error(
+              //     "Error deleting document from Firestore:",
+              //     deleteError
+              //   );
+              // });
+
+              // Inform the user about the error
+              toast("Error during data extraction", {
+                description: "An error occurred during data extraction",
+              });
             })
         );
       });
@@ -400,7 +477,7 @@ const Uploadbtn = () => {
           params.client,
           "process-file",
           error.message
-        ); // Log the error
+        );
       } finally {
         clearInterval(fakeProgressInterval);
         setLoading(false);

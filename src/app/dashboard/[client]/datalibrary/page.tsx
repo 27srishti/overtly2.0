@@ -15,6 +15,8 @@ import Link from "next/link";
 import { MediaTable } from "./media-table";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import FolderView from "./folderview";
+import Competes from "./competes";
+import { CompetesTable } from "./competes-table";
 
 customInitApp();
 
@@ -169,6 +171,7 @@ export default async function Page({
   const sort = searchParams.sort || "";
   const name = searchParams.name || "";
   const list = searchParams.view || "folder";
+  const tab = searchParams.tab || "";
 
   const { data, total } = await getData(
     page,
@@ -186,6 +189,52 @@ export default async function Page({
       params.client,
       name as string
     );
+
+  async function getCompetes(
+    client: string
+  ): Promise<{ data: any[]; total: number }> {
+    // Adjust the type as necessary
+    try {
+      const session = cookies().get("session")?.value || "";
+
+      if (!session) {
+        console.log("No session cookie found");
+        return { data: [], total: 0 };
+      }
+
+      const decodedClaims = await auth().verifySessionCookie(session, true);
+      if (!decodedClaims) {
+        console.log("Invalid session cookie");
+        return { data: [], total: 0 };
+      }
+
+      const db = getFirestore();
+      const cityRef = db.collection(
+        `users/${decodedClaims.uid}/clients/${client}/competes`
+      );
+
+      // Get total count of documents
+      const totalSnapshot = await cityRef.get();
+      const total = totalSnapshot.size;
+
+      // Get all documents without pagination
+      const querySnapshot = await cityRef.get();
+
+      const competes = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      return { data: competes, total };
+    } catch (error) {
+      console.error("Error fetching competes data:", error);
+      return { data: [], total: 0 };
+    }
+  }
+
+  const { data: competes } = await getCompetes(params.client);
+
+  console.log(competes);
 
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
@@ -208,12 +257,18 @@ export default async function Page({
                   Documents
                 </TabsTrigger>
               </Link>
-              {/* <TabsTrigger
-                value="newsarticles"
-                className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+
+              <Link
+                href={`/dashboard/${params.client}/datalibrary?tab=competes`}
               >
-                News Articles
-              </TabsTrigger> */}
+                <TabsTrigger
+                  value="Competes"
+                  className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
+                >
+                  Competes
+                </TabsTrigger>
+              </Link>
+
               <TabsTrigger
                 value="knowledgegraph"
                 className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-[#ECECEC]"
@@ -232,9 +287,7 @@ export default async function Page({
                 </TabsTrigger>
               </Link>
             </div>
-            <div>
-              <Uploadbtn />
-            </div>
+            <div>{tab === "competes" ? <Competes /> : <Uploadbtn />}</div>
           </TabsList>
           <TabsContent
             value="documents"
@@ -258,6 +311,19 @@ export default async function Page({
             className="px-0 bg-transparent border rounded-[30px]"
           >
             <Newsarticle />
+          </TabsContent>
+          <TabsContent
+            value="Competes"
+            className="bg-transparent border rounded-[30px] p-0"
+          >
+            <div className="mx-auto overflow-hidden ">
+              <div className="container mx-auto py-10 pb-0">
+                <CompetesTable
+                  data={competes || []}
+                  pageCount={Math.ceil(total / perPage)}
+                />
+              </div>
+            </div>
           </TabsContent>
           <TabsContent value="knowledgegraph"> knowledge graph</TabsContent>
           <TabsContent
