@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { TopicsPopup } from "@/components/Customcomponent/topics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDebounce } from "use-debounce";
@@ -60,7 +61,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Filetypes } from "@/lib/dropdown";
-import { logErrorToFirestore } from "@/lib/firebase/logs";
+import { useState, useEffect } from "react";
+import { getDoc } from "firebase/firestore";
 
 export type FilesData = {
   file_type: string | undefined;
@@ -80,6 +82,15 @@ interface DataTableProps<TData, TValue> {
   defaultPerPage?: number;
 }
 
+interface Subtopic {
+  name: string;
+}
+
+interface Topic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
 export function DataTable<TData extends FilesData, TValue>({
   data,
   pageCount,
@@ -97,6 +108,32 @@ export function DataTable<TData extends FilesData, TValue>({
   const [selectedRows, setSelectedRows] = React.useState<
     Record<string, boolean>
   >({});
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<FilesData | null>(null);
+  const [topics, setTopics] = useState<Topic[]>([]);
+
+  const fetchTopics = async (fileId: string): Promise<Topic[]> => {
+    const authUser = auth.currentUser;
+
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return [];
+    }
+
+    const path = `users/${authUser.uid}/clients/${params.client}/files/${fileId}`;
+    console.log("Fetching document from path:", path);
+    const docRef = doc(db, path);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      return docSnap.data().topics || [];
+    } else {
+      console.error("No such document! ID:", fileId);
+      return [];
+    }
+  };
+
   const handleDeleteFile = async (file: FilesData) => {
     const authUser = auth.currentUser;
 
@@ -151,18 +188,7 @@ export function DataTable<TData extends FilesData, TValue>({
           .then((response) => {
             console.log(response.json());
           })
-          .catch(async (error) => {
-            await logErrorToFirestore(
-              authUser.uid,
-              params.client,
-              "file",
-              error.message,
-              {
-                client_id: params.client,
-                file_name: file.bucketName,
-              }
-            ); // Log the error
-          });
+          .catch((error) => console.error("Error:", error));
       }
     } catch (error) {
       console.error("Error deleting file metadata from Firestore:", error);
@@ -532,18 +558,7 @@ export function DataTable<TData extends FilesData, TValue>({
           .then((response) => {
             console.log(response.json());
           })
-          .catch(async (error) => {
-            await logErrorToFirestore(
-              authUser.uid,
-              params.client,
-              "file",
-              error.message,
-              {
-                client_id: params.client,
-                file_name: file.bucketName,
-              }
-            ); // Log the error
-          });
+          .catch((error) => console.error("Error:", error));
       }
 
       // Refresh data or clear the selected state if needed
@@ -558,6 +573,27 @@ export function DataTable<TData extends FilesData, TValue>({
       setDeletingRows(false);
     }
   };
+
+  const handleRowClick = (file: FilesData) => {
+    console.log("Row clicked:", file);
+    setSelectedFile(file);
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    console.log("Closing popup");
+    setIsPopupOpen(false);
+    setSelectedFile(null);
+  };
+
+  useEffect(() => {
+    if (isPopupOpen && selectedFile) {
+      fetchTopics(selectedFile.id).then((fetchedTopics) => {
+        console.log("Fetched topics:", fetchedTopics);
+        setTopics(fetchedTopics);
+      });
+    }
+  }, [isPopupOpen, selectedFile]);
 
   return (
     <div>
@@ -599,7 +635,7 @@ export function DataTable<TData extends FilesData, TValue>({
             className="shadow-none border-none"
           />
 
-          <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
+          <div className="bg-[#3E3E3E] rounded-full p-[.6rem] bg-opacity-80">
             <svg
               viewBox="0 0 14 14"
               fill="none"
@@ -645,16 +681,22 @@ export function DataTable<TData extends FilesData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="border-none "
+                  className="border-none cursor-pointer hover:bg-gray-200"
                 >
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
                       key={cell.id}
-                      className={cn(" p-2 bg-[#D8D8D8] bg-opacity-20", {
+                      className={cn("p-2 bg-[#D8D8D8] bg-opacity-20", {
                         "rounded-tl-xl rounded-bl-xl": index === 0,
                         "rounded-tr-xl rounded-br-xl":
                           index === row.getVisibleCells().length - 1,
+                        "hover:text-blue-500": cell.column.id === "name", // Add this line
                       })}
+                      onClick={() => {
+                        if (cell.column.id === "name") {
+                          handleRowClick(row.original);
+                        }
+                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
@@ -677,6 +719,11 @@ export function DataTable<TData extends FilesData, TValue>({
           </TableBody>
         </Table>
       </div>
+      <TopicsPopup 
+        topics={topics}
+        isOpen={isPopupOpen && selectedFile !== null}
+        onClose={closePopup}
+      />
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
           <span className="text-sm">Rows per page:</span>
