@@ -21,6 +21,8 @@ WORKDIR /app
 
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV GOOGLE_CLIENT_ID "179570525467-k0aj1jv4io9oni0obl4q1ckaamqbihf6.apps.googleusercontent.com"
+ENV GOOGLE_API_KEY "AIzaSyD6qOqKqLyqPvvdb_zaXCx3Hd44ZN1bZF4"
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

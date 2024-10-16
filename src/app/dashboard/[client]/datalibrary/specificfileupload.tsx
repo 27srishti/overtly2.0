@@ -106,7 +106,7 @@ const Uploadbtn = (props: { data: any }) => {
       alert(
         "An error occurred while opening the Google Picker. Please try again later."
       );
-      setOpen(true); // Ensure the picker can be reopened in case of an error
+      setOpen(true);
     }
   };
 
@@ -288,7 +288,7 @@ const Uploadbtn = (props: { data: any }) => {
         {
           client_id: params.client,
         }
-      ); // Log the error
+      );
       return "";
     }
   };
