@@ -8,7 +8,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { auth, db, storage } from "@/lib/firebase/firebase";
+import { auth, db, drive, storage } from "@/lib/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -65,12 +65,12 @@ const Uploadbtn = (props: { data: any }) => {
 
     try {
       if (
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
-        process.env.NEXT_PUBLIC_GOOGLE_API_KEY
+        drive.GOOGLE_CLIENT_ID &&
+        drive.GOOGLE_CLIENT_ID
       ) {
         openPicker({
-          clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+          clientId: drive.GOOGLE_CLIENT_ID,
+          developerKey: drive.GOOGLE_CLIENT_ID,
           viewId: "DOCS",
           showUploadView: true,
           showUploadFolders: true,
