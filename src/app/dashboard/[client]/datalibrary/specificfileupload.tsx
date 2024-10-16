@@ -66,11 +66,11 @@ const Uploadbtn = (props: { data: any }) => {
     try {
       if (
         drive.GOOGLE_CLIENT_ID &&
-        drive.GOOGLE_CLIENT_ID
+        drive.GOOGLE_API_KEY
       ) {
         openPicker({
           clientId: drive.GOOGLE_CLIENT_ID,
-          developerKey: drive.GOOGLE_CLIENT_ID,
+          developerKey: drive.GOOGLE_API_KEY,
           viewId: "DOCS",
           showUploadView: true,
           showUploadFolders: true,
