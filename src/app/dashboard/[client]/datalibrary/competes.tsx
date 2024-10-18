@@ -26,6 +26,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { useParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { collection, addDoc } from "firebase/firestore";
+import clearCachesByServerAction from "@/lib/revalidation";
 
 const Competes = () => {
   const [user, setuser] = useState<User | null>(null);
@@ -78,6 +79,8 @@ const Competes = () => {
         title: "Success",
         description: "Compete has been successfully added.",
       });
+
+      clearCachesByServerAction(params.client as string);
     } catch (error) {
       console.error("Error adding project: ", error);
       toast({

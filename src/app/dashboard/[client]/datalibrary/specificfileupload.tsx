@@ -13,11 +13,13 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
 import App from "./app";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
+import DropboxExample from "./dropbox";
+import { toast } from "sonner";
 
 interface FileCollection {
   id: string;
@@ -64,10 +66,7 @@ const Uploadbtn = (props: { data: any }) => {
     setOpen(false);
 
     try {
-      if (
-        drive.GOOGLE_CLIENT_ID &&
-        drive.GOOGLE_API_KEY
-      ) {
+      if (drive.GOOGLE_CLIENT_ID && drive.GOOGLE_API_KEY) {
         openPicker({
           clientId: drive.GOOGLE_CLIENT_ID,
           developerKey: drive.GOOGLE_API_KEY,
@@ -344,7 +343,36 @@ const Uploadbtn = (props: { data: any }) => {
         });
       }, 150);
 
-      files.forEach((file) => {
+      files.forEach(async (file) => {
+        const clientRef = doc(
+          db,
+          `users/${authUser.uid}/clients/${params.client}`
+        );
+        const docSnap = await getDoc(clientRef);
+        const clientData = docSnap.exists() ? docSnap : null;
+        const overallClientDataSize = clientData
+          ? clientData.data()?.overallClientDataSize || 0
+          : 0;
+
+        const totalFilesSize = files.reduce((acc, file) => acc + file.size, 0);
+
+        if (overallClientDataSize + totalFilesSize > 2 * 1024 * 1024 * 1024) {
+          toast("Total file size exceeds 2GB. Please select smaller files.", {
+            description: "Ensure the total size is less than 2GB.",
+          });
+          setLoading(false);
+          setIsUploading(false);
+          return;
+        }
+
+        if (file.size > 100 * 1024 * 1024) {
+          toast("File size exceeds 100MB. File not uploaded.", {
+            description: "Please ensure file size is less than 100MB.",
+          });
+          setFiles([]);
+          return;
+        }
+
         const originalFileName = file.name;
         const fileNameWithoutExtension = originalFileName.split(".")[0];
         const uniqueId = uuidv4().slice(0, 6);
@@ -595,6 +623,8 @@ const Uploadbtn = (props: { data: any }) => {
                   </div>
                 </div>
                 <div>OR</div>
+
+                <DropboxExample />
 
                 <div
                   onFocusCapture={(e) => {

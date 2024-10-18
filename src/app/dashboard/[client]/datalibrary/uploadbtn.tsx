@@ -23,6 +23,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   setDoc,
 } from "firebase/firestore";
@@ -323,7 +324,36 @@ const Uploadbtn = () => {
         });
       }, 150);
 
-      files.forEach((file) => {
+      files.forEach(async (file) => {
+        const clientRef = doc(
+          db,
+          `users/${authUser.uid}/clients/${params.client}`
+        );
+        const docSnap = await getDoc(clientRef);
+        const clientData = docSnap.exists() ? docSnap : null;
+        const overallClientDataSize = clientData
+          ? clientData.data()?.overallClientDataSize || 0
+          : 0;
+
+        const totalFilesSize = files.reduce((acc, file) => acc + file.size, 0);
+
+        if (overallClientDataSize + totalFilesSize > 2 * 1024 * 1024 * 1024) {
+          toast("Total file size exceeds 2GB. Please select smaller files.", {
+            description: "Ensure the total size is less than 2GB.",
+          });
+          setLoading(false);
+          setIsUploading(false);
+          return;
+        }
+
+        if (file.size > 100 * 1024 * 1024) {
+          toast("File size exceeds 100MB. File not uploaded.", {
+            description: "Please ensure file size is less than 100MB.",
+          });
+          setFiles([]);
+          return;
+        }
+
         const originalFileName = file.name;
         const fileNameWithoutExtension = originalFileName.split(".")[0];
         const uniqueId = uuidv4().slice(0, 6);
