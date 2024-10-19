@@ -40,7 +40,6 @@
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
-    "dns": "^0.2.2",
     "dropbox": "^10.34.0",
     "firebase": "^10.8.1",
     "firebase-admin": "^12.2.0",
