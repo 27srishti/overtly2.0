@@ -69,7 +69,7 @@
     "@types/react-dom": "^18",
     "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
-    "eslint": "^9",
+    "eslint": "^8.57.0",
     "eslint-config-next": "14.2.15",
     "postcss": "^8",
     "raw-loader": "^4.0.2",
