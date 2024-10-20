@@ -1,11 +1,11 @@
-FROM node:latest AS base
+From node:18-alpine AS base
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --force
+RUN npm install --legacy-peer-deps
 
 FROM base AS builder
 WORKDIR /app
