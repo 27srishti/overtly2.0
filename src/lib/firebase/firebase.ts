@@ -25,6 +25,6 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const drive = {
-  GOOGLE_CLIENT_ID: "179570525467-k0aj1jv4io9oni0obl4q1ckaamqbihf6.apps.googleusercontent.com",
-  GOOGLE_API_KEY: "AIzaSyCT_lsDdCC6dhNe1oL4ycEkxQFG5Yqvlbg",
+  GOOGLE_CLIENT_ID: "87008435117-lkk1shffgdiqtjphc49k9kes3qre9lvb.apps.googleusercontent.com",
+  GOOGLE_API_KEY: "AIzaSyCjYy_RraVW2Hf0sBsgeSnUK8_xDSD6wgY",
 }

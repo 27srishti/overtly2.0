@@ -20,25 +20,25 @@ export default function AuthenticationPage() {
           </div>
           <UserAuthForm />
           <div className="text-center text-sm text-muted-foreground text-w">
-          Already have a accound ? 
-          <Link
-            href="/login"
-            className={cn(buttonVariants({ variant: "ghost" }))}
-          >
-            Log in
-          </Link>
-        </div>
+            Already have a account ?
+            <Link
+              href="/login"
+              className={cn(buttonVariants({ variant: "ghost" }))}
+            >
+              Log in
+            </Link>
+          </div>
           <div className="px-8 text-center text-sm text-muted-foreground text-w">
             By clicking continue, you agree to our&nbsp;
             <Link
-              href="/terms"
+              href="/terms-of-service"
               className="underline underline-offset-4 hover:text-primary"
             >
               Terms of Service&nbsp;
             </Link>
             and&nbsp;
             <Link
-              href="/privacy"
+              href="/privacy-policy"
               className="underline underline-offset-4 hover:text-primary"
             >
               Privacy Policy
@@ -51,7 +51,7 @@ export default function AuthenticationPage() {
       >
         <div className="relative  h-full flex-col  p-10  flex  bold ml-auto">
           <div className="relative z-20 flex items-center text-lg font-medium">
-          <img src="fullimage.png" alt="logo" className="w-24" />
+            <img src="fullimage.png" alt="logo" className="w-24" />
           </div>
         </div>
       </div>

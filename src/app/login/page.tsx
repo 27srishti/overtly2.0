@@ -30,7 +30,7 @@ export default function AuthenticationPage() {
           <UserAuthForm />
 
           <div className="px-8 text-center text-sm text-muted-foreground text-w">
-            Already have a accound ? &nbsp;
+            Already have a account ? &nbsp;
             <Link
               href="/signup"
               className={`${cn(
@@ -44,14 +44,14 @@ export default function AuthenticationPage() {
           <div className="px-8 text-center text-sm text-muted-foreground text-w">
             By clicking continue, you agree to our&nbsp;
             <Link
-              href="/terms"
+              href="/terms-of-service"
               className="underline underline-offset-4 hover:text-primary"
             >
               Terms of Service&nbsp;
             </Link>
             and&nbsp;
             <Link
-              href="/privacy"
+              href="/privacy-policy"
               className="underline underline-offset-4 hover:text-primary"
             >
               Privacy Policy
