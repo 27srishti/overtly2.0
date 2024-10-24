@@ -18,15 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import debounce from 'lodash/debounce';
 import { Input } from "@/components/ui/input";
 import { OpenInNewWindowIcon, PlusIcon } from "@radix-ui/react-icons";
 import { Slider } from "@/components/ui/slider";
@@ -36,6 +32,7 @@ import { useParams } from "next/navigation";
 import { auth } from "@/lib/firebase/firebase";
 import Link from "next/link";
 import { Icons } from "@/components/ui/Icons";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 interface Article {
   title: string;
   imageUrl?: string;
@@ -52,6 +49,26 @@ interface Article {
   snippet?: string;
 }
 
+interface AuthorSuggestion {
+  name: string;
+}
+interface sourceSuggestions {
+  dataType: string;
+  score: number;
+  title: string;
+  uri: string;
+}
+
+interface LocationSuggestions {
+  type: string;
+  wikiUri: string;
+  label: {
+    eng: string
+  };
+  lat: number;
+  long: number;
+}
+
 const Page = () => {
   const params = useParams();
   const clientid = params.client;
@@ -61,12 +78,74 @@ const Page = () => {
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
   });
-  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false); // New state for advanced filter
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
   const toggleAdvancedFilter = () => {
-    setIsAdvancedOpen((prev) => !prev); // Toggle the advanced filter visibility
+    setIsAdvancedOpen((prev) => !prev);
   };
 
+  const [authorQuery, setAuthorQuery] = useState('');
+  const [authorSuggestions, setAuthorSuggestions] = useState<AuthorSuggestion[]>([]);
+  const [isLoadingSource, setIsLoadingSource] = useState(false);
+  const [isLoadingAuthor, setIsLoadingAuthor] = useState(false);
+  const [sourceSuggestions, setSourceSuggestions] = useState<sourceSuggestions[]>([]);
+  const [sourceQuery, setSourceQuery] = useState('');
+  const [locationQuery, setLocationQuery] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestions[]>([]);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+
+
+  const fetchSuggestions = async (query: any, type: string) => {
+
+    try {
+      const response = await fetch('/api/autosuggest', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await authUser?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          [type === 'source' ? 'source_name' : type === 'author' ? 'author_name' : 'location_name']: query
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch suggestions');
+      const data = await response.json();
+      console.log(data)
+      return data;
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      return [];
+    }
+  };
+
+  const debouncedFetchSource = debounce(async (query: string | any[]) => {
+    if (query.length < 2) return;
+    setIsLoadingSource(true);
+    const suggestions = await fetchSuggestions(query, 'source');
+    setSourceSuggestions(suggestions);
+    setIsLoadingSource(false);
+  }, 300);
+
+  const debouncedFetchAuthor = debounce(async (query: string | any[]) => {
+    if (query.length < 2) return;
+    setIsLoadingAuthor(true);
+    const suggestions = await fetchSuggestions(query, 'author');
+    setAuthorSuggestions(suggestions);
+    setIsLoadingAuthor(false);
+  }, 300);
+
+  const debouncedFetchLocation = debounce(async (query: string) => {
+    if (query.length < 2) return;
+    setIsLoadingLocation(true);
+    const suggestions = await fetchSuggestions(query, "location");
+    setLocationSuggestions(suggestions);
+    setIsLoadingLocation(false);
+  }, 300);
+
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
@@ -97,7 +176,9 @@ const Page = () => {
 
       const data = await response.json();
       console.log(data);
-      setArticles(data.articles);
+      const authors = data.map((item: { name: string }) => item.name);
+      setAuthorSuggestions(authors);
+      return authors;
     } catch (error) {
       toast({
         title: "Error",
@@ -132,12 +213,9 @@ const Page = () => {
         </div>
 
 
-
-
-
         <div className="flex flex-row gap-4">
           <div
-            onClick={toggleAdvancedFilter} 
+            onClick={toggleAdvancedFilter}
             className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans cursor-pointer"
           >
             Advanced
@@ -167,24 +245,46 @@ const Page = () => {
 
 
       {isAdvancedOpen && (
-        <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-10">
+        <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-10 flex justify-between">
 
 
           <div className="grid grid-cols-3 gap-5">
 
             <div className="flex items-center gap-5 font-raleway">
-              <div className="flex-shrink-0 w-[100px]">Location</div> {/* Set a fixed width */}
-              <div>
-                <Select>
-                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
-                    <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex-shrink-0 w-[100px]">Location</div>
+              <div className="relative w-[200px]">
+                <Input
+                  className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
+                  placeholder="Search locations..."
+                  value={locationQuery}
+                  onChange={(e) => {
+                    setLocationQuery(e.target.value);
+                    debouncedFetchLocation(e.target.value);
+                  }}
+                />
+                {isLoadingLocation && (
+                  <div className="absolute right-3 top-2">
+                    <Icons.spinner className="animate-spin h-6 w-6" />
+                  </div>
+                )}
+                {locationSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
+                    <ScrollArea className="max-h-72 max-w-48 rounded-md p-0">
+                      {locationSuggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer"
+                          onClick={() => {
+                            setLocationQuery(suggestion.label.eng);
+                            setLocationSuggestions([]);
+                          }}
+                        >
+                          {suggestion.label.eng}
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -193,12 +293,66 @@ const Page = () => {
               <div>
                 <Select>
                   <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
-                    <SelectValue placeholder="Theme" />
+                    <SelectValue placeholder="Select Language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="german">German</SelectItem>
+                    <SelectItem value="spanish">Spanish</SelectItem>
+                    <SelectItem value="catalan">Catalan</SelectItem>
+                    <SelectItem value="portuguese">Portuguese</SelectItem>
+                    <SelectItem value="italian">Italian</SelectItem>
+                    <SelectItem value="french">French</SelectItem>
+                    <SelectItem value="russian">Russian</SelectItem>
+                    <SelectItem value="arabic">Arabic</SelectItem>
+                    <SelectItem value="turkish">Turkish</SelectItem>
+                    <SelectItem value="slovene">Slovene</SelectItem>
+                    <SelectItem value="croatian">Croatian</SelectItem>
+                    <SelectItem value="serbian">Serbian</SelectItem>
+                    <SelectItem value="albanian">Albanian</SelectItem>
+                    <SelectItem value="macedonian">Macedonian</SelectItem>
+                    <SelectItem value="czech">Czech</SelectItem>
+                    <SelectItem value="slovak">Slovak</SelectItem>
+                    <SelectItem value="polish">Polish</SelectItem>
+                    <SelectItem value="basque">Basque</SelectItem>
+                    <SelectItem value="irish">Irish</SelectItem>
+                    <SelectItem value="hungarian">Hungarian</SelectItem>
+                    <SelectItem value="dutch">Dutch</SelectItem>
+                    <SelectItem value="swiss-german">Swiss German</SelectItem>
+                    <SelectItem value="swedish">Swedish</SelectItem>
+                    <SelectItem value="finnish">Finnish</SelectItem>
+                    <SelectItem value="norwegian">Norwegian</SelectItem>
+                    <SelectItem value="latvian">Latvian</SelectItem>
+                    <SelectItem value="lithuanian">Lithuanian</SelectItem>
+                    <SelectItem value="estonian">Estonian</SelectItem>
+                    <SelectItem value="icelandic">Icelandic</SelectItem>
+                    <SelectItem value="danish">Danish</SelectItem>
+                    <SelectItem value="greek">Greek</SelectItem>
+                    <SelectItem value="romanian">Romanian</SelectItem>
+                    <SelectItem value="bulgarian">Bulgarian</SelectItem>
+                    <SelectItem value="georgian">Georgian</SelectItem>
+                    <SelectItem value="ukrainian">Ukrainian</SelectItem>
+                    <SelectItem value="belarusian">Belarusian</SelectItem>
+                    <SelectItem value="armenian">Armenian</SelectItem>
+                    <SelectItem value="azerbaijani">Azerbaijani</SelectItem>
+                    <SelectItem value="kazakh">Kazakh</SelectItem>
+                    <SelectItem value="hebrew">Hebrew</SelectItem>
+                    <SelectItem value="persian">Persian</SelectItem>
+                    <SelectItem value="kurdish">Kurdish</SelectItem>
+                    <SelectItem value="indonesian">Indonesian</SelectItem>
+                    <SelectItem value="malayalam">Malayalam</SelectItem>
+                    <SelectItem value="thai">Thai</SelectItem>
+                    <SelectItem value="vietnamese">Vietnamese</SelectItem>
+                    <SelectItem value="chinese">Chinese</SelectItem>
+                    <SelectItem value="japanese">Japanese</SelectItem>
+                    <SelectItem value="korean">Korean</SelectItem>
+                    <SelectItem value="urdu">Urdu</SelectItem>
+                    <SelectItem value="hindi">Hindi</SelectItem>
+                    <SelectItem value="kannada">Kannada</SelectItem>
+                    <SelectItem value="tamil">Tamil</SelectItem>
+                    <SelectItem value="gujarati">Gujarati</SelectItem>
+                    <SelectItem value="punjabi">Punjabi</SelectItem>
+                    <SelectItem value="bengali">Bengali</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -206,52 +360,122 @@ const Page = () => {
 
             <div className="flex items-center gap-5 font-raleway">
               <div className="flex-shrink-0 w-[100px]">Date Range</div>
-              <div className=" bg-secondary p-3 rounded-full border-[#ADADAD] border">
-                <Icons.Calendar />
-              </div>
               <div>
-                <Select>
-                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[150px]">
-                    <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className={cn("grid gap-2")}>
+                  <Popover >
+                    <PopoverTrigger asChild className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-4">
+                      <Button
+                        id="date"
+                        variant={"outline"}
+                        className={cn(
+                          "w-[300px] justify-start text-left font-normal w-[250px]",
+                          !date && "text-muted-foreground w-[250px]"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date?.from ? (
+                          date.to ? (
+                            <>
+                              {format(date.from, "LLL dd, y")} -{" "}
+                              {format(date.to, "LLL dd, y")}
+                            </>
+                          ) : (
+                            format(date.from, "LLL dd, y")
+                          )
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={setDate}
+                        numberOfMonths={2}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
               </div>
             </div>
 
+
+
             <div className="flex items-center gap-5 font-raleway">
               <div className="flex-shrink-0 w-[100px]">Source</div>
-              <div>
-                <Select>
-                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
-                    <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="relative w-[200px]">
+                <Input
+                  className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
+                  placeholder="Search sources..."
+                  value={sourceQuery}
+                  onChange={(e) => {
+                    setSourceQuery(e.target.value);
+                    debouncedFetchSource(e.target.value);
+                  }}
+                />
+                {isLoadingSource && (
+                  <div className="absolute right-3 top-2">
+                    <Icons.spinner className="animate-spin h-6 w-6" />
+                  </div>
+                )}
+                {sourceSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
+                    <ScrollArea className="max-h-72 max-w-48 rounded-md p-0">
+                      {sourceSuggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer"
+                          onClick={() => {
+                            setSourceQuery(suggestion.title);
+                            setSourceSuggestions([]);
+                          }}
+                        >
+                          {suggestion.title}
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex items-center gap-5 font-raleway">
               <div className="flex-shrink-0 w-[100px]">Author</div>
-              <div>
-                <Select>
-                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] ">
-                    <SelectValue placeholder="Theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Light</SelectItem>
-                    <SelectItem value="dark">Dark</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="relative w-[200px]">
+                <Input
+                  className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
+                  placeholder="Search authors..."
+                  value={authorQuery}
+                  onChange={(e) => {
+                    setAuthorQuery(e.target.value);
+                    debouncedFetchAuthor(e.target.value);
+                  }}
+                />
+                {isLoadingAuthor && (
+                  <div className="absolute right-3 top-2">
+                    <Icons.spinner className="animate-spin h-6 w-6" />
+                  </div>
+                )}
+                {authorSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
+                    <ScrollArea className="max-h-72 max-w-48 rounded-md p-0">
+                      {authorSuggestions.map((suggestion, index) => (
+                        <div
+                          key={index}
+                          className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer"
+                          onClick={() => {
+                            setAuthorQuery(suggestion.name);
+                            setAuthorSuggestions([]);
+                          }}
+                        >
+                          {suggestion.name}
+                        </div>
+                      ))}
+                    </ScrollArea>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -270,6 +494,11 @@ const Page = () => {
                 </Select>
               </div>
             </div>
+          </div>
+          <div className="flex justify-end items-end h-full">
+            <Button className="bg-[#636363] rounded-full p-5 flex ">
+              Search
+            </Button>
           </div>
         </div>
       )
