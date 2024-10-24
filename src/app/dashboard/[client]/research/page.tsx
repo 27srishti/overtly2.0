@@ -11,6 +11,13 @@ import React, { useEffect, useState } from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon, Mail, Newspaper } from "lucide-react";
 import { DateRange } from "react-day-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -28,6 +35,7 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { useParams } from "next/navigation";
 import { auth } from "@/lib/firebase/firebase";
 import Link from "next/link";
+import { Icons } from "@/components/ui/Icons";
 interface Article {
   title: string;
   imageUrl?: string;
@@ -53,6 +61,11 @@ const Page = () => {
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
   });
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false); // New state for advanced filter
+
+  const toggleAdvancedFilter = () => {
+    setIsAdvancedOpen((prev) => !prev); // Toggle the advanced filter visibility
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
@@ -100,108 +113,171 @@ const Page = () => {
         <div className="flex gap-8">
           <TabsTrigger
             value="Trends"
-            className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-transparent border"
+            className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans"
           >
             Trends
           </TabsTrigger>
           <TabsTrigger
             value="Competition"
-            className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-transparent border"
+            className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:border-[#A2BEA0]  data-[state=active]:bg-opacity-20 bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans"
           >
-            Competition
+            Competes
           </TabsTrigger>
           <TabsTrigger
             value="EconomicNews"
-            className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-transparent border"
+            className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans"
           >
-            Economic News
-          </TabsTrigger>
-          <TabsTrigger
-            value="Industry"
-            className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-transparent border"
-          >
-            Industry
-          </TabsTrigger>
-          <TabsTrigger
-            value="Digest"
-            className="p-3 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#585858] bg-transparent border"
-          >
-            Digest
+            Client
           </TabsTrigger>
         </div>
 
-        <div className={cn("grid gap-2")}>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={"outline"}
-                className={cn(
-                  "w-[300px] justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
+
+
+
+
+        <div className="flex flex-row gap-4">
+          <div
+            onClick={toggleAdvancedFilter} 
+            className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans cursor-pointer"
+          >
+            Advanced
+          </div>
+          <div className="flex flex-row gap-3 self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2">
+            <Input
+              placeholder="Filter name..."
+              className="shadow-none border-none"
+            />
+
+            <div className="bg-[#3E3E3E] rounded-full p-[.6rem] bg-opacity-80">
+              <svg
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4 text-white"
               >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(date.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={setDate}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      </TabsList>
-      <TabsContent value="Trends" className="bg-white p-0">
-        <div className="flex flex-col gap-40">
-          <div className="px-80 mt-10">
-            <div className="flex flex-row self-end bg-[#F5F5F0] p-1 rounded-[40px] px-2 bg-white border items-center">
-              <div className="rounded-full rounded-full p-[.6rem] ">
-                <svg
-                  viewBox="0 0 14 14"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5 "
-                >
-                  <path
-                    d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
-                    fill="#c9c9c9"
-                  />
-                </svg>
-              </div>
-
-              <Input
-                type="search"
-                placeholder="Search"
-                className="shadow-none border-none h-full"
-              />
+                <path
+                  d="M6.0651 1.3999C3.49315 1.3999 1.39844 3.49461 1.39844 6.06657C1.39844 8.63852 3.49315 10.7332 6.0651 10.7332C7.18354 10.7332 8.21056 10.3361 9.01549 9.67685L11.8018 12.4632C11.8448 12.508 11.8963 12.5437 11.9533 12.5684C12.0103 12.593 12.0717 12.606 12.1337 12.6066C12.1958 12.6073 12.2574 12.5955 12.3149 12.572C12.3724 12.5486 12.4246 12.5139 12.4685 12.47C12.5124 12.4261 12.5471 12.3738 12.5706 12.3164C12.594 12.2589 12.6058 12.1973 12.6052 12.1352C12.6045 12.0731 12.5915 12.0118 12.5669 11.9548C12.5423 11.8978 12.5065 11.8463 12.4617 11.8033L9.67539 9.01696C10.3346 8.21203 10.7318 7.18501 10.7318 6.06657C10.7318 3.49461 8.63706 1.3999 6.0651 1.3999ZM6.0651 2.33324C8.13275 2.33324 9.79844 3.99892 9.79844 6.06657C9.79844 8.13421 8.13275 9.7999 6.0651 9.7999C3.99746 9.7999 2.33177 8.13421 2.33177 6.06657C2.33177 3.99892 3.99746 2.33324 6.0651 2.33324Z"
+                  fill="white"
+                />
+              </svg>
             </div>
           </div>
-          <div>
-            <div className="flex flex-row justify-end gap-4">
-              <div className="bg-[#DAE7F1] bg-opacity-20 px-8 rounded-[20px] text-center py-2">
-                Filter
-              </div>
-              <div className="bg-[#DAE7F1] bg-opacity-20 px-8 rounded-[20px] text-center py-2 mr-4">
-                Sort
+        </div>
+      </TabsList>
+
+
+      {isAdvancedOpen && (
+        <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-10">
+
+
+          <div className="grid grid-cols-3 gap-5">
+
+            <div className="flex items-center gap-5 font-raleway">
+              <div className="flex-shrink-0 w-[100px]">Location</div> {/* Set a fixed width */}
+              <div>
+                <Select>
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
+
+            <div className="flex items-center gap-5 font-raleway">
+              <div className="flex-shrink-0 w-[100px]">Language</div>
+              <div>
+                <Select>
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5 font-raleway">
+              <div className="flex-shrink-0 w-[100px]">Date Range</div>
+              <div className=" bg-secondary p-3 rounded-full border-[#ADADAD] border">
+                <Icons.Calendar />
+              </div>
+              <div>
+                <Select>
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[150px]">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5 font-raleway">
+              <div className="flex-shrink-0 w-[100px]">Source</div>
+              <div>
+                <Select>
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5 font-raleway">
+              <div className="flex-shrink-0 w-[100px]">Author</div>
+              <div>
+                <Select>
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] ">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5 font-raleway">
+              <div className="flex-shrink-0 w-[100px]">Sentiment</div>
+              <div>
+                <Select>
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
+                    <SelectValue placeholder="Theme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="light">Light</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="system">System</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+      }
+
+      <TabsContent value="Trends" className="bg-white p-0">
+        <div className="flex flex-col gap-40">
+          <div>
             <div className="flex flex-col gap-4 mt-5">
               {articles.map((article, index) => (
                 <Dialog key={index}>
@@ -295,7 +371,7 @@ const Page = () => {
                               rise of “superintelligent” AI systems. Yet both
                               Sutskever and Leike left the company after a
                               dramatic falling-out with leadership over how to
-                              approach AI safety. 
+                              approach AI safety.
                             </div>
                             <div className="flex gap-3 items-center text-[.8rem] text-center">
                               <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
@@ -498,7 +574,7 @@ const Page = () => {
       <TabsContent value="EconomicNews">Economic News</TabsContent>
       <TabsContent value="Industry">Industry</TabsContent>
       <TabsContent value="Digest">Digest</TabsContent>
-    </Tabs>
+    </Tabs >
   );
 };
 
