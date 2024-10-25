@@ -245,7 +245,7 @@ const Page = () => {
 
 
       {isAdvancedOpen && (
-        <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-10 flex justify-between">
+        <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-7 flex justify-between  items-end">
 
 
           <div className="grid grid-cols-3 gap-5">
@@ -483,7 +483,7 @@ const Page = () => {
               <div className="flex-shrink-0 w-[100px]">Sentiment</div>
               <div>
                 <Select>
-                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px]">
+                  <SelectTrigger className="w-full grey shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[250px] max-w-[250px]">
                     <SelectValue placeholder="Theme" />
                   </SelectTrigger>
                   <SelectContent>
