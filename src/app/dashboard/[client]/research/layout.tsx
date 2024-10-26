@@ -22,18 +22,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   : "bg-[#F6F6F6] "
               } rounded-full items-center  p-4 px-5 cursor-pointer transition-all text-center rounded-[40px]`}
             >
-              Discover
+          <div className="flex items-center align-middle justify-center gap-2"><div>    Discover</div> <img src="/compass.png" className="h-5"/> </div>
             </div>
           </Link>
-          <Link href={`/dashboard/${client?.id}/research/chat`}>
+          <Link href={`/dashboard/${client?.id}/research/Topics`}>
             <div
               className={`rounded-full items-center p-2 px-5 ${
-                pathname.endsWith("chat")
+                pathname.endsWith("Topics")
                   ? "bg-[#FFAEB5]  text-white bg-opacity-70"
                   : "bg-[#F6F6F6] "
               } rounded-full items-center  p-4 px-5 cursor-pointer transition-all text-center rounded-[40px]`}
             >
-              Chat
+              Topics
             </div>
           </Link>
           <Link href={`/dashboard/${client?.id}/research/insights`}>
@@ -47,6 +47,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               Insights
             </div>
           </Link>
+          <Link href={`/dashboard/${client?.id}/research/Trends`}>
+            <div
+              className={`rounded-full items-center p-2 px-5 ${
+                pathname.endsWith("Trends")
+                  ? "bg-[#FFAEB5]  text-white bg-opacity-70"
+                  : "bg-[#F6F6F6] "
+              } rounded-full items-center  p-4 px-5 cursor-pointer transition-all text-center rounded-[40px]`}
+            >
+              Trends
+            </div>
+          </Link>
+          <Link href={`/dashboard/${client?.id}/research/chat`}>
+            <div
+              className={`rounded-full items-center p-2 px-5 ${
+                pathname.endsWith("chat")
+                  ? "bg-[#FFAEB5]  text-white bg-opacity-70"
+                  : "bg-[#F6F6F6] "
+              } rounded-full items-center  p-4 px-5 cursor-pointer transition-all text-center rounded-[40px]`}
+            >
+              Chat
+            </div>
+          </Link>
+
         </div>
         <div className="text-center border rounded-[40px] p-4 border-1 border-[#4A4A4A]">
             Start a Thread

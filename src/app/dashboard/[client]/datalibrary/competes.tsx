@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { auth, db } from "@/lib/firebase/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { useParams } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { collection, addDoc } from "firebase/firestore";
@@ -30,6 +30,7 @@ import clearCachesByServerAction from "@/lib/revalidation";
 
 const Competes = () => {
   const [user, setuser] = useState<User | null>(null);
+  const [open, setOpen] = useState(false);
   const params = useParams();
   const clientid = params.client;
   const formSchema = z.object({
@@ -70,6 +71,20 @@ const Competes = () => {
     };
 
     try {
+      const q = query(
+        collection(db, `users/${user?.uid}/clients/${clientid}/competes`),
+        where("companyName", "==", data.companyName)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        toast({
+          title: "Duplicate Entry",
+          description: "A compete with the same company name already exists.",
+        });
+        return;
+      }
+
       await addDoc(
         collection(db, `users/${user?.uid}/clients/${clientid}/competes`),
         data
@@ -81,6 +96,8 @@ const Competes = () => {
       });
 
       clearCachesByServerAction(params.client as string);
+      form.reset();
+      setOpen(false);
     } catch (error) {
       console.error("Error adding project: ", error);
       toast({
@@ -90,9 +107,13 @@ const Competes = () => {
     }
   };
 
+  const handleDialogOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+  };
+
   return (
     <>
-      <Dialog>
+      <Dialog open={open} onOpenChange={handleDialogOpenChange}>
         <DialogTrigger>
           <div className="gap-7 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-4 py-[.7rem]">
             <div className="ml-1 font-montserrat text-[#545454]">
