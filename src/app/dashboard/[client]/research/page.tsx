@@ -51,6 +51,8 @@ interface Article {
 
 interface AuthorSuggestion {
   name: string;
+  uri: string;
+  type: string;
 }
 interface sourceSuggestions {
   dataType: string;
@@ -188,6 +190,8 @@ const Page = () => {
     }
   }
 
+  console.log(authorSuggestions)
+
   return (
     <div className="p-4">
       <div className="flex justify-between items-center ">
@@ -288,7 +292,7 @@ const Page = () => {
 
               <div className="flex items-center gap-5 font-raleway">
                 <div className="flex-shrink-0 w-[100px]">Location</div>
-                <div className="relative w-[200px]">
+                <div className="relative w-[250px]">
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
                     placeholder="Search locations..."
@@ -303,9 +307,9 @@ const Page = () => {
                       <Icons.spinner className="animate-spin h-6 w-6" />
                     </div>
                   )}
-                  {locationSuggestions.length > 0 && (
+                  {(locationSuggestions.length > 0 && locationQuery.length > 0)  && (
                     <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
-                      <ScrollArea className="max-h-72 max-w-48 rounded-md p-0">
+                      <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {locationSuggestions.map((suggestion, index) => (
                           <div
                             key={index}
@@ -328,7 +332,7 @@ const Page = () => {
                 <div className="flex-shrink-0 w-[100px]">Language</div>
                 <div>
                   <Select>
-                    <SelectTrigger className="w-full  shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] bg-[#F7F7F1] bg-opacity-50">
+                    <SelectTrigger className="w-full  shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[250px] bg-[#F7F7F1] bg-opacity-50">
                       <SelectValue placeholder="Select Language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -441,7 +445,7 @@ const Page = () => {
 
               <div className="flex items-center gap-5 font-raleway">
                 <div className="flex-shrink-0 w-[100px]">Source</div>
-                <div className="relative w-[200px]">
+                <div className="relative w-[250px]">
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
                     placeholder="Search sources..."
@@ -456,9 +460,9 @@ const Page = () => {
                       <Icons.spinner className="animate-spin h-6 w-6" />
                     </div>
                   )}
-                  {sourceSuggestions.length > 0 && (
+                  {(sourceSuggestions.length > 0 && sourceQuery.length > 0) && (
                     <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
-                      <ScrollArea className="max-h-72 max-w-48 rounded-md p-0">
+                      <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {sourceSuggestions.map((suggestion, index) => (
                           <div
                             key={index}
@@ -479,7 +483,7 @@ const Page = () => {
 
               <div className="flex items-center gap-5 font-raleway">
                 <div className="flex-shrink-0 w-[100px]">Author</div>
-                <div className="relative w-[200px]">
+                <div className="relative w-[250px]">
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
                     placeholder="Search authors..."
@@ -494,9 +498,9 @@ const Page = () => {
                       <Icons.spinner className="animate-spin h-6 w-6" />
                     </div>
                   )}
-                  {authorSuggestions.length > 0 && (
+                  {(authorSuggestions.length > 0 && authorQuery.length > 0) && (
                     <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
-                      <ScrollArea className="max-h-72 max-w-48 rounded-md p-0">
+                      <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {authorSuggestions.map((suggestion, index) => (
                           <div
                             key={index}
@@ -506,7 +510,8 @@ const Page = () => {
                               setAuthorSuggestions([]);
                             }}
                           >
-                            {suggestion.name}
+                            <div className="flex flex-col">             <span className="font-semibold text-gray-800">{suggestion.name}</span>
+                              <span className="text-[11px]">{suggestion.uri}</span></div>
                           </div>
                         ))}
                       </ScrollArea>
@@ -520,7 +525,7 @@ const Page = () => {
                 <div>
                   <Select>
                     <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[250px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50">
-                      <SelectValue placeholder="Theme" className="text-[#828282]"/>
+                      <SelectValue placeholder="Theme" className="text-[#828282]" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="light">Light</SelectItem>
