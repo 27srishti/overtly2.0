@@ -49,6 +49,7 @@ import {
   getDoc,
   updateDoc,
   writeBatch,
+  deleteDoc,
 } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -110,6 +111,8 @@ export function CompetesTable<TData extends FilesData, TValue>({
 
     const userRef = doc(db, "users", authUser.uid);
     const clientRef = doc(userRef, "clients", params.client);
+    const competesRef = collection(clientRef, "competes");
+    const fileDocRef = doc(competesRef, file.id);
 
     try {
       const clientDoc = await getDoc(clientRef);
@@ -117,22 +120,20 @@ export function CompetesTable<TData extends FilesData, TValue>({
         throw new Error("Client document not found");
       }
 
-      await updateDoc(clientRef, {
-        journalists: arrayRemove(file),
-      });
+      await deleteDoc(fileDocRef);
 
       clearCachesByServerAction(params.client);
 
       toast({
-        title: "Journalist removed",
+        title: "Compete removed",
         description:
-          "The journalist has been successfully removed from the client.",
+          "The compete has been successfully removed from the client.",
       });
     } catch (error) {
-      console.error("Error deleting journalist:", error);
+      console.error("Error deleting compete:", error);
       toast({
         title: "Error",
-        description: "An error occurred while removing the journalist.",
+        description: "An error occurred while removing the compete.",
         variant: "destructive",
       });
     }
@@ -148,31 +149,29 @@ export function CompetesTable<TData extends FilesData, TValue>({
 
     const userRef = doc(db, "users", authUser.uid);
     const clientRef = doc(userRef, "clients", params.client);
+    const competesRef = collection(clientRef, "competes");
 
     try {
       const selectedFiles = getSelectedRowData();
-      // Perform delete operation with selectedFiles
-      console.log(selectedFiles); // For debugging purposes
+      console.log(selectedFiles);
 
-      // Example: Deleting each selected file
       for (const file of selectedFiles) {
-        await updateDoc(clientRef, {
-          journalists: arrayRemove(file),
-        });
+        const fileDocRef = doc(competesRef, file.id);
+        await deleteDoc(fileDocRef);
       }
 
       clearCachesByServerAction(params.client);
 
       toast({
-        title: "Journalists removed",
+        title: "Competes removed",
         description:
-          "The selected journalists have been successfully removed from the client.",
+          "The selected competes have been successfully removed from the client.",
       });
     } catch (error) {
-      console.error("Error deleting journalists:", error);
+      console.error("Error deleting competes:", error);
       toast({
         title: "Error",
-        description: "An error occurred while removing the journalists.",
+        description: "An error occurred while removing the competes.",
         variant: "destructive",
       });
     }

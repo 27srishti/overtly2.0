@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/lib/firebase/firebase-admin-config.ts", "src/app/dashboard/[client]/create/StepFour.jsx", "src/app/dashboard/[client]/create/Draggable.tsx", "src/app/dashboard/[client]/create/editor/text-editor.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/lib/firebase/firebase-admin-config.ts", "src/app/dashboard/[client]/create/StepFour.jsx", "src/app/dashboard/[client]/create/Draggable.tsx", "src/app/dashboard/[client]/create/editor/text-editor.jsx", "src/app/dashboard/[client]/datalibrary/dropbox.jsx"],
   "exclude": ["node_modules"]
 }

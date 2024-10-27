@@ -8,16 +8,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { auth, db, storage } from "@/lib/firebase/firebase";
+import { auth, db, drive, storage } from "@/lib/firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
-import App from "./app";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
+import { canOpenDropbox } from "react-cloud-chooser";
+import { toast } from "sonner";
 
 interface FileCollection {
   id: string;
@@ -30,8 +31,6 @@ interface FileCollection {
 }
 
 const Uploadbtn = (props: { data: any }) => {
-  console.log("prospdklsapkdisahjjdhsaj", props.data);
-
   const [files, setFiles] = useState<File[]>([]);
   const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
     null
@@ -64,13 +63,10 @@ const Uploadbtn = (props: { data: any }) => {
     setOpen(false);
 
     try {
-      if (
-        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID &&
-        process.env.NEXT_PUBLIC_GOOGLE_API_KEY
-      ) {
+      if (drive.GOOGLE_CLIENT_ID && drive.GOOGLE_API_KEY) {
         openPicker({
-          clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          developerKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+          clientId: drive.GOOGLE_CLIENT_ID,
+          developerKey: drive.GOOGLE_API_KEY,
           viewId: "DOCS",
           showUploadView: true,
           showUploadFolders: true,
@@ -106,9 +102,37 @@ const Uploadbtn = (props: { data: any }) => {
       alert(
         "An error occurred while opening the Google Picker. Please try again later."
       );
-      setOpen(true); // Ensure the picker can be reopened in case of an error
+      setOpen(true);
     }
   };
+
+  interface DtopboxBtnProps {
+    openDropbox: () => void;
+    isDropboxLoading: boolean;
+  }
+
+  const DtopboxBtn: React.FC<DtopboxBtnProps> = ({
+    openDropbox,
+    isDropboxLoading,
+  }) => (
+    <Button
+      onClick={openDropbox}
+      className="flex items-center justify-center w-12 h-12 rounded-full bg-[#5C5C5C] text-white"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        x="0px"
+        y="0px"
+        width="150"
+        height="100"
+        viewBox="0 0 50 50"
+        fill="white"
+      >
+        <path d="M 15.5 1 C 15.34375 1.015625 15.195313 1.070313 15.0625 1.15625 L 0.46875 10.5625 C 0.199219 10.738281 0.03125 11.035156 0.0195313 11.359375 C 0.0078125 11.679688 0.152344 11.988281 0.40625 12.1875 L 9.34375 18.96875 L 0.40625 25.6875 C 0.128906 25.886719 -0.03125 26.214844 -0.0117188 26.558594 C 0.0078125 26.898438 0.199219 27.207031 0.5 27.375 L 9 32.375 L 9 39.09375 C 8.996094 39.429688 9.160156 39.746094 9.4375 39.9375 L 24.4375 49.84375 C 24.777344 50.074219 25.222656 50.074219 25.5625 49.84375 L 40.5625 40.03125 C 40.839844 39.839844 41.003906 39.523438 41 39.1875 L 41 32.4375 L 49.5 27.34375 C 49.769531 27.179688 49.945313 26.898438 49.976563 26.585938 C 50.007813 26.273438 49.890625 25.960938 49.65625 25.75 L 41.25 18.625 L 49.625 11.78125 C 49.875 11.578125 50.015625 11.265625 49.996094 10.945313 C 49.976563 10.621094 49.804688 10.328125 49.53125 10.15625 L 35.34375 1.15625 C 35.140625 1.023438 34.898438 0.96875 34.65625 1 C 34.472656 1.023438 34.300781 1.101563 34.15625 1.21875 L 25.03125 8.8125 L 16.25 1.25 C 16.046875 1.066406 15.773438 0.976563 15.5 1 Z M 15.53125 3.25 L 23.34375 9.96875 L 11.03125 17.78125 L 2.75 11.46875 Z M 34.875 3.25 L 47.28125 11.09375 L 39.59375 17.375 L 26.75 9.9375 Z M 25 11.28125 L 37.75 18.625 L 24.96875 26.625 L 12.875 19 Z M 39.59375 19.8125 L 47.3125 26.375 L 39.6875 30.9375 L 39.59375 30.96875 C 39.503906 31.007813 39.417969 31.0625 39.34375 31.125 L 34.6875 33.90625 L 26.75 27.875 Z M 11.0625 20.21875 L 23.25 27.875 L 15.53125 33.90625 L 2.8125 26.40625 Z M 25.03125 29.0625 L 34 35.90625 C 34.328125 36.15625 34.773438 36.179688 35.125 35.96875 L 39 33.65625 L 39 38.65625 L 25 47.78125 L 11 38.53125 L 11 33.5625 L 15.09375 35.96875 C 15.453125 36.171875 15.898438 36.136719 16.21875 35.875 Z"></path>
+      </svg>
+    </Button>
+  );
+  const DropboxOpenBtn = canOpenDropbox(DtopboxBtn);
 
   const downloadAndUploadFiles = async (
     driveFiles: { id: string; name: string; mimeType: string }[]
@@ -168,7 +192,6 @@ const Uploadbtn = (props: { data: any }) => {
     try {
       let url = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
 
-      // Fetch file metadata (mimeType and name)
       const fileMetadataResponse = await fetch(
         `https://www.googleapis.com/drive/v3/files/${fileId}?fields=mimeType,name`,
         {
@@ -186,7 +209,6 @@ const Uploadbtn = (props: { data: any }) => {
 
       const fileMetadata = await fileMetadataResponse.json();
 
-      // Check if the file is a Google Docs file that requires exporting
       const isGoogleDocsFile = fileMetadata.mimeType.startsWith(
         "application/vnd.google-apps."
       );
@@ -195,7 +217,6 @@ const Uploadbtn = (props: { data: any }) => {
         url = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=application/pdf`;
       }
 
-      // Download or export the file from Google Drive
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token.current}`,
@@ -208,12 +229,10 @@ const Uploadbtn = (props: { data: any }) => {
         );
       }
 
-      // Return the file blob
       return await response.blob();
     } catch (error) {
       console.error("Error downloading or exporting file:", error);
-      // Optionally provide user feedback or retry logic here
-      return null; // Return null to signal failure to the caller
+      return null;
     }
   };
 
@@ -223,6 +242,49 @@ const Uploadbtn = (props: { data: any }) => {
   ) => {
     if (!authUser) {
       console.error("User is not authenticated");
+      return;
+    }
+
+    const clientRef = doc(db, `users/${authUser.uid}/clients/${params.client}`);
+    const docSnap = await getDoc(clientRef);
+    const clientData = docSnap.exists() ? docSnap : null;
+    const overallClientDataSize = clientData
+      ? clientData.data()?.overallClientDataSize || 0
+      : 0;
+
+    if (overallClientDataSize + fileBlob.size > 2 * 1024 * 1024 * 1024) {
+      toast("Total file size exceeds 2GB. Please select smaller files.", {
+        description: "Ensure the total size is less than 2GB.",
+      });
+      setLoading(false);
+      setIsUploading(false);
+
+      await logErrorToFirestore(
+        authUser.uid,
+        params.client,
+        "user-fileSize",
+        "Total file size exceeds 2GB. Please select smaller files.",
+        {
+          client_id: params.client,
+        }
+      );
+
+      return;
+    }
+
+    if (fileBlob.size > 100 * 1024 * 1024) {
+      toast("File size exceeds 100MB. File not uploaded.", {
+        description: "Please ensure file size is less than 100MB.",
+      });
+      await logErrorToFirestore(
+        authUser.uid,
+        params.client,
+        "user-fileSize",
+        "File size exceeds 100MB. File not uploaded.",
+        {
+          client_id: params.client,
+        }
+      );
       return;
     }
 
@@ -288,7 +350,7 @@ const Uploadbtn = (props: { data: any }) => {
         {
           client_id: params.client,
         }
-      ); // Log the error
+      );
       return "";
     }
   };
@@ -344,7 +406,57 @@ const Uploadbtn = (props: { data: any }) => {
         });
       }, 150);
 
-      files.forEach((file) => {
+      files.forEach(async (file) => {
+        const clientRef = doc(
+          db,
+          `users/${authUser.uid}/clients/${params.client}`
+        );
+        const docSnap = await getDoc(clientRef);
+        const clientData = docSnap.exists() ? docSnap : null;
+        const overallClientDataSize = clientData
+          ? clientData.data()?.overallClientDataSize || 0
+          : 0;
+
+        const totalFilesSize = files.reduce((acc, file) => acc + file.size, 0);
+
+        if (overallClientDataSize + totalFilesSize > 2 * 1024 * 1024 * 1024) {
+          toast("Total file size exceeds 2GB. Please select smaller files.", {
+            description: "Ensure the total size is less than 2GB.",
+          });
+          setLoading(false);
+          setIsUploading(false);
+
+          await logErrorToFirestore(
+            authUser.uid,
+            params.client,
+            "user-fileSize",
+            "Total file size exceeds 2GB. Please select smaller files.",
+            {
+              client_id: params.client,
+            }
+          );
+
+          return;
+        }
+
+        if (file.size > 100 * 1024 * 1024) {
+          toast("File size exceeds 100MB. File not uploaded.", {
+            description: "Please ensure file size is less than 100MB.",
+          });
+          setFiles([]);
+
+          await logErrorToFirestore(
+            authUser.uid,
+            params.client,
+            "user-fileSize",
+            "File size exceeds 100MB. File not uploaded.",
+            {
+              client_id: params.client,
+            }
+          );
+          return;
+        }
+
         const originalFileName = file.name;
         const fileNameWithoutExtension = originalFileName.split(".")[0];
         const uniqueId = uuidv4().slice(0, 6);
@@ -455,6 +567,45 @@ const Uploadbtn = (props: { data: any }) => {
         setFiles([]);
       }
     }
+  };
+  const DropboxUpload = async (
+    processedFiles: { link: string; name: string }[]
+  ) => {
+    setUploadProgress(0);
+    setFakeProgress(0);
+
+    setLoading(true);
+    setIsUploading(true);
+
+    const fakeProgressInterval = setInterval(() => {
+      setFakeProgress((prev) => {
+        const nextProgress = Math.min(prev + 5, 85);
+        return nextProgress;
+      });
+    }, 150);
+    const totalFiles = processedFiles.length;
+    let uploadedCount = 0;
+
+    for (const file of processedFiles) {
+      try {
+        const fileBlob = await fetch(file.link).then((res) => res.blob());
+        console.log(fileBlob);
+        const result = await uploadFileToFirebase(fileBlob, file.name);
+        uploadedCount++;
+        setUploadProgress((uploadedCount / totalFiles) * 100);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        setIsUploading(false);
+      }
+    }
+    setDownloadfromDrive(null);
+    setLoading(false);
+    setIsUploading(false);
+    setFiles([]);
+    clearInterval(fakeProgressInterval);
+    setUploadProgress(0);
+    setFakeProgress(0);
   };
 
   return (
@@ -600,12 +751,13 @@ const Uploadbtn = (props: { data: any }) => {
                   onFocusCapture={(e) => {
                     e.stopPropagation();
                   }}
+                  className="flex flex-row gap-3"
                 >
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          className=" text-white px-6 py-2 rounded-[55px] flex items-center font-montserrat bg-[#5C5C5C]  font-sm  gap-4 font-light py-5"
+                          className="flex items-center justify-center w-12 h-12 rounded-full bg-[#5C5C5C] text-white"
                           onClick={() => handleOpenPicker()}
                         >
                           <svg
@@ -621,7 +773,7 @@ const Uploadbtn = (props: { data: any }) => {
                               fill="white"
                             />
                           </svg>
-                          Upload From Drive
+                          {/* Upload From Drive */}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent className="bg-[#5C5C5C]">
@@ -629,7 +781,13 @@ const Uploadbtn = (props: { data: any }) => {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  <App />
+
+                  <DropboxOpenBtn
+                    appKey="j101w30xs3ehgyo"
+                    linkType="direct"
+                    success={DropboxUpload}
+                    multiselect="true"
+                  />
                 </div>
               </>
             )}

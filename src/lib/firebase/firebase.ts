@@ -24,3 +24,7 @@ export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const drive = {
+  GOOGLE_CLIENT_ID: "87008435117-lkk1shffgdiqtjphc49k9kes3qre9lvb.apps.googleusercontent.com",
+  GOOGLE_API_KEY: "AIzaSyCjYy_RraVW2Hf0sBsgeSnUK8_xDSD6wgY",
+}
