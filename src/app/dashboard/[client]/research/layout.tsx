@@ -11,9 +11,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { client } = useClientStore();
   const params = useParams<{ client: string }>();
   return (
-    <div className="grid w-full grid-cols-[300px_1fr] p-5 gap-10  pt-10 font-montserrat">
-      <div className="w-full rounded-[40px] p-5 flex flex-col justify-between h-[83vh] py-10 bg-opacity-25 sticky top-[7.6rem] border">
-        <div className="flex gap-5 flex-col px-5">
+<div className="grid w-full grid-cols-[250px_1fr] xl:grid-cols-[280px_1fr] p-5 gap-5 xl:gap-10 pt-10 font-montserrat">
+
+      <div className="w-full rounded-[40px] p-5 flex flex-col justify-between h-[83vh] py-10 bg-opacity-25 sticky top-[7.6rem] border ">
+        <div className="flex gap-5 flex-col xl:px-4">
           <Link href={`/dashboard/${client?.id}/research`}>
             <div
               className={`rounded-full items-center p-2 px-5 ${

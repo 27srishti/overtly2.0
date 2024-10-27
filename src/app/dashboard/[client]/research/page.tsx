@@ -190,13 +190,10 @@ const Page = () => {
     }
   }
 
-  console.log(authorSuggestions)
-
   return (
-    <div className="p-4">
+    <div className="p-1">
       <div className="flex justify-between items-center ">
-
-        <div className="flex flex-col font-raleway font-light text-[#828282] text-4xl gap-3">
+        <div className="flex flex-col font-raleway font-light text-[#828282] text-3xl xl:text-4xl gap-3">
           <div>
             Let’s find you the most
           </div>
@@ -206,58 +203,63 @@ const Page = () => {
         </div>
         <div className="font-raleway font-light text-[#828282] text-sm">Last Updated 3 hrs back</div>
       </div>
-      <Tabs defaultValue="Trends" className="w-full font-normal mt-8">
-        <TabsList className=" flex flex-row justify-between">
-          <div className="flex gap-8">
+      <Tabs defaultValue="Trends" className="w-full font-normal mt-11">
+        <TabsList className=" flex flex-row justify-between gap-10">
+          <div className="flex gap-7">
             <TabsTrigger
               value="Industry"
-              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans"
+              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5 font-sans"
             >
-              <div className="flex items-center gap-7">
-                <div>              Industry</div>
-
-                <div><Icons.Industries className="w-4 h-4" /></div>
+              <div className="flex items-center gap-6">
+                <div>Industry</div>
+                <div className="hidden xl:block">
+                  <Icons.Industries className="w-4 h-4" />
+                </div>
               </div>
             </TabsTrigger>
+
             <TabsTrigger
               value="Competes"
-              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:border-[#A2BEA0]  data-[state=active]:bg-opacity-20 bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans"
+              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:border-[#A2BEA0] data-[state=active]:bg-opacity-20 bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5 font-sans"
             >
-              <div className="flex items-center gap-7">
-                <div>              Competes</div>
+              <div className="flex items-center gap-6">
+                <div>Competes</div>
 
-                <div><Icons.Compets className="w-4 h-4" /></div>
+                <div className="hidden xl:block">
+                  <Icons.Compets className="w-4 h-4" />
+                </div>
               </div>
-
             </TabsTrigger>
+
             <TabsTrigger
               value="Client"
-              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans"
+              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5 font-sans"
             >
-              <div className="flex items-center gap-7">
-                <div>              Client</div>
+              <div className="flex items-center gap-6">
+                <div>Client</div>
 
-                <div><Icons.client className="w-4 h-4" /></div>
+                <div className="hidden xl:block">
+                  <Icons.client className="w-4 h-4" />
+                </div>
               </div>
-
             </TabsTrigger>
+
           </div>
 
 
           <div className="flex flex-row gap-4">
             <div
               onClick={toggleAdvancedFilter}
-              className="p-3 rounded-full px-7 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5  font-sans cursor-pointer"
+              className="p-3 rounded-full px-8 data-[state=active]:text-[#486946] data-[state=active]:bg-[#F2FFA9] data-[state=active]:bg-opacity-20 data-[state=active]:border-[#A2BEA0] bg-transparent border border-[#A2BEA0] bg-[#FFEFA6] bg-opacity-5 font-sans cursor-pointer text-sm   flex    items-center text-center justify-center  text-sm   "
             >
-
-              <div className="flex items-center gap-7">
-                <div>              Advanced</div>
-
-                <div><Icons.Advance className="w-4 h-4" /></div>
+              <div className="flex items-center gap-6">
+                <div>Advanced</div>
+                <div className="hidden xl:block">
+                  <Icons.Advance className="w-4 h-4" />
+                </div>
               </div>
-
-
             </div>
+
             <div className="flex flex-row gap-3 self-end border-y border-l rounded-[40px]  border-[#A2BEA0] items-center">
               <Input
                 placeholder="Search"
@@ -281,18 +283,12 @@ const Page = () => {
           </div>
         </TabsList>
 
-
-
-
         {isAdvancedOpen && (
-          <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-7 flex justify-between  items-end mt-4">
-
-
-            <div className="grid grid-cols-3 gap-5">
-
-              <div className="flex items-center gap-5 font-raleway">
-                <div className="flex-shrink-0 w-[100px]">Location</div>
-                <div className="relative w-[250px]">
+          <div className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] p-5 flex justify-between  items-end mt-4 text-[#666A66] px-12 md:px-5  ">
+            <div className="grid grid-cols-2  2xl:grid-cols-3 gap-5">
+              <div className="flex items-center gap-5 font-raleway text-center">
+                <div className="flex-shrink-0 w-[90px]">Location</div>
+                <div className="relative w-[230px]">
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
                     placeholder="Search locations..."
@@ -307,7 +303,7 @@ const Page = () => {
                       <Icons.spinner className="animate-spin h-6 w-6" />
                     </div>
                   )}
-                  {(locationSuggestions.length > 0 && locationQuery.length > 0)  && (
+                  {(locationSuggestions.length > 0 && locationQuery.length > 0) && (
                     <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
                       <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {locationSuggestions.map((suggestion, index) => (
@@ -328,11 +324,11 @@ const Page = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-5 font-raleway">
-                <div className="flex-shrink-0 w-[100px]">Language</div>
+              <div className="flex items-center gap-5 font-raleway text-center">
+                <div className="flex-shrink-0 w-[90px]">Language</div>
                 <div>
                   <Select>
-                    <SelectTrigger className="w-full  shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[250px] bg-[#F7F7F1] bg-opacity-50">
+                    <SelectTrigger className=" shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] bg-[#F7F7F1] bg-opacity-50">
                       <SelectValue placeholder="Select Language" />
                     </SelectTrigger>
                     <SelectContent>
@@ -398,18 +394,18 @@ const Page = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-5 font-raleway">
-                <div className="flex-shrink-0 w-[100px]">Date Range</div>
+              <div className="flex items-center gap-5 font-raleway text-center">
+                <div className="flex-shrink-0 w-[90px]">Date Range</div>
                 <div>
                   <div className={cn("grid gap-2")}>
                     <Popover >
-                      <PopoverTrigger asChild className="bg-[#F7F7F1] bg-opacity-50 border-[#A2BEA0] border rounded-[18px] mx-2 p-4">
+                      <PopoverTrigger asChild className="bg-[#F7F7F1] bg-opacity-50 border-[#ADADAD] border rounded-full  p-4 h-10">
                         <Button
                           id="date"
                           variant={"outline"}
                           className={cn(
-                            "w-[300px] justify-start text-left font-normal w-[250px]",
-                            !date && "text-muted-foreground w-[250px]"
+                            "w-[300px] justify-start text-left font-normal w-[230px]",
+                            !date && "text-muted-foreground w-[230px]"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
@@ -441,11 +437,9 @@ const Page = () => {
                 </div>
               </div>
 
-
-
-              <div className="flex items-center gap-5 font-raleway">
-                <div className="flex-shrink-0 w-[100px]">Source</div>
-                <div className="relative w-[250px]">
+              <div className="flex items-center gap-5 font-raleway text-center">
+                <div className="flex-shrink-0 w-[90px]">Source</div>
+                <div className="relative w-[230px]">
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
                     placeholder="Search sources..."
@@ -481,9 +475,9 @@ const Page = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-5 font-raleway">
-                <div className="flex-shrink-0 w-[100px]">Author</div>
-                <div className="relative w-[250px]">
+              <div className="flex items-center gap-5 font-raleway text-center">
+                <div className="flex-shrink-0 w-[90px]">Author</div>
+                <div className="relative w-[230px]">
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
                     placeholder="Search authors..."
@@ -520,11 +514,11 @@ const Page = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-5 font-raleway">
-                <div className="flex-shrink-0 w-[100px]">Sentiment</div>
+              <div className="flex items-center gap-5 font-raleway text-center">
+                <div className="flex-shrink-0 w-[90px]">Sentiment</div>
                 <div>
                   <Select>
-                    <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[250px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50">
+                    <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50">
                       <SelectValue placeholder="Theme" className="text-[#828282]" />
                     </SelectTrigger>
                     <SelectContent>
@@ -546,12 +540,8 @@ const Page = () => {
         }
 
         <TabsContent value="Industry" className="bg-white p-0">
-
           <div className="flex items-center justify-end mt-5 gap-3">
-
-
             <div className=" border-[#A2BEA0] border rounded-[40px] p-3"> <Icons.Calendar /></div>
-
             <div className="font-raleway text-sm">
               <Select>
                 <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50 px-4">
@@ -567,11 +557,6 @@ const Page = () => {
                 </SelectContent>
               </Select>
             </div>
-
-
-
-
-
             <div className="font-raleway text-sm">
               <Select>
                 <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50 px-4">
@@ -584,14 +569,7 @@ const Page = () => {
                 </SelectContent>
               </Select>
             </div>
-
-
-
           </div>
-
-
-
-
 
           <div className="flex flex-col gap-40">
             <div>
