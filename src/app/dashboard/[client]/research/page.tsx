@@ -7,7 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { addDays, format } from "date-fns";
 import { Calendar as CalendarIcon, Icon, Mail, Newspaper } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -85,6 +85,8 @@ const Page = () => {
   const toggleAdvancedFilter = () => {
     setIsAdvancedOpen((prev) => !prev);
   };
+  const dropdownRefs = useRef<Array<HTMLDivElement | null>>([]);
+
 
   const [authorQuery, setAuthorQuery] = useState('');
   const [authorSuggestions, setAuthorSuggestions] = useState<AuthorSuggestion[]>([]);
@@ -96,6 +98,23 @@ const Page = () => {
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestions[]>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
+
+  const handleClickOutside = (event: MouseEvent) => {
+    dropdownRefs.current.forEach((ref, index) => {
+      if (ref && !ref.contains(event.target as Node)) {
+        if (index === 0) setLocationSuggestions([]);
+        else if (index === 1) setSourceSuggestions([]);
+        else if (index === 2) setAuthorSuggestions([]);
+      }
+    });
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
 
   const fetchSuggestions = async (query: any, type: string) => {
@@ -193,7 +212,7 @@ const Page = () => {
   return (
     <div className="p-1">
       <div className="flex justify-between items-center ">
-        <div className="flex flex-col font-raleway font-light text-[#828282] text-3xl xl:text-4xl gap-3">
+        <div className="flex flex-col font-raleway font-light text-[#828282] text-3xl xl:text-4xl gap-3 mt-6">
           <div>
             Let’s find you the most
           </div>
@@ -203,7 +222,7 @@ const Page = () => {
         </div>
         <div className="font-raleway font-light text-[#828282] text-sm">Last Updated 3 hrs back</div>
       </div>
-      <Tabs defaultValue="Trends" className="w-full font-normal mt-11">
+      <Tabs defaultValue="Trends" className="w-full font-normal mt-16">
         <TabsList className=" flex flex-row justify-between gap-10">
           <div className="flex gap-7">
             <TabsTrigger
@@ -263,7 +282,7 @@ const Page = () => {
             <div className="flex flex-row gap-3 self-end border-y border-l rounded-[40px]  border-[#A2BEA0] items-center">
               <Input
                 placeholder="Search"
-                className="shadow-none border-none"
+                className="shadow-none border-none pl-5"
               />
 
               <div className="border-[#A2BEA0] border rounded-[40px] p-3">
@@ -290,7 +309,7 @@ const Page = () => {
                 <div className="flex-shrink-0 w-[90px]">Location</div>
                 <div className="relative w-[230px]">
                   <Input
-                    className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
+                    className="w-full rounded-full h-10 bg-transparent border-[#ADADAD] pl-5"
                     placeholder="Search locations..."
                     value={locationQuery}
                     onChange={(e) => {
@@ -304,12 +323,12 @@ const Page = () => {
                     </div>
                   )}
                   {(locationSuggestions.length > 0 && locationQuery.length > 0) && (
-                    <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
-                      <ScrollArea className="h-72 w-250 rounded-md p-0">
+                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2" ref={(el) => { dropdownRefs.current[0] = el; }}>
+                      <ScrollArea className="h-72 w-250  p-0">
                         {locationSuggestions.map((suggestion, index) => (
                           <div
                             key={index}
-                            className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer"
+                            className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer text-left  text-[15px]"
                             onClick={() => {
                               setLocationQuery(suggestion.label.eng);
                               setLocationSuggestions([]);
@@ -328,10 +347,10 @@ const Page = () => {
                 <div className="flex-shrink-0 w-[90px]">Language</div>
                 <div>
                   <Select>
-                    <SelectTrigger className=" shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] bg-[#F7F7F1] bg-opacity-50">
+                    <SelectTrigger className=" shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] bg-[#F7F7F1] bg-opacity-50 pl-5">
                       <SelectValue placeholder="Select Language" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className=" mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD]  text-left text-[#666A66]  text-[15px] font-raleway p-2 px-2" >
                       <SelectItem value="english">English</SelectItem>
                       <SelectItem value="german">German</SelectItem>
                       <SelectItem value="spanish">Spanish</SelectItem>
@@ -423,13 +442,18 @@ const Page = () => {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
+                      <PopoverContent className="w-auto p-0" align="start" >
                         <Calendar
                           mode="range"
                           defaultMonth={date?.from}
                           selected={date}
                           onSelect={setDate}
                           numberOfMonths={2}
+                          className="px-4 py-2 bg-[#666A66] bg-opacity-10 cursor-pointer text-left  text-[15px] font-raleway"
+                         classNames={{
+                          day_range_middle:
+                          "aria-selected:bg-[#ADADAD] aria-selected:text-accent-foreground",
+                         }}
                         />
                       </PopoverContent>
                     </Popover>
@@ -439,9 +463,9 @@ const Page = () => {
 
               <div className="flex items-center gap-5 font-raleway text-center">
                 <div className="flex-shrink-0 w-[90px]">Source</div>
-                <div className="relative w-[230px]">
+                <div className="relative w-[230px]"  ref={(el) => { dropdownRefs.current[1] = el; }}>
                   <Input
-                    className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
+                    className="w-full rounded-full h-10 bg-transparent border-[#ADADAD] pl-5"
                     placeholder="Search sources..."
                     value={sourceQuery}
                     onChange={(e) => {
@@ -455,12 +479,12 @@ const Page = () => {
                     </div>
                   )}
                   {(sourceSuggestions.length > 0 && sourceQuery.length > 0) && (
-                    <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
+                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2" >
                       <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {sourceSuggestions.map((suggestion, index) => (
                           <div
                             key={index}
-                            className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer"
+                            className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer text-left  text-[15px]"
                             onClick={() => {
                               setSourceQuery(suggestion.title);
                               setSourceSuggestions([]);
@@ -475,11 +499,11 @@ const Page = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-5 font-raleway text-center">
+              <div className="flex items-center gap-5 font-raleway text-center" >
                 <div className="flex-shrink-0 w-[90px]">Author</div>
                 <div className="relative w-[230px]">
                   <Input
-                    className="w-full rounded-full h-10 bg-transparent border-[#ADADAD]"
+                    className="w-full rounded-full h-10 bg-transparent border-[#ADADAD] pl-5"
                     placeholder="Search authors..."
                     value={authorQuery}
                     onChange={(e) => {
@@ -493,18 +517,18 @@ const Page = () => {
                     </div>
                   )}
                   {(authorSuggestions.length > 0 && authorQuery.length > 0) && (
-                    <div className="absolute z-10 w-full mt-1 rounded-md bg-[#F7F7F1] border p-0">
+                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2 font-raleway"  ref={(el) => { dropdownRefs.current[2] = el; }}>
                       <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {authorSuggestions.map((suggestion, index) => (
                           <div
                             key={index}
-                            className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer"
+                            className="px-4 py-2 hover:bg-[#ADADAD] hover:bg-opacity-20 cursor-pointer text-left  text-[15px]"
                             onClick={() => {
                               setAuthorQuery(suggestion.name);
                               setAuthorSuggestions([]);
                             }}
                           >
-                            <div className="flex flex-col">             <span className="font-semibold text-gray-800">{suggestion.name}</span>
+                            <div className="flex flex-col">             <span className="font-medium text-gray-700">{suggestion.name}</span>
                               <span className="text-[11px]">{suggestion.uri}</span></div>
                           </div>
                         ))}
@@ -518,10 +542,10 @@ const Page = () => {
                 <div className="flex-shrink-0 w-[90px]">Sentiment</div>
                 <div>
                   <Select>
-                    <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50">
-                      <SelectValue placeholder="Theme" className="text-[#828282]" />
+                    <SelectTrigger className="shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] bg-[#F7F7F1] bg-opacity-50 pl-5">
+                      <SelectValue placeholder="Theme" className="text-[#828282] " />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD]  text-left text-[#666A66]  text-[15px] font-raleway p-2 px-2">
                       <SelectItem value="light">Light</SelectItem>
                       <SelectItem value="dark">Dark</SelectItem>
                       <SelectItem value="system">System</SelectItem>
@@ -544,10 +568,11 @@ const Page = () => {
             <div className=" border-[#A2BEA0] border rounded-[40px] p-3"> <Icons.Calendar /></div>
             <div className="font-raleway text-sm">
               <Select>
-                <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50 px-4">
+                <SelectTrigger className="shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] bg-[#F7F7F1] bg-opacity-50 pl-5">
                   <SelectValue placeholder="Any Time" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD]  text-left text-[#666A66]  text-[15px] font-raleway p-2 px-2">
+
                   <SelectItem value="Past Hour">Past Hour</SelectItem>
                   <SelectItem value="Past 24 Hour">Past 24 Hour</SelectItem>
                   <SelectItem value="Past Week">Past Week</SelectItem>
@@ -559,10 +584,11 @@ const Page = () => {
             </div>
             <div className="font-raleway text-sm">
               <Select>
-                <SelectTrigger className="w-full shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[200px] max-w-[250px] bg-[#F7F7F1] bg-opacity-50 px-4">
+                <SelectTrigger className="shadow-none outline-none rounded-full h-10 bg-transparent border-[#ADADAD] border w-[230px] bg-[#F7F7F1] bg-opacity-50 pl-5">
                   <SelectValue placeholder="Relevance" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD]  text-left text-[#666A66]  text-[15px] font-raleway p-2 px-2">
+
                   <SelectItem value="Relevance">Relevance</SelectItem>
                   <SelectItem value="Latest">Latest</SelectItem>
                   <SelectItem value="Social Score">Social Score</SelectItem>
