@@ -431,18 +431,18 @@ const Page: React.FC = () => {
               onClick={handleSendMessage}
               disabled={loading} // Disable button while sending
             >
-              <Icons.Send />
+              <Icons.Submit />
             </Button>
           </div>
         </div>
       </div>
       <div className="w-full bg-[#DDDDDD] rounded-[30px] p-5 flex flex-col h-[83vh] bg-opacity-25">
-        <div
+        {/* <div
           onClick={createNewSession}
           className="rounded-[30px] p-5 mb-5 self-start bg-opacity-25 cursor-pointer"
         >
           Create a new session
-        </div>
+        </div> */}
         <ScrollArea
           className="h-[70vh] flex flex-col w-full"
           onScroll={handleScroll}
@@ -452,9 +452,9 @@ const Page: React.FC = () => {
               key={userSession.docid}
               className={`${
                 sessionId === userSession.docid
-                  ? "bg-[#454545]"
-                  : "bg-[#CDCDCD]"
-              } rounded-[30px] p-4 mb-5 bg-opacity-25 cursor-pointer flex`}
+                  ? "bg-[#454545] bg-opacity-25"
+                  : "bg-[#FCFDF7]"
+              } rounded-[30px] p-3 mb-5 px-4  cursor-pointer flex`}
               onClick={() => fetchSessionMessages(userSession.docid)}
             >
               {editingSessionId === userSession.docid ? (
@@ -474,7 +474,7 @@ const Page: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <>
+                <div className="flex justify-between items-center w-full">
                   <span
                     onDoubleClick={() => {
                       setEditingSessionId(userSession.docid);
@@ -483,8 +483,11 @@ const Page: React.FC = () => {
                   >
                     {userSession.sessionname}
                   </span>
-                </>
+
+                  <Icons.dots/>
+                </div>
               )}
+
             </div>
           ))}
 
