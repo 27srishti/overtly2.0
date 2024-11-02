@@ -14,6 +14,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { auth, db } from "@/lib/firebase/firebase";
 import ReactMarkdown from "react-markdown";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   addDoc,
   collection,
   getDocs,
@@ -27,6 +36,7 @@ import {
   Timestamp,
   getDoc,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { useParams } from "next/navigation";
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -322,11 +332,10 @@ const Page: React.FC = () => {
         return (
           <div
             key={index}
-            className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${
-              jsonmessage.type === "ai"
-                ? "self-start"
-                : "self-end bg-[#CDCDCD] bg-opacity-25 rounded-[30px] max-w-[40%] mb-5"
-            }`}
+            className={`rounded-[30px] p-5 max-w-[90%] mb-5 ${jsonmessage.type === "ai"
+              ? "self-start"
+              : "self-end bg-[#CDCDCD] bg-opacity-25 rounded-[30px] max-w-[40%] mb-5"
+              }`}
           >
             {/* {jsonmessage.content} */}
             <ReactMarkdown>{jsonmessage.content}</ReactMarkdown>
@@ -404,6 +413,47 @@ const Page: React.FC = () => {
       console.error("Error fetching session messages: ", error);
     }
   };
+  const deleteSession = async (sessionId: string) => {
+    try {
+      if (!user) {
+        console.error("User is not authenticated");
+        return;
+      }
+
+      const sessionRef = doc(
+        db,
+        `users/${user.uid}/clients/${clientId}/chatsMetadata`,
+        sessionId
+      );
+
+      // Delete the session document from Firestore
+      await deleteDoc(sessionRef);
+
+      // Remove the session from the local state
+      setUserSessions((prevSessions) =>
+        prevSessions.filter((session) => session.docid !== sessionId)
+      );
+
+      // Optionally, also delete related chat messages
+      const messagesRef = doc(
+        db,
+        `users/${user.uid}/clients/${clientId}/chats`,
+        sessionId
+      );
+      await deleteDoc(messagesRef);
+
+      toast({
+        title: "Session deleted",
+        description: "The session has been deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Error deleting session: ", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the session.",
+      });
+    }
+  };
 
   return (
     <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden gap-10">
@@ -437,12 +487,6 @@ const Page: React.FC = () => {
         </div>
       </div>
       <div className="w-full bg-[#DDDDDD] rounded-[30px] p-5 flex flex-col h-[83vh] bg-opacity-25">
-        {/* <div
-          onClick={createNewSession}
-          className="rounded-[30px] p-5 mb-5 self-start bg-opacity-25 cursor-pointer"
-        >
-          Create a new session
-        </div> */}
         <ScrollArea
           className="h-[70vh] flex flex-col w-full"
           onScroll={handleScroll}
@@ -450,21 +494,20 @@ const Page: React.FC = () => {
           {userSessions.map((userSession) => (
             <div
               key={userSession.docid}
-              className={`${
-                sessionId === userSession.docid
+              className={`${sessionId === userSession.docid
                   ? "bg-[#454545] bg-opacity-25"
                   : "bg-[#FCFDF7]"
-              } rounded-[30px] p-3 mb-5 px-4  cursor-pointer flex`}
+                } rounded-[30px] p-3 mb-5 px-4 cursor-pointer flex`}
               onClick={() => fetchSessionMessages(userSession.docid)}
             >
               {editingSessionId === userSession.docid ? (
-                <>
+                <div className="flex gap-2">
                   <input
                     type="text"
                     value={editedSessionName}
                     onChange={handleSessionNameChange}
                     onBlur={() => saveSessionName(userSession.docid)}
-                    className="bg-transparent"
+                    className="bg-transparent border rounded "
                   />
                   <div
                     className="bg-transparent shadow-none border-none"
@@ -472,24 +515,48 @@ const Page: React.FC = () => {
                   >
                     <CheckIcon className="h-5 w-5" />
                   </div>
-                </>
+                </div>
               ) : (
                 <div className="flex justify-between items-center w-full">
-                  <span
-                    onDoubleClick={() => {
-                      setEditingSessionId(userSession.docid);
-                      setEditedSessionName(userSession.sessionname);
-                    }}
-                  >
+                  <span>
                     {userSession.sessionname}
                   </span>
-
-                  <Icons.dots/>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <div>
+                        <Icons.dots />
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuLabel>Options</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuRadioGroup>
+                        <DropdownMenuRadioItem
+                          onClick={() => {
+                            setEditingSessionId(userSession.docid);
+                            setEditedSessionName(userSession.sessionname);
+                          }}
+                          value="Rename"
+                        >
+                          Rename
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          onClick={async () => {
+                            // Implement delete functionality
+                            await deleteSession(userSession.docid);
+                          }}
+                          value="Delete"
+                        >
+                          Delete
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               )}
-
             </div>
           ))}
+
 
           {fileloading && (
             <EosIconsThreeDotsLoading className="h-20 w-20 ml-2" />

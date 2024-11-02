@@ -83,18 +83,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                   </Link>
                   <div className="flex flex-row sm:flex-row gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 bg-white">
-                    <Link href={`/dashboard/${client?.id}`}>
-                      <div
-                        className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${
-                          pathname.endsWith(params.client) ||
-                          pathname.endsWith("create")
-                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                            : "hover:bg-[#F5F4F4]"
-                        } cursor-pointer transition-all`}
-                      >
-                        Workflow
-                      </div>
-                    </Link>
+
                     <Link href={`/dashboard/${client?.id}/research`}>
                       <div
                         className={`${
@@ -106,6 +95,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
                       >
                         Research
+                      </div>
+                    </Link>
+                    <Link href={`/dashboard/${client?.id}`}>
+                      <div
+                        className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${
+                          pathname.endsWith(params.client) ||
+                          pathname.endsWith("create")
+                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                            : "hover:bg-[#F5F4F4]"
+                        } cursor-pointer transition-all`}
+                      >
+                        Workflow
                       </div>
                     </Link>
                     <Link href={`/dashboard/${client?.id}/analytics`}>

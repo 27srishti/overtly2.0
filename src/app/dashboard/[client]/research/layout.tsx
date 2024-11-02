@@ -12,181 +12,97 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { client } = useClientStore();
   const params = useParams<{ client: string }>();
   return (
-    <div className="grid w-full grid-cols-[250px_1fr] xl:grid-cols-[70px_1fr] p-5 gap-5 xl:gap-10 pt-10 font-montserrat">
-      <div className="w-20 py-10 flex flex-col items-center h-[83vh] bg-white sticky top-0 border rounded-[40px] gap-5">
-        <Link href={`/dashboard/${client?.id}/research`} className="group mb-4 flex items-center text-center font-raleway">
-          <div
-            className={`flex items-center justify-center w-12 h-12 rounded-full z-50 ${pathname.endsWith("discover") || pathname.endsWith("research")
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <Icons.Compass
-              className={`text-xl ${pathname.endsWith("discover") || pathname.endsWith("research")
-                  ? "text-white"
-                  : "text-black"
-                }`}
-            />
-          </div>
+<div className="grid w-full grid-cols-[70px_1fr] xl:grid-cols-[70px_1fr] p-5 gap-5 xl:gap-10 pt-10 font-montserrat">
+  {/* Sidebar with Hover Expansion */}
+  <div className="flex flex-col items-center h-[83vh] bg-white sticky top-0 border rounded-[30px] gap-10 transition-all duration-500 ease-in-out w-20 hover:w-[12rem] p-4 relative group z-50">
 
-          <div
-            className={`absolute flex items-center justify-center text-center pr-5 py-2 h-12 max-w-0 opacity-0 transition-all duration-300 ease-in-out group-hover:max-w-xs group-hover:opacity-100 overflow-hidden whitespace-nowrap rounded-full ${pathname.endsWith("discover") || pathname.endsWith("research")
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ease-in-out hover:rounded-r">
-              <Icons.Compass />
-            </div>
-            <span className="text-sm font-medium">Discover</span>
-          </div>
-        </Link>
+    {/* Discover Link */}
+    <Link href={`/dashboard/${client?.id}/research`} className="flex items-center w-full">
+      <div
+        className={`flex items-center justify-center w-12 h-12 group-hover:w-full rounded-full transition-colors duration-500 ${pathname.endsWith("discover") || pathname.endsWith("research")
+          ? "bg-[#FFAEB5] text-white"
+          : "bg-[#F6F6F6] text-black"
+          }`}
+      >
+        <Icons.Compass className="text-xl" />
 
-
-
-        <Link href={`/dashboard/${client?.id}/research/Topics`} className="group mb-4 flex items-center text-center">
-          <div
-            className={`flex items-center justify-center w-12 h-12 rounded-full z-50 ${pathname.endsWith("Topics") 
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <Icons.Trends 
-              className={`text-xl ${pathname.endsWith("Topics")
-                  ? "text-white"
-                  : "text-black"
-                }`}
-            />
-          </div>
-
-          <div
-            className={`absolute flex items-center justify-center text-center pr-5 py-2 h-12 max-w-0 opacity-0 transition-all duration-300 ease-in-out group-hover:max-w-xs group-hover:opacity-100 overflow-hidden whitespace-nowrap rounded-full ${pathname.endsWith("Topics")
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ease-in-out hover:rounded-r">
-            <Icons.Trends />
-            </div>
-            <span className="text-sm font-medium">Trends</span>
-          </div>
-        </Link>
-
-
-
-
-        <Link href={`/dashboard/${client?.id}/research/Topics`} className="group mb-4 flex items-center text-center">
-          <div
-            className={`flex items-center justify-center w-12 h-12 rounded-full z-50 ${pathname.endsWith("Topics") 
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <Icons.Trends 
-              className={`text-xl ${pathname.endsWith("Topics")
-                  ? "text-white"
-                  : "text-black"
-                }`}
-            />
-          </div>
-
-          <div
-            className={`absolute flex items-center justify-center text-center pr-5 py-2 h-12 max-w-0 opacity-0 transition-all duration-300 ease-in-out group-hover:max-w-xs group-hover:opacity-100 overflow-hidden whitespace-nowrap rounded-full ${pathname.endsWith("Topics")
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ease-in-out hover:rounded-r">
-            <Icons.Trends />
-            </div>
-            <span className="text-sm font-medium">Trends</span>
-          </div>
-        </Link>
-
-
-
-
-
-
-
-        <Link href={`/dashboard/${client?.id}/research/Trends`} className="group mb-4 flex items-center text-center">
-          <div
-            className={`flex items-center justify-center w-12 h-12 rounded-full z-50 ${pathname.endsWith("Trends") 
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <Icons.Wire 
-              className={`text-xl ${pathname.endsWith("Trends")
-                  ? "text-white"
-                  : "text-black"
-                }`}
-            />
-          </div>
-
-          <div
-            className={`absolute flex items-center justify-center text-center pr-5 py-2 h-12 max-w-0 opacity-0 transition-all duration-300 ease-in-out group-hover:max-w-xs group-hover:opacity-100 overflow-hidden whitespace-nowrap rounded-full ${pathname.endsWith("Insights")
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ease-in-out hover:rounded-r">
-            <Icons.Wire />
-            </div>
-            <span className="text-sm font-medium">Insights</span>
-          </div>
-        </Link>
-
-
-
-
-        <Link href={`/dashboard/${client?.id}/research/chat`} className="group mb-4 flex items-center text-center">
-          <div
-            className={`flex items-center justify-center w-12 h-12 rounded-full z-50 ${pathname.endsWith("chat") 
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <Icons.Chat  
-              className={`text-xl ${pathname.endsWith("chat")
-                  ? "text-white"
-                  : "text-black"
-                }`}
-            />
-          </div>
-
-          <div
-            className={`absolute flex items-center justify-center text-center pr-5 py-2 h-12 max-w-0 opacity-0 transition-all duration-300 ease-in-out group-hover:max-w-xs group-hover:opacity-100 overflow-hidden whitespace-nowrap rounded-full ${pathname.endsWith("chat")
-                ? "bg-[#FFAEB5] text-white"
-                : "bg-[#F6F6F6] text-black"
-              }`}
-          >
-            <div className="flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ease-in-out hover:rounded-r">
-            <Icons.Chat  />
-            </div>
-            <span className="text-sm font-medium">Converse</span>
-          </div>
-        </Link>
-
-
-
-
-
-
-
-
-
-
+        <span
+          className={`ml-4 text-sm font-medium whitespace-nowrap transition-all duration-500 hidden  delay-200 ${pathname.endsWith("discover") || pathname.endsWith("research")
+            ? "text-white"
+            : "text-black"
+            } group-hover:flex `}
+        >
+          Discover
+        </span>
       </div>
+    </Link>
 
+    <Link href={`/dashboard/${client?.id}/research/Topics`} className="group flex items-center w-full">
+      <div
+        className={`flex items-center justify-center w-12 h-12 group-hover:w-full rounded-full transition-colors duration-500 ${pathname.endsWith("Topics")
+          ? "bg-[#FFAEB5] text-white"
+          : "bg-[#F6F6F6] text-black"
+          }`}
+      >
+        <Icons.Trends className="text-xl" />
 
-
-
-
-
-      <div className="w-full rounded-[30px] flex flex-col bg-opacity-25">
-        {children}
+        <span
+          className={`ml-4 text-sm font-medium whitespace-nowrap transition-all duration-500 hidden ${pathname.endsWith("Topics")
+            ? "text-white"
+            : "text-black"
+            } group-hover:flex`}
+        >
+          Topics
+        </span>
       </div>
-    </div>
+    </Link>
+
+    <Link href={`/dashboard/${client?.id}/research/Trends`} className="group flex items-center w-full">
+      <div
+        className={`flex items-center justify-center  w-12 h-12 group-hover:w-full rounded-full transition-colors duration-500 ${pathname.endsWith("Trends")
+          ? "bg-[#FFAEB5] text-white"
+          : "bg-[#F6F6F6] text-black"
+          }`}
+      >
+        <Icons.Wire className="text-xl" />
+
+        <span
+          className={`ml-4 text-sm font-medium whitespace-nowrap transition-all duration-500 hidden ${pathname.endsWith("Trends")
+            ? "text-white"
+            : "text-black"
+            } group-hover:flex`}
+        >
+          Insights
+        </span>
+      </div>
+    </Link>
+
+    <Link href={`/dashboard/${client?.id}/research/chat`} className="group flex items-center w-full">
+      <div
+        className={`flex items-center justify-center  w-12 h-12 group-hover:w-full rounded-full transition-colors duration-500 ${pathname.endsWith("chat")
+          ? "bg-[#FFAEB5] text-white"
+          : "bg-[#F6F6F6] text-black"
+          }`}
+      >
+        <Icons.Chat className="text-xl" />
+
+        <span
+          className={`ml-4 text-sm font-medium whitespace-nowrap transition-all duration-500 hidden ${pathname.endsWith("chat")
+            ? "text-white"
+            : "text-black"
+            } group-hover:flex`}
+        >
+          Converse
+        </span>
+      </div>
+    </Link>
+  </div>
+
+  <div className="w-full rounded-[30px] flex flex-col bg-opacity-25">
+    {children}
+  </div>
+</div>
+
+
   );
 }
