@@ -214,10 +214,10 @@ const Page: React.FC = () => {
         console.error("Failed to send message");
       }
 
-      setLoading(false); // Stop loading state
+      setLoading(false);
     } catch (error) {
       console.error("Error sending message: ", error);
-      setLoading(false); // Stop loading state on error
+      setLoading(false);
     }
   };
 
@@ -290,7 +290,6 @@ const Page: React.FC = () => {
       setUserSessionMessages(sessionDoc.data()?.messages || []);
       setMessage("");
 
-      // Update userSessions
       const updatedSessions = [
         {
           docid: newSessionId,
@@ -337,13 +336,12 @@ const Page: React.FC = () => {
               : "self-end bg-[#CDCDCD] bg-opacity-25 rounded-[30px] max-w-[40%] mb-5"
               }`}
           >
-            {/* {jsonmessage.content} */}
             <ReactMarkdown>{jsonmessage.content}</ReactMarkdown>
           </div>
         );
       });
     } else {
-      // if (loading) {
+
       return (
         <div className="p-20 flex flex-col gap-6">
           <div className="text-[#5B5757] text-3xl">
@@ -355,7 +353,7 @@ const Page: React.FC = () => {
           </div>
         </div>
       );
-      // }
+
     }
   };
 
@@ -413,6 +411,7 @@ const Page: React.FC = () => {
       console.error("Error fetching session messages: ", error);
     }
   };
+
   const deleteSession = async (sessionId: string) => {
     try {
       if (!user) {
@@ -426,21 +425,24 @@ const Page: React.FC = () => {
         sessionId
       );
 
-      // Delete the session document from Firestore
       await deleteDoc(sessionRef);
 
-      // Remove the session from the local state
       setUserSessions((prevSessions) =>
         prevSessions.filter((session) => session.docid !== sessionId)
       );
 
-      // Optionally, also delete related chat messages
+
       const messagesRef = doc(
         db,
         `users/${user.uid}/clients/${clientId}/chats`,
         sessionId
       );
       await deleteDoc(messagesRef);
+
+      if (sessionId === sessionId) {
+        setSessionId("");
+        setUserSessionMessages(null);
+      }
 
       toast({
         title: "Session deleted",
@@ -454,6 +456,7 @@ const Page: React.FC = () => {
       });
     }
   };
+
 
   return (
     <div className="grid w-full grid-cols-[1fr_300px] overflow-hidden gap-10">
@@ -473,13 +476,13 @@ const Page: React.FC = () => {
               onChange={handleMessageChange}
               onKeyDown={handleKeyPress}
               className="outline-none focus:outline-none shadow-none border-none font-montserrat ring-[0px] focus:ring-0 ring-white"
-              disabled={loading} // Disable textarea while sending
+              disabled={loading}
             />
             <Button
               variant="outline"
               className="shadow-none border-none bg-transparent self-end"
               onClick={handleSendMessage}
-              disabled={loading} // Disable button while sending
+              disabled={loading}
             >
               <Icons.Submit />
             </Button>
@@ -495,8 +498,8 @@ const Page: React.FC = () => {
             <div
               key={userSession.docid}
               className={`${sessionId === userSession.docid
-                  ? "bg-[#454545] bg-opacity-25"
-                  : "bg-[#FCFDF7]"
+                ? "bg-[#EBE6E6]"
+                : "bg-[#FEFFFC]"
                 } rounded-[30px] p-3 mb-5 px-4 cursor-pointer flex`}
               onClick={() => fetchSessionMessages(userSession.docid)}
             >

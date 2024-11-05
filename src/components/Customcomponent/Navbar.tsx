@@ -48,38 +48,34 @@ const Navbar = () => {
           </Link>
 
           <div className="flex items-center gap-5">
-            <div className=" bg-secondary p-3 rounded-full">
+            <div className="bg-secondary p-2 rounded-full h-10 w-10 flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24px"
                 viewBox="0 0 24 24"
                 width="24px"
                 fill="#727272"
+                className="h-5 w-5"
               >
                 <path d="M0 0h24v24H0V0z" fill="none" />
                 <path
                   d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-1.29 1.29c-.63.63-.19 1.71.7 1.71h13.17c.89 0 1.34-1.08.71-1.71L18 16z"
-                  className="w-5 h-5"
+                  className="w-full h-full"
                 />
               </svg>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full mr-4"
-                >
-                  <Avatar className="h-10 w-10 ">
-                    <AvatarImage
-                      src={
-                        user?.photoURL ??
-                        "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"
-                      }
-                      alt="profileimage"
-                    />
-                    <AvatarFallback>OT</AvatarFallback>
-                  </Avatar>
-                </Button>
+              <DropdownMenuTrigger className="h-10 w-10 rounded-full ">
+                <Avatar className="h-full w-full">
+                  <AvatarImage
+                    src={
+                      user?.photoURL ??
+                      "https://i.pinimg.com/736x/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg"
+                    }
+                    alt="profile image"
+                  />
+                  <AvatarFallback className="font-inter">OT</AvatarFallback>
+                </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
