@@ -719,7 +719,7 @@ export function DataTable<TData extends FilesData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <TopicsPopup 
+      <TopicsPopup
         topics={topics}
         isOpen={isPopupOpen && selectedFile !== null}
         onClose={closePopup}

@@ -53,12 +53,24 @@ import {
 } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CompetePopup } from "@/components/Customcomponent/competePopUp";
 
 export type FilesData = {
   companyName: string;
   id: string;
   companyURL: string;
+  topics: Topic[];
 };
+
+interface Topic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
+interface Subtopic {
+  name: string;
+  subtopics?: Subtopic[];
+}
 
 interface DataTableProps<TData, TValue> {
   data: TData[];
@@ -82,6 +94,8 @@ export function CompetesTable<TData extends FilesData, TValue>({
     Record<string, boolean>
   >({});
   const [filterValue, setFilterValue] = React.useState("");
+  const [isPopupOpen, setIsPopupOpen] = React.useState(false);
+  const [selectedTopic, setSelectedTopic] = React.useState<Topic | null>(null);
 
   const getSelectedRowData = () => {
     return table.getSelectedRowModel().rows.map((row) => row.original);
@@ -163,6 +177,13 @@ export function CompetesTable<TData extends FilesData, TValue>({
     }
   };
 
+  const handleCompanyNameClick = (data: FilesData) => {
+    if (data.topics.length > 0) {
+      setSelectedTopic(data.topics[0]); // Assuming you want to show the first topic
+      setIsPopupOpen(true);
+    }
+  };
+
   const columns: ColumnDef<FilesData>[] = [
     {
       id: "select",
@@ -189,10 +210,11 @@ export function CompetesTable<TData extends FilesData, TValue>({
       cell: ({ row }) => {
         const data = row.original;
         return (
-          <div className="flex flex-col">
-            <div className="text-[#3E3E3E] font-semibold text-[15px]">
-              {data.companyName}
-            </div>
+          <div
+            className="text-[#3E3E3E] font-semibold text-[15px] hover:text-blue-500 cursor-pointer"
+            onClick={() => handleCompanyNameClick(data)}
+          >
+            {data.companyName}
           </div>
         );
       },
@@ -321,7 +343,7 @@ export function CompetesTable<TData extends FilesData, TValue>({
             }}
             className="shadow-none border-none"
           />
-          <div className="bg-[#3E3E3E] rounded-full rounded-full p-[.6rem] bg-opacity-80">
+          <div className="bg-[#3E3E3E]  rounded-full p-[.6rem] bg-opacity-80">
             <svg
               viewBox="0 0 14 14"
               fill="none"
@@ -372,7 +394,7 @@ export function CompetesTable<TData extends FilesData, TValue>({
                   {row.getVisibleCells().map((cell, index) => (
                     <TableCell
                       key={`${row.id}_${cell.column.id}`}
-                      className={cn(" p-2 bg-[#D8D8D8] bg-opacity-20", {
+                      className={cn(" p-2 bg-[#D8D8D8] bg-opacity-20 ", {
                         "rounded-tl-xl rounded-bl-xl": index === 0,
                         "rounded-tr-xl rounded-br-xl":
                           index === row.getVisibleCells().length - 1,
@@ -399,6 +421,13 @@ export function CompetesTable<TData extends FilesData, TValue>({
           </TableBody>
         </Table>
       </div>
+      {isPopupOpen && selectedTopic && (
+        <CompetePopup
+          topics={[selectedTopic]}
+          isOpen={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+        />
+      )}
     </div>
   );
 }
