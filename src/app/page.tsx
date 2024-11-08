@@ -929,34 +929,29 @@ const LandingPage: React.FC = () => {
             <div className="hs-accordion-group ">
               {[
                 {
-                  question: "Can I cancel at anytime?",
+                  question: "What PR tasks does Overtly automate?",
                   answer:
-                    "Yes, you can cancel anytime no questions are asked while you cancel but we would highly appreciate if you will give us some feedback.",
+                    "Overtly handles both routine, repetitive tasks (like media monitoring, report generation, and outreach follow-ups) and data-heavy, complex tasks (like analysing trends, competitor activity, and journalist behaviour). It simplifies the processes that are time-consuming or require high precision, freeing up time for strategy and creative work.",
                 },
                 {
-                  question: "My team has credits. How do we use them?",
+                  question: "How is Overtly different from other PR tools?",
                   answer:
-                    "Once your team signs up for a subscription plan. This is where we sit down, grab a cup of coffee and dial in the details.",
+                    "Overtly integrates research, workflows, and analytics to create a connected system. Overtly uses contextual learning to understand your company’s voice and PR strategy. It tailors communications based on historical data and industry trends, unlike other tools that rely on generic models. It's a PR-specific approach where everything—research, workflows, and writing."  },
+                {
+                  question: "How does Overtly ensure human control in PR communication?",
+                  answer:
+                    "Overtly is designed to assist, not replace. There is human intervention in every step of the workflow so the final result has a human touch, it automates routine tasks, but always leaves strategic control in your hands. You direct the process, review drafts, and approve content. The platform provides guidance and automates the heavy lifting, but human expertise ensures that every message remains relevant and on-point.",
+                },
+               
+                {
+                  question: "What types of documents can be uploaded to Overtly?",
+                  answer:
+                    "You can upload any PR-related documents, including press releases, media lists, media outreach content, campaign reports, and brand guidelines. Overtly processes them to streamline your PR workflows and improve automation.",
                 },
                 {
-                  question: "How does Preline's pricing work?",
+                  question: "Can I set up custom workflows in Overtly?",
                   answer:
-                    "Our subscriptions are tiered. Understanding the task at hand and ironing out the wrinkles is key.",
-                },
-                {
-                  question: "How secure is Preline?",
-                  answer:
-                    "Protecting the data you trust to Preline is our first priority. This part is really crucial in keeping the project in line to completion.",
-                },
-                {
-                  question: "How do I get access to a theme I purchased?",
-                  answer:
-                    "If you lose the link for a theme you purchased, don't panic! We've got you covered. You can login to your account, tap your avatar in the upper right corner, and tap Purchases. If you didn't create a login or can't remember the information, you can use our handy Redownload page, just remember to use the same email you originally made your purchases with.",
-                },
-                {
-                  question: "Upgrade License Type",
-                  answer:
-                    "There may be times when you need to upgrade your license from the original type you purchased and we have a solution that ensures you can apply your original purchase cost to the new license purchase.",
+                    "Yes, Overtly lets you build workflows that fit your unique PR needs. Whether it's automating content approvals or complex media outreach, you can customise the steps, so they align with how your team works and what matters most to your strategy.",
                 },
               ].map((item, index) => (
                 <div
