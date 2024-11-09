@@ -23,8 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import * as React from "react";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -35,20 +34,13 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useDebounce } from "use-debounce";
 import { cn } from "@/lib/utils";
-import { ArrowUpDown } from "lucide-react";
 import clearCachesByServerAction from "@/lib/revalidation";
 import { auth, db } from "@/lib/firebase/firebase";
-import { Avatar } from "@radix-ui/react-avatar";
-import { AvatarImage } from "@/components/ui/avatar";
 import {
-  arrayRemove,
   collection,
   doc,
   getDoc,
-  updateDoc,
-  writeBatch,
   deleteDoc,
 } from "firebase/firestore";
 import { toast } from "@/components/ui/use-toast";
@@ -353,9 +345,9 @@ export function CompetesTable<TData extends FilesData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

@@ -52,6 +52,8 @@ import { deleteObject, ref } from "firebase/storage";
 import clearCachesByServerAction from "@/lib/revalidation";
 import Uploadbtn from "./specificfileupload";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
+import { Upload } from "lucide-react";
+import { SelectSeparator } from "@/components/ui/select";
 
 interface File {
   name: string;
@@ -81,7 +83,7 @@ const FolderView = () => {
   const searchParams = useSearchParams();
   const [currentFiles, setCurrentFiles] = useState("");
   const [files, setFiles] = useState<FilesData[]>([]);
-  const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files); // New state for filtered files
+  const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files);
 
   const createQueryString = useCallback(
     (params: { [s: string]: unknown } | ArrayLike<unknown>) => {
@@ -115,7 +117,6 @@ const FolderView = () => {
 
   useEffect(() => {
     if (currentFiles) {
-      // Only fetch if currentFiles is set
       FetchcurrentFiletypefiles();
     }
   }, [currentFiles]);
@@ -123,10 +124,10 @@ const FolderView = () => {
   useEffect(() => {
     setFilteredFiles(
       files.filter(file =>
-        file.name.toLowerCase().includes(filterInput.toLowerCase()) // Filter logic
+        file.name.toLowerCase().includes(filterInput.toLowerCase()) 
       )
     );
-  }, [filterInput, files]); // Update filtered files when filterInput or files change
+  }, [filterInput, files]);
 
   const handleFileTypeSelect = (value: string) => {
     setCurrentFiles(value);
@@ -147,7 +148,7 @@ const FolderView = () => {
       );
       const q = query(
         filesCollectionRef,
-        where("file_type", "==", currentFiles) // Ensure currentFiles is set correctly
+        where("file_type", "==", currentFiles)
       );
 
       const querySnapshot = await getDocs(q);
@@ -156,7 +157,7 @@ const FolderView = () => {
         ...doc.data(),
       })) as FilesData[];
 
-      console.log("Fetched files:", fetchedFiles); // Log fetched files
+      console.log("Fetched files:", fetchedFiles);
       setFiles(fetchedFiles);
     } catch (error) {
       console.error("Error fetching files from Firestore:", error);
@@ -218,10 +219,10 @@ const FolderView = () => {
             console.log(response.json());
           })
           .catch(async (error) => {
-            await logErrorToFirestore(authUser.uid, params.client, "file", error.message ,{
+            await logErrorToFirestore(authUser.uid, params.client, "file", error.message, {
               client_id: params.client,
               file_name: file.bucketName,
-            } ); // Log the error
+            }); // Log the error
           });
       }
     } catch (error) {
@@ -231,6 +232,15 @@ const FolderView = () => {
       FetchcurrentFiletypefiles();
     }
   };
+
+
+  const handleOpenCompanyBio = async () => {
+  }
+
+
+
+
+
 
   const renderedFiletypes = Filetypes.map((option) => (
     <Dialog key={option.value}>
@@ -298,7 +308,7 @@ const FolderView = () => {
                 <div>
                   <Table className="border-separate border-spacing-y-4">
                     <TableBody>
-                      {filteredFiles.length > 0 ? ( // Use filteredFiles instead of files
+                      {filteredFiles.length > 0 ? (
                         filteredFiles.map((file, index) => (
                           <div
                             key={index}
@@ -388,15 +398,13 @@ const FolderView = () => {
       <div className="mb-4 flex justify-end">
         <div className="relative flex gap-2 bg-[#F5F6F1] rounded-full mx-6 p-1">
           <div
-            className={`absolute top-0 bottom-0 left-0 w-1/2 bg-[#3E3E3E] bg-opacity-80 rounded-full transition-transform duration-300 ${
-              list ? "translate-x-0" : "translate-x-full"
-            }`}
+            className={`absolute top-0 bottom-0 left-0 w-1/2 bg-[#3E3E3E] bg-opacity-80 rounded-full transition-transform duration-300 ${list ? "translate-x-0" : "translate-x-full"
+              }`}
           ></div>
 
           <div
-            className={`flex-1 flex items-center justify-center gap-4 cursor-pointer rounded-full px-5 transition-colors duration-300 ${
-              list ? "text-white" : "text-black"
-            }`}
+            className={`flex-1 flex items-center justify-center gap-4 cursor-pointer rounded-full px-5 transition-colors duration-300 ${list ? "text-white" : "text-black"
+              }`}
             onClick={() => handleViewModeChange(true)}
             style={{ flexBasis: "50%", zIndex: 1 }}
           >
@@ -404,9 +412,8 @@ const FolderView = () => {
           </div>
 
           <div
-            className={`flex-1 flex items-center justify-center gap-3 cursor-pointer rounded-full px-5 transition-colors duration-300 ${
-              !list ? "text-white" : "text-black"
-            }`}
+            className={`flex-1 flex items-center justify-center gap-3 cursor-pointer rounded-full px-5 transition-colors duration-300 ${!list ? "text-white" : "text-black"
+              }`}
             onClick={() => handleViewModeChange(false)}
             style={{ flexBasis: "50%", zIndex: 1 }}
           >
@@ -439,6 +446,197 @@ const FolderView = () => {
       </div>
 
       <div className="mx-10 grid grid-cols-4 gap-5 mt-5 font-montserrat">
+
+
+
+
+        <Dialog>
+
+          <DialogTrigger className="text-left">
+            <div
+              className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${""}`}
+              onClick={() => handleOpenCompanyBio()}
+            >
+              <div className="flex flex-row justify-between items-center">
+                <span
+                  className={`p-2 rounded-full h-[32px] w-[32px] `}
+                ></span>
+                <div>
+                  <Icons.Expand className="w-[12px] h-[12px] mr-5" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-[10px] font-medium font-montserrat">
+                <div className="text-[14px] break-words leading-tight">
+                  hh
+                </div>
+                <div className="text-[10px] leading-tight">
+                  This is the second vehicle company Henrik Fisker
+                </div>
+              </div>
+            </div>
+          </DialogTrigger>
+          <DialogContent className="max-w-[80vw] max-h-[85vh] min-w-[80vw] min-h-[85vh] p-10 px-14 pb-8 font-montserrat pt-5 text-[#545454] py-9">
+            {/* <div>
+              <div> <div className="font-medium text-2xl mb-5">Company Bio</div>
+                <hr></hr>
+              </div>
+              <div className="p-6 sm:p-16 flex flex-col gap-4 sm:gap-5 items-center sm:px-28 mt-[4rem]">
+                <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                  <div className="flex items-center gap-2">
+                    <span>Upload company bio documents</span>
+                  </div>
+                  <div className="gap-6 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-3 py-[.6rem] cursor-pointer">
+                    <div className="ml-1 font-montserrat text-[#545454] text-base">
+                      Upload files
+                    </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      height="23px"
+                      viewBox="0 0 24 24"
+                      width="23px"
+                      fill="#545454"
+                    >
+                      <path d="M0 0h24v24H0z" fill="none" />
+                      <path
+                        d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
+                        className="w-6 h-6"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+
+                <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
+
+                <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                  <div className="flex items-center gap-2 ">
+                    <span>Generate Company bio</span>
+                  </div>
+
+                  <div className="flex max-w-xl items-center gap-2 rounded-full bg-[#F6F6F6] p-2 text-base">
+                    <Input
+                      type="text"
+                      placeholder="www.amazon.com"
+                      className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+                    />
+                    <Button
+                      className="rounded-full bg-[#2D2D2D] px-6 hover:bg-[#1a1a1a]"
+                    >
+                      Generate
+                    </Button>
+                  </div>
+
+                </div>
+
+                <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
+
+                <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                  <div className="flex items-center gap-2">
+                    <span>Manually fill-up bio</span>
+                  </div>
+
+
+                  <div
+
+                    className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8"
+                  >
+                    Answer Few Questions
+                  </div>
+
+
+                </div>
+
+
+              </div>
+            </div> */}
+            <div>
+
+              <div>
+                <div className="flex flex-row justify-between">
+                  <div className="font-medium text-2xl ">Company Bio</div>
+                  <div className="flex gap-3 text-sm">
+                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Uploaded Files</div>
+                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Regenerate</div>
+                  </div>
+                </div>
+              </div>
+              <hr className="mt-5"></hr>
+              <div className="w-full p-6">
+                <div className="space-y-6">
+                  <div className="flex gap-8">
+                    <div className="w-48 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground"># Company Name</span>
+                    </div>
+                    <div className="flex-1">
+                      <span>Amazon Web Services</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-8">
+                    <div className="w-48 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground"># Domain / Industry</span>
+                    </div>
+                    <div className="flex-1">
+                      <span>Cloud infra, compute</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-8">
+                    <div className="w-48 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground"># HQ / Location</span>
+                    </div>
+                    <div className="flex-1">
+                      <span>Australia, India</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-8">
+                    <div className="w-48 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground"># Company Overview</span>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                      <p className="text-sm">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                      </p>
+                      <p className="text-sm">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-8">
+                    <div className="w-48 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground"># Vision & mission</span>
+                    </div>
+                    <div className="flex-1 space-y-4">
+                      <p className="text-sm">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                      </p>
+                      <p className="text-sm">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-8">
+                    <div className="w-48 flex-shrink-0">
+                      <span className="text-sm text-muted-foreground"># Services / Products</span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapib
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="justify-end flex items-center">    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5"> Save</div> </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+
         {renderedFiletypes}
       </div>
     </div>

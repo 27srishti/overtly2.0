@@ -193,7 +193,6 @@ export default async function Page({
   async function getCompetes(
     client: string
   ): Promise<{ data: any[]; total: number }> {
-    // Adjust the type as necessary
     try {
       const session = cookies().get("session")?.value || "";
 
@@ -212,12 +211,9 @@ export default async function Page({
       const cityRef = db.collection(
         `users/${decodedClaims.uid}/clients/${client}/competes`
       );
-
-      // Get total count of documents
       const totalSnapshot = await cityRef.get();
       const total = totalSnapshot.size;
 
-      // Get all documents without pagination
       const querySnapshot = await cityRef.get();
 
       const competes = querySnapshot.docs.map((doc) => ({

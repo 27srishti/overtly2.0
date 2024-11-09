@@ -35,7 +35,7 @@ import { Icons } from "@/components/ui/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 interface Article {
   title: string;
-  imageUrl?: string;
+  image?: string;
   timeAgo?: string;
   summary?: string;
   detailedContent?: string;
@@ -47,6 +47,13 @@ interface Article {
   source?: string;
   date?: string;
   snippet?: string;
+  body?: any;
+  social_score?: any;
+  relevance?: number;
+  authors?: any;
+  topics?: {};
+  sentiment?: any;
+
 }
 
 interface AuthorSuggestion {
@@ -97,7 +104,8 @@ const Page = () => {
   const [locationQuery, setLocationQuery] = useState('');
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestions[]>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-
+  const [ArticleModalData, setArticleModalData] = useState<Article>()
+  const [isHovering, setIsHovering] = useState(false)
 
   const handleClickOutside = (event: MouseEvent) => {
     dropdownRefs.current.forEach((ref, index) => {
@@ -171,7 +179,9 @@ const Page = () => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setAuthUser(authUser);
-        fetchNewsArticles(authUser);
+        const articles = await fetchNewsArticles(authUser) || [];
+        setArticles(articles);
+        console.log(articles)
       }
     });
     return () => unsubscribe();
@@ -179,27 +189,124 @@ const Page = () => {
 
   async function fetchNewsArticles(user: User) {
     try {
-      const response = await fetch("/api/getnews", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await user.getIdToken()}`,
+      // const response = await fetch("/api/get-curated-articles", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${await user.getIdToken()}`,
+      //   },
+      //   body: JSON.stringify({
+      //     client_id: clientid,
+      //   }),
+      // });
+
+      // if (!response.ok) {
+      //   const errorData = await response.json();
+      //   console.log(response);
+      //   throw new Error(errorData.message || "Something went wrong");
+      // // }
+      // console.log("dsds" + await response.json());
+      // const data = await response.json();
+
+      // const authors = data.map((item: { name: string }) => item.name);
+      // setAuthorSuggestions(authors);
+
+
+
+      return [{
+        "title": "Biden-Harris Administration Releases New Report that Shows Gains in Health Care Coverage for Rural Americans",
+        "link": "https://www.hhs.gov/about/news/2024/11/01/biden-harris-administration-releases-new-report-shows-gains-health-care-coverage-rural-americans.html",
+        "snippet": "President Biden and Vice President Harris's efforts to strengthen access to health care are linked to historic gains in rural Americans' health insurance...",
+        "source": "HHS.gov",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhFKbHA-GxjrTr5Q14Cu-Ig6oFPGAOokAqOKQ2HW6NDIl2urZksiDlXFnIJQ&s",
+        "body": null,
+        "social_score": null,
+        "date": "5 days ago",
+        "relevance": 1,
+        "authors": null,
+        "summary": "The Biden-Harris Administration has released a new report highlighting improvements in health care coverage for rural Americans. This report is part of the ongoing efforts by the Department of Health and Human Services (HHS) to enhance access to health care services in rural areas. The report underscores the administration's commitment to addressing health disparities and ensuring that rural populations receive adequate health care coverage. The article also includes a disclaimer about the limitations of linking to non-federal websites, emphasizing that HHS does not endorse external content and is not responsible for the accessibility compliance of private websites.",
+        "topics": {
+          "topics": [
+            {
+              "name": "Biden-Harris Administration",
+              "subtopics": [
+                {
+                  "name": "Health Care Initiatives",
+                  "subtopics": [
+                    {
+                      "name": "Rural Health Care Coverage",
+                      "subtopics": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Department of Health and Human Services (HHS)",
+              "subtopics": [
+                {
+                  "name": "Reports and Publications",
+                  "subtopics": [
+                    {
+                      "name": "Health Care Coverage Reports",
+                      "subtopics": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Web Notification Policies",
+                  "subtopics": [
+                    {
+                      "name": "Website Disclaimers",
+                      "subtopics": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Health Care Coverage",
+              "subtopics": [
+                {
+                  "name": "Rural Americans",
+                  "subtopics": [
+                    {
+                      "name": "Access to Health Services",
+                      "subtopics": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Website Disclaimers",
+              "subtopics": [
+                {
+                  "name": "Non-Federal Websites",
+                  "subtopics": [
+                    {
+                      "name": "Accuracy and Endorsement",
+                      "subtopics": []
+                    },
+                    {
+                      "name": "Privacy Policy and Terms of Service",
+                      "subtopics": []
+                    },
+                    {
+                      "name": "Section 508 Compliance",
+                      "subtopics": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         },
-        body: JSON.stringify({
-          client_id: clientid,
-          query: "",
-        }),
-      });
+        "sentiment": null
+      }] as Article[];
 
-      if (!response.ok) {
-        throw new Error("Something went wrong");
-      }
 
-      const data = await response.json();
-      console.log(data);
-      const authors = data.map((item: { name: string }) => item.name);
-      setAuthorSuggestions(authors);
-      return authors;
+
     } catch (error) {
       toast({
         title: "Error",
@@ -450,10 +557,10 @@ const Page = () => {
                           onSelect={setDate}
                           numberOfMonths={2}
                           className="px-4 py-2 bg-[#666A66] bg-opacity-10 cursor-pointer text-left  text-[15px] font-raleway"
-                         classNames={{
-                          day_range_middle:
-                          "aria-selected:bg-[#ADADAD] aria-selected:text-accent-foreground",
-                         }}
+                          classNames={{
+                            day_range_middle:
+                              "aria-selected:bg-[#ADADAD] aria-selected:text-accent-foreground",
+                          }}
                         />
                       </PopoverContent>
                     </Popover>
@@ -463,7 +570,7 @@ const Page = () => {
 
               <div className="flex items-center gap-5 font-raleway text-center">
                 <div className="flex-shrink-0 w-[90px]">Source</div>
-                <div className="relative w-[230px]"  ref={(el) => { dropdownRefs.current[1] = el; }}>
+                <div className="relative w-[230px]" ref={(el) => { dropdownRefs.current[1] = el; }}>
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD] pl-5"
                     placeholder="Search sources..."
@@ -517,7 +624,7 @@ const Page = () => {
                     </div>
                   )}
                   {(authorSuggestions.length > 0 && authorQuery.length > 0) && (
-                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2 font-raleway"  ref={(el) => { dropdownRefs.current[2] = el; }}>
+                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2 font-raleway" ref={(el) => { dropdownRefs.current[2] = el; }}>
                       <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {authorSuggestions.map((suggestion, index) => (
                           <div
@@ -596,17 +703,16 @@ const Page = () => {
               </Select>
             </div>
           </div>
-
           <div className="flex flex-col gap-40">
             <div>
               <div className="flex flex-col gap-4 mt-5">
                 {articles.map((article, index) => (
                   <Dialog key={index}>
                     <DialogTrigger>
-                      <div className="bg-[#D8D8D8] bg-opacity-20 flex flex gap-6 p-2 rounded-[21px]">
+                      <div className="bg-[#E6E5E5] bg-opacity-15 flex flex gap-6 p-2 rounded-[21px] border border-[#A2BEA0] border-opacity-25" onClick={() => setArticleModalData(article)}>
                         <div className="relative w-30 h-30 aspect-square">
                           <img
-                            src={article.imageUrl || "/placeholder.png"}
+                            src={article.image || "/placeholder.png"}
                             className="w-full h-full rounded-[18px] object-cover"
                             alt="Article Thumbnail"
                           />
@@ -617,7 +723,6 @@ const Page = () => {
                             }}
                           ></div>
                         </div>
-
                         <div className="flex flex-col gap-2 w-full">
                           <div className="flex flex-row justify-between pr-10">
                             <div className="font-semibold mt-2 text-[#2C2C2C] text-[15px]">
@@ -625,16 +730,15 @@ const Page = () => {
                                 ? article.title.slice(0, 60) + "..."
                                 : article.title}
                             </div>
-
                             <div className="flex flex-row gap-2 items-center gap-5">
                               <div className="flex flex-col gap-2">
-                                <div className="flex gap-2 items-center text-[.8rem] text-center text-[#2C5694] ">
+                                <div className="flex gap-2 items-center text-[.8rem] text-center text-[#43942C] ">
                                   <Link href={article.link}>
                                     {article.source}
                                   </Link>
                                 </div>
                               </div>
-                              <div className="flex gap-1 items-center text-[.8rem] text-center">
+                              <div className="flex gap-1 items-center text-[.8rem] text-center text-[#858383]">
                                 <svg
                                   width="17"
                                   height="17"
@@ -680,19 +784,30 @@ const Page = () => {
                             <div className="flex flex-col gap-2 w-full justify-start">
                               <div className="flex flex-row justify-between items-center">
                                 <div className="font-medium text-[25px] text-[#2C2C2C] font-montserrat">
-                                  Ilya Sutskever isn’t done working on AI safety
+                                  <div className="relative font-montserrat cursor-pointer">
+                                    <div
+                                      className="flex flex-row justify-between items-center"
+                                      onMouseEnter={() => setIsHovering(true)}
+                                      onMouseLeave={() => setIsHovering(false)}
+                                    >
+                                      <div className="font-medium text-[25px] text-[#2C2C2C]">
+                                        {ArticleModalData ? (
+                                          ArticleModalData.title.length > 60 ? ArticleModalData.title.slice(0, 40) + "..." : ArticleModalData.title
+                                        ) : "Loading..."}
+                                      </div>
+                                    </div>
+                                    {isHovering && ArticleModalData?.title && ArticleModalData.title.length > 60 && (
+                                      <div className="absolute left-0 top-full mt-2 p-2 bg-white border border-gray-200 rounded shadow-lg z-10 max-w-2md">
+                                        <div className="font-medium text-[16px] text-[#2C2C2C]">
+                                          {ArticleModalData.title}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="text-[8px]  font-regular leading-2 text-[#6F6F6F] font-inter pr-20">
-                                This week, Ilya Sutskever launched a new AI
-                                company, Safe Superintelligence Inc. (SSI), just
-                                one month after formally leaving OpenAI.
-                                Sutskever, alongside Jan Leike, was integral to
-                                OpenAI’s efforts to improve AI safety w ith the
-                                rise of “superintelligent” AI systems. Yet both
-                                Sutskever and Leike left the company after a
-                                dramatic falling-out with leadership over how to
-                                approach AI safety.
+                              <div className="text-[9px]  font-regular leading-2 text-[#6F6F6F] font-inter pr-20">
+                                {ArticleModalData?.snippet}
                               </div>
                               <div className="flex gap-3 items-center text-[.8rem] text-center">
                                 <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
@@ -713,10 +828,13 @@ const Page = () => {
                               </div>
                             </div>
                             <div className="flex justify-center self-start items-center">
-                              <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
-                                Full&nbsp;Article
-                                <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
-                              </div>
+                              <Link href={ArticleModalData?.link || ""}>
+
+                                <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
+                                  Full&nbsp;Article
+                                  <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
+                                </div>
+                              </Link>
                             </div>
                           </div>
                           <Tabs
@@ -731,12 +849,12 @@ const Page = () => {
                                 >
                                   Summary
                                 </TabsTrigger>
-                                <TabsTrigger
-                                  value="Competition"
+                                <div
+
                                   className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
                                 >
-                                  Questions
-                                </TabsTrigger>
+                                  Topics
+                                </div>
                                 <TabsTrigger
                                   value="EconomicNews"
                                   className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
@@ -755,8 +873,11 @@ const Page = () => {
                           <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
                             Summary :
                           </div>
-                          <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E] font-raleway">
-                            <div className="container mx-auto p-4">
+                          <div className="container mx-auto p-4 text-sm text-[#3E3E3E]">
+                            {ArticleModalData?.summary}
+                          </div>
+                          {/* <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E] font-raleway">
+             
                               <div className="text-2xl font-semibold mb-4">
                                 MacBook Power Issue Troubleshooting
                               </div>
@@ -825,7 +946,7 @@ const Page = () => {
                                 </li>
                               </ol>
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                         <div className="flex flex-col gap-4">
                           <div className="flex flex-col gap-3 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">

@@ -690,7 +690,7 @@ export function DataTable<TData extends FilesData, TValue>({
                         "rounded-tl-xl rounded-bl-xl": index === 0,
                         "rounded-tr-xl rounded-br-xl":
                           index === row.getVisibleCells().length - 1,
-                        "hover:text-blue-500": cell.column.id === "name", // Add this line
+                        "hover:text-blue-500": cell.column.id === "name", 
                       })}
                       onClick={() => {
                         if (cell.column.id === "name") {
