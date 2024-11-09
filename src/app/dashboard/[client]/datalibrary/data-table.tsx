@@ -292,7 +292,7 @@ export function DataTable<TData extends FilesData, TValue>({
         return (
           <Select
             defaultValue={data.file_type}
-            onValueChange={(value) => handleUpdateFile(data, value)} // Pass the file data and new value
+            onValueChange={(value) => handleUpdateFile(data, value)}
           >
             <SelectTrigger className="px-5 w-[250px] bg-white border-none shadow-none rounded-[40px] text-center font-medium bg-opacity-60">
               <SelectValue placeholder="Select a category" />
@@ -364,7 +364,6 @@ export function DataTable<TData extends FilesData, TValue>({
     },
   ];
 
-  // Search params
   const page = parseInt(searchParams.get("page") as string, 10) || 1;
   const perPage =
     parseInt(searchParams.get("per_page") as string, 10) || defaultPerPage;
@@ -476,7 +475,6 @@ export function DataTable<TData extends FilesData, TValue>({
   };
   const handleViewModeChange = (isListView: boolean) => {
     if (list !== isListView) {
-      // Prevent unnecessary updates
       setlist(isListView);
       const queryString = createQueryString({
         view: isListView ? "list" : "folder",
@@ -505,7 +503,6 @@ export function DataTable<TData extends FilesData, TValue>({
     console.log(selectedRowIds);
 
     try {
-      // Delete selected files from Firebase Storage and Firestore
       for (const rowId of selectedRowIds) {
         const row = table
           .getRowModel()
@@ -516,12 +513,10 @@ export function DataTable<TData extends FilesData, TValue>({
 
         const file = row.original as FilesData;
 
-        // Delete file from Firebase Storage
         const storageRef = ref(storage, file.url);
         await deleteObject(storageRef);
         console.log("File deleted from storage:", file.name);
 
-        // Delete file metadata from Firestore
         const docRef = collection(
           db,
           `users/${authUser.uid}/clients/${params.client}/files`
@@ -561,7 +556,6 @@ export function DataTable<TData extends FilesData, TValue>({
           .catch((error) => console.error("Error:", error));
       }
 
-      // Refresh data or clear the selected state if needed
       clearCachesByServerAction(pathname);
       console.log("Selected files deleted successfully");
     } catch (error) {

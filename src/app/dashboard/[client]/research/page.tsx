@@ -33,6 +33,20 @@ import { auth } from "@/lib/firebase/firebase";
 import Link from "next/link";
 import { Icons } from "@/components/ui/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { TopicsPopup } from "@/components/Customcomponent/topics";
+
+
+
+interface Topic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
+interface Subtopic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
 interface Article {
   title: string;
   image?: string;
@@ -51,7 +65,7 @@ interface Article {
   social_score?: any;
   relevance?: number;
   authors?: any;
-  topics?: {};
+  topics: { topics: Topic[] };
   sentiment?: any;
 
 }
@@ -106,7 +120,7 @@ const Page = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [ArticleModalData, setArticleModalData] = useState<Article>()
   const [isHovering, setIsHovering] = useState(false)
-
+  const [isTopicsPopupOpen, setIsTopicsPopupOpen] = useState(false);
   const handleClickOutside = (event: MouseEvent) => {
     dropdownRefs.current.forEach((ref, index) => {
       if (ref && !ref.contains(event.target as Node)) {
@@ -189,16 +203,16 @@ const Page = () => {
 
   async function fetchNewsArticles(user: User) {
     try {
-      // const response = await fetch("/api/get-curated-articles", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${await user.getIdToken()}`,
-      //   },
-      //   body: JSON.stringify({
-      //     client_id: clientid,
-      //   }),
-      // });
+      const response = await fetch("/api/get-curated-articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await user.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          client_id: clientid,
+        }),
+      });
 
       // if (!response.ok) {
       //   const errorData = await response.json();
@@ -316,6 +330,14 @@ const Page = () => {
     }
   }
 
+  const closePopup = () => {
+    setIsTopicsPopupOpen(false);
+  };
+
+  const handleTopicClick = () => {
+    setIsTopicsPopupOpen(true);
+  };
+
   return (
     <div className="p-1">
       <div className="flex justify-between items-center ">
@@ -329,7 +351,7 @@ const Page = () => {
         </div>
         <div className="font-raleway font-light text-[#828282] text-sm">Last Updated 3 hrs back</div>
       </div>
-      <Tabs defaultValue="Trends" className="w-full font-normal mt-16">
+      <Tabs defaultValue="Industry" className="w-full font-normal mt-16">
         <TabsList className=" flex flex-row justify-between gap-10">
           <div className="flex gap-7">
             <TabsTrigger
@@ -679,7 +701,6 @@ const Page = () => {
                   <SelectValue placeholder="Any Time" />
                 </SelectTrigger>
                 <SelectContent className="mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD]  text-left text-[#666A66]  text-[15px] font-raleway p-2 px-2">
-
                   <SelectItem value="Past Hour">Past Hour</SelectItem>
                   <SelectItem value="Past 24 Hour">Past 24 Hour</SelectItem>
                   <SelectItem value="Past Week">Past Week</SelectItem>
@@ -707,7 +728,7 @@ const Page = () => {
             <div>
               <div className="flex flex-col gap-4 mt-5">
                 {articles.map((article, index) => (
-                  <Dialog key={index}>
+                  <Dialog key={index} >
                     <DialogTrigger>
                       <div className="bg-[#E6E5E5] bg-opacity-15 flex flex gap-6 p-2 rounded-[21px] border border-[#A2BEA0] border-opacity-25" onClick={() => setArticleModalData(article)}>
                         <div className="relative w-30 h-30 aspect-square">
@@ -851,7 +872,7 @@ const Page = () => {
                                 </TabsTrigger>
                                 <div
 
-                                  className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
+                                  className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]" onClick={handleTopicClick}
                                 >
                                   Topics
                                 </div>
@@ -1004,6 +1025,11 @@ const Page = () => {
                           </div>
                         </div>
                       </div>
+                      <TopicsPopup
+                        topics={(ArticleModalData?.topics.topics ?? []) as Topic[]}
+                        isOpen={isTopicsPopupOpen}
+                        onClose={closePopup}
+                      ></TopicsPopup>
                     </DialogContent>
                   </Dialog>
                 ))}

@@ -326,6 +326,8 @@ const Uploadbtn = () => {
 
       await setDoc(docRef, data);
 
+
+
       const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
       const response = await fetch(url, {
@@ -339,7 +341,20 @@ const Uploadbtn = () => {
           bucket_name: bucketName,
           file_path: filePath,
         }),
+      })
+      const fileId = uniqueId;
+      await fetch('api/update-core-context', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await authUser?.getIdToken()}`,
+        },
+        body: JSON.stringify({
+          file_id: fileId,
+          client_id: params.client,
+        }),
       });
+
 
       return response.json();
     } catch (error: any) {
@@ -518,11 +533,26 @@ const Uploadbtn = () => {
                 if (!response.ok) {
                   const errorData = await response.json();
                   throw new Error(
-                    `Error ${response.status}: ${
-                      errorData.message || "Unknown error"
+                    `Error ${response.status}: ${errorData.message || "Unknown error"
                     }`
                   );
                 }
+
+                const fileId = uniqueId;
+                await fetch('api/update-core-context', {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
+                  },
+                  body: JSON.stringify({
+                    file_id: fileId,
+                    client_id: params.client,
+                  }),
+                });
+
+
+
 
                 return response.json();
               } catch (error) {

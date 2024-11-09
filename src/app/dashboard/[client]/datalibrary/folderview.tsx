@@ -31,7 +31,7 @@ import { Filetypes } from "@/lib/dropdown";
 import { DashboardIcon, ListBulletIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth, db, storage } from "@/lib/firebase/firebase";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {
   Table,
@@ -84,6 +84,8 @@ const FolderView = () => {
   const [currentFiles, setCurrentFiles] = useState("");
   const [files, setFiles] = useState<FilesData[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files);
+  const [coreContextExists, setCoreContextExists] = useState(false);
+
 
   const createQueryString = useCallback(
     (params: { [s: string]: unknown } | ArrayLike<unknown>) => {
@@ -124,7 +126,7 @@ const FolderView = () => {
   useEffect(() => {
     setFilteredFiles(
       files.filter(file =>
-        file.name.toLowerCase().includes(filterInput.toLowerCase()) 
+        file.name.toLowerCase().includes(filterInput.toLowerCase())
       )
     );
   }, [filterInput, files]);
@@ -235,8 +237,26 @@ const FolderView = () => {
 
 
   const handleOpenCompanyBio = async () => {
-  }
+    const authUser = auth.currentUser;
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
 
+    try {
+      const docRef = doc(db, `users/${authUser.uid}/clients/${params.client}`);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setCoreContextExists(!!data.core_context);
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching document:", error);
+    }
+  };
 
 
 
@@ -447,11 +467,7 @@ const FolderView = () => {
 
       <div className="mx-10 grid grid-cols-4 gap-5 mt-5 font-montserrat">
 
-
-
-
         <Dialog>
-
           <DialogTrigger className="text-left">
             <div
               className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${""}`}
@@ -476,163 +492,170 @@ const FolderView = () => {
             </div>
           </DialogTrigger>
           <DialogContent className="max-w-[80vw] max-h-[85vh] min-w-[80vw] min-h-[85vh] p-10 px-14 pb-8 font-montserrat pt-5 text-[#545454] py-9">
-            {/* <div>
-              <div> <div className="font-medium text-2xl mb-5">Company Bio</div>
-                <hr></hr>
-              </div>
-              <div className="p-6 sm:p-16 flex flex-col gap-4 sm:gap-5 items-center sm:px-28 mt-[4rem]">
-                <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
-                  <div className="flex items-center gap-2">
-                    <span>Upload company bio documents</span>
-                  </div>
-                  <div className="gap-6 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-3 py-[.6rem] cursor-pointer">
-                    <div className="ml-1 font-montserrat text-[#545454] text-base">
-                      Upload files
+
+            {coreContextExists ? (
+              <div>
+                <div>
+                  <div className="flex flex-row justify-between">
+                    <div className="font-medium text-2xl ">Company Bio</div>
+                    <div className="flex gap-3 text-sm">
+                      <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Uploaded Files</div>
+                      <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Regenerate</div>
                     </div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      height="23px"
-                      viewBox="0 0 24 24"
-                      width="23px"
-                      fill="#545454"
-                    >
-                      <path d="M0 0h24v24H0z" fill="none" />
-                      <path
-                        d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
-                        className="w-6 h-6"
-                      />
-                    </svg>
+                  </div>
+                </div>
+                <hr className="mt-5"></hr>
+                <div className="w-full p-6">
+                  <div className="space-y-6">
+                    <div className="flex gap-8">
+                      <div className="w-48 flex-shrink-0">
+                        <span className="text-sm text-muted-foreground"># Company Name</span>
+                      </div>
+                      <div className="flex-1">
+                        <span>Amazon Web Services</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-8">
+                      <div className="w-48 flex-shrink-0">
+                        <span className="text-sm text-muted-foreground"># Domain / Industry</span>
+                      </div>
+                      <div className="flex-1">
+                        <span>Cloud infra, compute</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-8">
+                      <div className="w-48 flex-shrink-0">
+                        <span className="text-sm text-muted-foreground"># HQ / Location</span>
+                      </div>
+                      <div className="flex-1">
+                        <span>Australia, India</span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-8">
+                      <div className="w-48 flex-shrink-0">
+                        <span className="text-sm text-muted-foreground"># Company Overview</span>
+                      </div>
+                      <div className="flex-1 space-y-4">
+                        <p className="text-sm">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                        </p>
+                        <p className="text-sm">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-8">
+                      <div className="w-48 flex-shrink-0">
+                        <span className="text-sm text-muted-foreground"># Vision & mission</span>
+                      </div>
+                      <div className="flex-1 space-y-4">
+                        <p className="text-sm">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                        </p>
+                        <p className="text-sm">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-8">
+                      <div className="w-48 flex-shrink-0">
+                        <span className="text-sm text-muted-foreground"># Services / Products</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm">
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapib
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-
-                <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
-
-                <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
-                  <div className="flex items-center gap-2 ">
-                    <span>Generate Company bio</span>
-                  </div>
-
-                  <div className="flex max-w-xl items-center gap-2 rounded-full bg-[#F6F6F6] p-2 text-base">
-                    <Input
-                      type="text"
-                      placeholder="www.amazon.com"
-                      className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
-                    />
-                    <Button
-                      className="rounded-full bg-[#2D2D2D] px-6 hover:bg-[#1a1a1a]"
-                    >
-                      Generate
-                    </Button>
-                  </div>
-
-                </div>
-
-                <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
-
-                <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
-                  <div className="flex items-center gap-2">
-                    <span>Manually fill-up bio</span>
-                  </div>
-
-
-                  <div
-
-                    className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8"
-                  >
-                    Answer Few Questions
-                  </div>
-
-
-                </div>
-
-
-              </div>
-            </div> */}
-            <div>
+                <div className="justify-end flex items-center"><div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5"> Save</div> </div>
+              </div>) : (
 
               <div>
-                <div className="flex flex-row justify-between">
-                  <div className="font-medium text-2xl ">Company Bio</div>
-                  <div className="flex gap-3 text-sm">
-                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Uploaded Files</div>
-                    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Regenerate</div>
+                <div> <div className="font-medium text-2xl mb-5">Company Bio</div>
+                  <hr></hr>
+                </div>
+                <div className="p-6 sm:p-16 flex flex-col gap-4 sm:gap-5 items-center sm:px-28 mt-[4rem]">
+                  <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <span>Upload company bio documents</span>
+                    </div>
+                    <div className="gap-6 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-3 py-[.6rem] cursor-pointer">
+                      <div className="ml-1 font-montserrat text-[#545454] text-base">
+                        Upload files
+                      </div>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="23px"
+                        viewBox="0 0 24 24"
+                        width="23px"
+                        fill="#545454"
+                      >
+                        <path d="M0 0h24v24H0z" fill="none" />
+                        <path
+                          d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
+                          className="w-6 h-6"
+                        />
+                      </svg>
+                    </div>
                   </div>
+
+
+                  <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
+
+                  <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2 ">
+                      <span>Generate Company bio</span>
+                    </div>
+
+                    <div className="flex max-w-xl items-center gap-2 rounded-full bg-[#F6F6F6] p-2 text-base">
+                      <Input
+                        type="text"
+                        placeholder="www.amazon.com"
+                        className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+                      />
+                      <Button
+                        className="rounded-full bg-[#2D2D2D] px-6 hover:bg-[#1a1a1a]"
+                      >
+                        Generate
+                      </Button>
+                    </div>
+
+                  </div>
+
+                  <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
+
+                  <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <span>Manually fill-up bio</span>
+                    </div>
+
+
+                    <div
+
+                      className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8"
+                    >
+                      Answer Few Questions
+                    </div>
+
+
+                  </div>
+
+
                 </div>
               </div>
-              <hr className="mt-5"></hr>
-              <div className="w-full p-6">
-                <div className="space-y-6">
-                  <div className="flex gap-8">
-                    <div className="w-48 flex-shrink-0">
-                      <span className="text-sm text-muted-foreground"># Company Name</span>
-                    </div>
-                    <div className="flex-1">
-                      <span>Amazon Web Services</span>
-                    </div>
-                  </div>
+            )}
 
-                  <div className="flex gap-8">
-                    <div className="w-48 flex-shrink-0">
-                      <span className="text-sm text-muted-foreground"># Domain / Industry</span>
-                    </div>
-                    <div className="flex-1">
-                      <span>Cloud infra, compute</span>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-8">
-                    <div className="w-48 flex-shrink-0">
-                      <span className="text-sm text-muted-foreground"># HQ / Location</span>
-                    </div>
-                    <div className="flex-1">
-                      <span>Australia, India</span>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-8">
-                    <div className="w-48 flex-shrink-0">
-                      <span className="text-sm text-muted-foreground"># Company Overview</span>
-                    </div>
-                    <div className="flex-1 space-y-4">
-                      <p className="text-sm">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                      </p>
-                      <p className="text-sm">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                      </p>
-                    </div>
-                  </div>
 
-                  <div className="flex gap-8">
-                    <div className="w-48 flex-shrink-0">
-                      <span className="text-sm text-muted-foreground"># Vision & mission</span>
-                    </div>
-                    <div className="flex-1 space-y-4">
-                      <p className="text-sm">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                      </p>
-                      <p className="text-sm">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-8">
-                    <div className="w-48 flex-shrink-0">
-                      <span className="text-sm text-muted-foreground"># Services / Products</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapib
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="justify-end flex items-center">    <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5"> Save</div> </div>
-            </div>
           </DialogContent>
         </Dialog>
 
