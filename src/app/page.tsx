@@ -110,7 +110,7 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <section className="font-readex  ">
+    <section className="">
       <div
         style={{
           background:
