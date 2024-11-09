@@ -64,23 +64,39 @@ const Competes = () => {
     return () => unsubscribe();
   }, []);
 
+
+
+
+  const extractRootDomain = (url: string) => {
+    try {
+      const { hostname } = new URL(url);
+      return hostname.startsWith("www.") ? hostname.slice(4) : hostname;
+    } catch (error) {
+      console.error("Invalid URL provided: ", url);
+      return url;
+    }
+  };
+  
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const data = {
       companyName: values.CompanyName,
-      companyURL: values.CompanyURL,
+      companyURL: extractRootDomain(values.CompanyURL), 
     };
-
+  
     try {
+
+      const normalizedURL = data.companyURL;
       const q = query(
         collection(db, `users/${user?.uid}/clients/${clientid}/competes`),
-        where("companyName", "==", data.companyName)
+        where("companyName", "==", data.companyName),
+        where("companyURL", "==", normalizedURL)
       );
       const querySnapshot = await getDocs(q);
-
+  
       if (!querySnapshot.empty) {
         toast({
           title: "Duplicate Entry",
-          description: "A compete with the same company name already exists.",
+          description: "A compete with the same company name and URL already exists.",
         });
         return;
       }
@@ -89,12 +105,12 @@ const Competes = () => {
         collection(db, `users/${user?.uid}/clients/${clientid}/competes`),
         data
       );
-
+  
       toast({
         title: "Success",
         description: "Compete has been successfully added.",
       });
-
+  
       clearCachesByServerAction(params.client as string);
       form.reset();
       setOpen(false);
@@ -106,6 +122,8 @@ const Competes = () => {
       });
     }
   };
+  
+
 
   const handleDialogOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);

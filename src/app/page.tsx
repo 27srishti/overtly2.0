@@ -1,21 +1,13 @@
 // src/app/page.tsx
 "use client";
 import React, { useState, useEffect } from "react";
+
 import { HoverBorderGradient } from "@/components/ui/HoverBorderGradient";
 import Image from "next/image";
 
-const logos = [
-  { name: "Vercel", url: "/pubs1.png" },
-  { name: "Nextjs", url: "/pubs2.png" },
-  { name: "Prime", url: "/pubs3.png" },
-  { name: "Trustpilot", url: "/pubs4.png" },
-  { name: "Webflow", url: "/pubs5.png" },
-  { name: "Airbnb", url: "/pubs6.png" },
-  { name: "Tina", url: "/pubs7.png" },
-  { name: "Stackoverflow", url: "/pubs8.png" },
-];
 
 const LandingPage: React.FC = () => {
+
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
   const [progress, setProgress] = useState(0);

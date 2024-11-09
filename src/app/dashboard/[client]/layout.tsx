@@ -49,10 +49,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="gradientbg">
-      <div className="sticky top-0 backdrop-filter backdrop-blur-lg border-b pb-2 z-10">
-        <div className="z-50 pt-4 px-4 sm:px-6 md:px-10 font-montserrat">
-          <div className="bg-opacity-20 py-2">
-            <div className="container flex flex-col flex-wrap justify-center sm:justify-between items-center md:flex-row md:justify-center xl:justify-between md:gap-5
+      <div className="sticky top-0 backdrop-filter backdrop-blur-lg border-b pb-2 z-10 ">
+        <div className="z-50 pt-4  sm:px-6 md:px-10 font-montserrat">
+          <div className="bg-opacity-20 py-2 px-2">
+            <div className=" flex flex-col flex-wrap justify-center sm:justify-between items-center md:flex-row md:justify-center xl:justify-between md:gap-5
             ">
               <Link href={`/dashboard`}>
                 <div className="flex items-center justify-center text-lg cursor-pointer">
@@ -83,38 +83,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </div>
                   </Link>
                   <div className="flex flex-row sm:flex-row gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 bg-white">
-                    <Link href={`/dashboard/${client?.id}`}>
-                      <div
-                        className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${
-                          pathname.endsWith(params.client) ||
-                          pathname.endsWith("create")
-                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                            : "hover:bg-[#F5F4F4]"
-                        } cursor-pointer transition-all`}
-                      >
-                        Workflow
-                      </div>
-                    </Link>
+
                     <Link href={`/dashboard/${client?.id}/research`}>
                       <div
-                        className={`${
-                          pathname.endsWith("/research") ||
+                        className={`${pathname.endsWith("/research") ||
                           pathname.endsWith("/chat") ||
                           pathname.endsWith("/insights")
-                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                            : "bg-white hover:bg-[#F5F4F4]"
-                        } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
+                          ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                          : "bg-white hover:bg-[#F5F4F4]"
+                          } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
                       >
                         Research
                       </div>
                     </Link>
+                    <Link href={`/dashboard/${client?.id}`}>
+                      <div
+                        className={`rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 ${pathname.endsWith(params.client) ||
+                          pathname.endsWith("create")
+                          ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                          : "hover:bg-[#F5F4F4]"
+                          } cursor-pointer transition-all`}
+                      >
+                        Workflow
+                      </div>
+                    </Link>
                     <Link href={`/dashboard/${client?.id}/analytics`}>
                       <div
-                        className={`${
-                          pathname.endsWith("/analytics")
-                            ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                            : "bg-white hover:bg-[#F5F4F4]"
-                        } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
+                        className={`${pathname.endsWith("/analytics")
+                          ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                          : "bg-white hover:bg-[#F5F4F4]"
+                          } rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer transition-all`}
                       >
                         Analytics
                       </div>
@@ -125,11 +123,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   href={`/dashboard/${params.client}/datalibrary?page=1&per_page=5&sort=type.desc&view=folder`}
                 >
                   <div
-                    className={`${
-                      pathname.endsWith("/datalibrary")
-                        ? "bg-[#BDF294] hover:bg-[#b3f87d]"
-                        : "bg-white hover:bg-[#F5F4F4]"
-                    } flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all mt-4 sm:mt-0`}
+                    className={`${pathname.endsWith("/datalibrary")
+                      ? "bg-[#BDF294] hover:bg-[#b3f87d]"
+                      : "bg-white hover:bg-[#F5F4F4]"
+                      } flex flex-col sm:flex-row gap-2 sm:gap-4 md:gap-7 rounded-full items-center border-[#D5D5D5] border py-1 px-1 cursor-pointer transition-all mt-4 sm:mt-0`}
                   >
                     <div className="rounded-full items-center p-1 sm:p-2 px-3 sm:px-5 cursor-pointer flex gap-2">
                       <svg
@@ -154,13 +151,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               </div>
               <div className="flex items-center gap-2 sm:gap-3 md:gap-5 mt-2 md:mt-0">
-                <div className="bg-secondary p-2 sm:p-3 rounded-full">
+                <div className="bg-secondary p-2 sm:p-3 rounded-full h-10 w-10 flex items-center justify-center">
                   <svg
                     width="22"
                     height="22"
                     viewBox="0 0 17 17"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
+                    className="h-full w-full"
                   >
                     <g clipPath="url(#clip0_1455_1874)">
                       <path
@@ -178,12 +176,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </svg>
                 </div>
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-8 w-8 rounded-full"
-                    >
-                      <Avatar className="h-8 w-8">
+                  <DropdownMenuTrigger >
+                    <div className=" h-10 w-10 rounded-full font-inter">
+                      <Avatar className="h-full w-full">
                         <AvatarImage
                           src={user?.photoURL || ""}
                           alt={user?.displayName || ""}
@@ -192,7 +187,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           {user?.displayName?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                    </Button>
+                    </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end">
                     <DropdownMenuLabel className="font-normal">
