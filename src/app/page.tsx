@@ -41,7 +41,7 @@ const LandingPage: React.FC = () => {
         });
         return 0; // Reset progress
       } else {
-        return prev + 0; // Increment progress + 10
+        return prev + 10; // Increment progress + 10
       }
     });
   };
@@ -58,7 +58,7 @@ const LandingPage: React.FC = () => {
         });
         return 0; // Reset progress
       } else {
-        return prev + 0; // Increment progress + 10
+        return prev + 10; // Increment progress + 10
       }
     });
   };
