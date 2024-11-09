@@ -2,7 +2,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { HoverBorderGradient } from "@/components/ui/HoverBorderGradient";
-
+import Image from "next/image";
 
 const logos = [
   { name: "Vercel", url: "/pubs1.png" },
@@ -73,8 +73,6 @@ const LandingPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-
-
   const handleJoinWaitlist = async () => {
     if (!email) {
       alert("Please enter a valid email address.");
@@ -127,19 +125,23 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="absolute top-8 left-5 lg:top-10 lg:left-10">
-            <img
+            <Image
               src="/fullimage.png"
               className="w-32 sm:w-28 md:w-32 4xl:w-60 ml-3"
               alt="Logo"
+              width={128}
+              height={128}
             />
           </div>
           <div className="sm:text-center mb-10 ">
             <div className="hidden  sm:flex flex-col sm:flex-row justify-center mb-4 ">
               <div className="flex  items-center border px-5 py-1 rounded-3xl font-light bg-[#f4efef] border-[#5e473055] z-0">
-                <img
+                <Image
                   src="/checkbox.png"
                   alt="Checkmark"
                   className="w-4 h-4 4xl:w-10 4xl:h-10 mr-3"
+                  width={16}
+                  height={16}
                 />
                 <span className="text-[0.7rem] lg:text-sm 4xl:text-2xl text-[#605449c7] ">
                   In-House Comm Teams
@@ -205,8 +207,8 @@ const LandingPage: React.FC = () => {
       {/*-------------------------  sponsors------------------------- */}
       <section className="max-w-screen-2xl mt-10 sm:mt-0 mx-auto">
         <div className="w-full sm:py-12 text-center">
-          <div className="text-lg px-10 font-light  text-[#454545] ">
-            Curated news sources & articles from 100,000's of publications
+          <div className="text-lg px-10 font-light text-[#454545]">
+            Curated news sources & articles from 100,000&apos;s of publications
             worldwide
           </div>
           <div className="mx-auto w-full px-4 md:px-8">
@@ -225,11 +227,13 @@ const LandingPage: React.FC = () => {
                     className="flex shrink-0 animate-logo-cloud flex-row justify-around gap-8"
                   >
                     {logos.map((logo, key) => (
-                      <img
+                      <Image
                         key={key}
                         src={logo.url}
                         className="h-5 w-full px-2 opacity-50  "
                         alt={`${logo.name}`}
+                        width={20}
+                        height={20}
                       />
                     ))}
                   </div>
@@ -303,10 +307,12 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className=" text-lg sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-none mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       <span>
                         Find insights that point you to great follow-up story
@@ -314,18 +320,22 @@ const LandingPage: React.FC = () => {
                       </span>
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       <span>Get Daily Inspiration for Creative Pitches</span>
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       <span>
                         Find ideas that bridge your content gaps with competes &
@@ -350,27 +360,33 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Consolidated Report on Journalists and Outlets covering
                       your niche
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Examine seasonal patterns, cyclical trends, & anomalies
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Adapt your stories as they evolve
                     </li>
@@ -392,27 +408,33 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Find insights that point you to great follow-up story
                       ideas for every news
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Get Daily Inspiration for Creative Pitches
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Find ideas that bridge your content gaps with competes &
                       industry
@@ -483,26 +505,32 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Choose whom to pitch with customized automated databases
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Personalize outreach based on their content
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Track past interactions with relevant journalists
                     </li>
@@ -524,27 +552,33 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
-                         className="inline-block  mr-1 sm:mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Write well researched pitches easily in no time
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
-                         className="inline-block  mr-1 sm:mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Mimic your pitch & have the model write in your pitch
                       style
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
-                      className="inline-block  mr-1 sm:mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Personalized pitches at scale
                     </li>
@@ -566,27 +600,33 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
-                         className="inline-block  mr-1 sm:mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Streamline your PR writing with an AI assistant
                       experienced in content workflows
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Re purpose new story angles to mirror the brand tone
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Content calendar/Automated Follow-ups
                     </li>
@@ -653,27 +693,33 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
-                          className="inline-block  mr-1 sm:mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Evaluate media mentions based on reach, engagement, &
                       sentiment for precise impact assessment
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Gauge public sentiment for deeper insights
                     </li>
                     <li className="flex items-center">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
-                         className="inline-block  mr-1 sm:mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
+                        width={16}
+                        height={16}
                       />
                       Predict future impact based on historical performance
                       data, enabling proactive decision-making in media outreach
@@ -696,28 +742,34 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-start">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
+                        width={16}
+                        height={16}
                       />
                       Automate complex data consolidation into detailed PR
                       reports in seconds—no manual work required
                     </li>
                     <li className="flex items-start">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
+                        width={16}
+                        height={16}
                       />
                       Access live dashboards that automatically update with
                       real-time insights style
                     </li>
                     <li className="flex items-start">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
+                        width={16}
+                        height={16}
                       />
                       Create concise report summaries that highlight key
                       takeaways for quick stakeholder review
@@ -740,28 +792,34 @@ const LandingPage: React.FC = () => {
                   </h3>
                   <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-start">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
+                        width={16}
+                        height={16}
                       />
                       AI pinpoints your next PR move, adapting suggestions to
                       your campaign’s progress and goals
                     </li>
                     <li className="flex items-start">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
+                        width={16}
+                        height={16}
                       />
                       Catch a crisis early— know how to handle it before it
                       erupts
                     </li>
                     <li className="flex items-start">
-                      <img
+                      <Image
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
+                        width={16}
+                        height={16}
                       />
                       Plan content timelines with automated next steps
                     </li>
@@ -772,7 +830,6 @@ const LandingPage: React.FC = () => {
             {/* image and Description end */}
           </div>
         </div>
-      
         {/*------------------------- New Understanding PR Section ------------------------- */}
         <div className="text-center mt-20 ">
           <h2 className="text-4xl font-light mt-14 text-[#616060]">
@@ -983,10 +1040,12 @@ const LandingPage: React.FC = () => {
           {/*------------------------- Footer ------------------------- */}
           <div className="mt-20 sm:flex sm:items-center sm:justify-between">
             <a className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-              <img
+              <Image
                 src="/fullimage.png"
                 className="w-20 sm:w-24 md:w-28 "
                 alt="Logo"
+                width={96}
+                height={96}
               />
             </a>
             <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
