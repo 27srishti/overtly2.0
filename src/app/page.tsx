@@ -2,41 +2,17 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { HoverBorderGradient } from "@/components/ui/HoverBorderGradient";
-import { useScroll, useTransform } from "framer-motion";
-import { GoogleGeminiEffect } from "@/components/ui/GoogleGeminiEffect";
+
+
 const logos = [
-  {
-    name: "Vercel",
-    url: "/pubs1.png",
-  },
-  {
-    name: "Nextjs",
-    url: "/pubs2.png",
-  },
-  {
-    name: "Prime",
-    url: "/pubs3.png",
-  },
-  {
-    name: "Trustpilot",
-    url: "/pubs4.png",
-  },
-  {
-    name: "Webflow",
-    url: "/pubs5.png",
-  },
-  {
-    name: "Airbnb",
-    url: "/pubs6.png",
-  },
-  {
-    name: "Tina",
-    url: "/pubs7.png",
-  },
-  {
-    name: "Stackoverflow",
-    url: "/pubs8.png",
-  },
+  { name: "Vercel", url: "/pubs1.png" },
+  { name: "Nextjs", url: "/pubs2.png" },
+  { name: "Prime", url: "/pubs3.png" },
+  { name: "Trustpilot", url: "/pubs4.png" },
+  { name: "Webflow", url: "/pubs5.png" },
+  { name: "Airbnb", url: "/pubs6.png" },
+  { name: "Tina", url: "/pubs7.png" },
+  { name: "Stackoverflow", url: "/pubs8.png" },
 ];
 
 const LandingPage: React.FC = () => {
@@ -65,7 +41,7 @@ const LandingPage: React.FC = () => {
         });
         return 0; // Reset progress
       } else {
-        return prev + 10; // Increment progress + 10
+        return prev + 0; // Increment progress + 10
       }
     });
   };
@@ -82,7 +58,7 @@ const LandingPage: React.FC = () => {
         });
         return 0; // Reset progress
       } else {
-        return prev + 10; // Increment progress + 10
+        return prev + 0; // Increment progress + 10
       }
     });
   };
@@ -97,17 +73,7 @@ const LandingPage: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const ref = React.useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
 
-  const pathLengthFirst = useTransform(scrollYProgress, [0, 0.8], [0.2, 1.2]);
-  const pathLengthSecond = useTransform(scrollYProgress, [0, 0.8], [0.15, 1.2]);
-  const pathLengthThird = useTransform(scrollYProgress, [0, 0.8], [0.1, 1.2]);
-  const pathLengthFourth = useTransform(scrollYProgress, [0, 0.8], [0.05, 1.2]);
-  const pathLengthFifth = useTransform(scrollYProgress, [0, 0.8], [0, 1.2]);
 
   const handleJoinWaitlist = async () => {
     if (!email) {
@@ -116,17 +82,20 @@ const LandingPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch("https://api.getwaitlist.com/api/v1/waiter/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          api_key: "14757",
-          email: email,
-          referral_link: "https://overtly.io/",
-        }),
-      });
+      const response = await fetch(
+        "https://api.getwaitlist.com/api/v1/waiter/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            api_key: "14757",
+            email: email,
+            referral_link: "https://overtly.io/",
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -193,7 +162,7 @@ const LandingPage: React.FC = () => {
                 </h1>
               </div>
 
-              <p className=" lg:text-lg 4xl:text-3xl font-light text-[#8A8A8A]">
+              <p className=" mt-5 sm:mt-0 lg:text-lg 4xl:text-3xl font-light text-[#8A8A8A]">
                 Automates in-depth research, simulates brainstorming shapes
                 insights into workflows <br className="hidden lg:flex" />
                 using data and AI for analytics & measurement.
@@ -220,7 +189,13 @@ const LandingPage: React.FC = () => {
           <div className="absolute top-8 right-6 lg:top-10 lg:right-12">
             <HoverBorderGradient
               className="bg-[#2C2B2B]  text-white font-light text-[0.6rem] lg:text-sm 4xl:text-2xl rounded-full px-4 py-3 4xl:px-8 4xl:py-5"
-              onClick={() => window.open('https://calendly.com/siddhar/30min', '_blank', 'noopener')}
+              onClick={() =>
+                window.open(
+                  "https://calendly.com/siddhar/30min",
+                  "_blank",
+                  "noopener"
+                )
+              }
             >
               Schedule Free Demo
             </HoverBorderGradient>
@@ -228,7 +203,7 @@ const LandingPage: React.FC = () => {
         </div>
       </div>
       {/*-------------------------  sponsors------------------------- */}
-      <section className="max-w-screen-2xl mx-auto">
+      <section className="max-w-screen-2xl mt-10 sm:mt-0 mx-auto">
         <div className="w-full sm:py-12 text-center">
           <div className="text-lg px-10 font-light  text-[#454545] ">
             Curated news sources & articles from 100,000's of publications
@@ -280,10 +255,12 @@ const LandingPage: React.FC = () => {
           </p>
         </div>
         {/*-------------------------  how it works - research ------------------------- */}
-        <div className="mt-20  p-8  mx-5 lg:mx-20  sm:px-20 shadow-sm  sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl ">
-          <div className="flex flex-col max-w-7xl mx-auto items-start ">
-            <h2 className="text-5xl text-[#454545] font-[250]">Research &</h2>
-            <h2 className="text-4xl text-gray-400 mt-2 font-extralight">
+        <div className="mt-20 p-8 mx-5 lg:mx-20 sm:px-20 shadow-sm sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
+          <div className="flex flex-col max-w-7xl mx-auto items-start">
+            <h2 className="mt-5 sm:mt-0 text-4xl sm:text-5xl text-[#454545] font-[250]">
+              Research &
+            </h2>
+            <h2 className="text-3xl sm:text-4xl text-gray-400 mt-2 font-extralight">
               Brainstorm With Ease
             </h2>
             <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
@@ -294,7 +271,7 @@ const LandingPage: React.FC = () => {
                       onClick={() => {
                         console.log(
                           `Manually switching to tab ${index}: ${label}`
-                        ); // Debugging log
+                        );
                         setActiveTab(index);
                       }}
                       className={`border border-[#A2BEA0] font-light text-sm rounded-full px-4 py-1.5 mb-2 relative overflow-hidden bg-white`}
@@ -314,45 +291,41 @@ const LandingPage: React.FC = () => {
             </div>
             {/* image and Description start */}
             {activeTab === 0 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
-                  <div className="w-full  h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
-                    {/* <img
-                    src="/path/to/curated-news-1-image.png" // Update with actual image path
-                    alt="Curated News 1"
-                    className="h-full w-auto max-w-xs"
-                  /> */}
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
+                  <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                    {/* Image placeholder */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-3xl sm:text-3xl text-[#454545] font-light">
                     Read 1000s of articles in seconds
                   </h3>
-                  <ul className="text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-none mt-8">
-                    <li className="flex items-start">
+                  <ul className=" text-lg sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-none mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       <span>
                         Find insights that point you to great follow-up story
                         ideas for every news
                       </span>
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       <span>Get Daily Inspiration for Creative Pitches</span>
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       <span>
                         Find ideas that bridge your content gaps with competes &
@@ -365,45 +338,39 @@ const LandingPage: React.FC = () => {
             )}
 
             {activeTab === 1 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
-                    {/* <img
-                    src="/path/to/curated-news-1-image.png" // Update with actual image path
-                    alt="Curated News 1"
-                    className="h-full w-auto max-w-xs"
-                  /> */}
+                    {/* Image placeholder */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Spot trends before it becomes one
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
-                    <li className="flex items-start">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Consolidated Report on Journalists and Outlets covering
                       your niche
                     </li>
-                    <li className="flex items-start">
-                      {" "}
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
-                      />{" "}
+                        className="inline-block  mr-1 sm:mr-5"
+                      />
                       Examine seasonal patterns, cyclical trends, & anomalies
                     </li>
-                    <li className="flex items-start">
-                      {" "}
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Adapt your stories as they evolve
                     </li>
@@ -413,45 +380,39 @@ const LandingPage: React.FC = () => {
             )}
 
             {activeTab === 2 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
-                    {/* <img
-                    src="/path/to/curated-news-1-image.png" // Update with actual image path
-                    alt="Curated News 1"
-                    className="h-full w-auto max-w-xs"
-                  /> */}
+                    {/* Image placeholder */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Story ideas on demand, every hour
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
-                    <li className="flex items-start">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Find insights that point you to great follow-up story
                       ideas for every news
                     </li>
-                    <li className="flex items-start">
-                      {" "}
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
-                      />{" "}
+                        className="inline-block  mr-1 sm:mr-5"
+                      />
                       Get Daily Inspiration for Creative Pitches
                     </li>
-                    <li className="flex items-start">
-                      {" "}
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Find ideas that bridge your content gaps with competes &
                       industry
@@ -464,7 +425,7 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
         {/*-------------------------  how it works - Smart Workflows ------------------------- */}
-        <div className="mt-20  p-8  mx-5 lg:mx-20 -center sm:px-20 shadow-sm  sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl ">
+        <div className="mt-20 p-8 mx-5 lg:mx-20 sm:px-20 shadow-sm sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start hide-scrollbar">
             <style>
               {`
@@ -473,10 +434,10 @@ const LandingPage: React.FC = () => {
               }
             `}
             </style>
-            <h2 className="text-5xl text-[#454545] font-[250]">
+            <h2 className="text-3xl sm:text-5xl text-[#454545] font-[250]">
               Smart Workflows &
             </h2>
-            <h2 className="text-4xl text-gray-400 mt-2 font-extralight">
+            <h2 className="text-2xl sm:text-4xl text-gray-400 mt-2 font-extralight">
               Easy Task Automation
             </h2>
             <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
@@ -487,7 +448,7 @@ const LandingPage: React.FC = () => {
                       onClick={() => {
                         console.log(
                           `Manually switching to tab ${index}: ${label}`
-                        ); // Debugging log
+                        );
                         setSmartWorkflowActiveTab(index);
                       }}
                       className={`border border-[#A2BEA0] font-light text-sm rounded-full px-4 py-1.5 mb-2 relative overflow-hidden bg-white`}
@@ -510,38 +471,38 @@ const LandingPage: React.FC = () => {
             </div>
             {/* image and Description start */}
             {smartWorkflowActiveTab === 0 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
                     {/* Content for AI Journalist Selector */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Find the right journalist to tell your story
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
-                    <li className="flex items-start">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Choose whom to pitch with customized automated databases
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Personalize outreach based on their content
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Track past interactions with relevant journalists
                     </li>
@@ -551,39 +512,39 @@ const LandingPage: React.FC = () => {
             )}
 
             {smartWorkflowActiveTab === 1 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
                     {/* Content for Pitch */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Write Specialized Pitches in minutes
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
-                    <li className="flex items-start">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                         className="inline-block  mr-1 sm:mr-5"
                       />
                       Write well researched pitches easily in no time
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                         className="inline-block  mr-1 sm:mr-5"
                       />
                       Mimic your pitch & have the model write in your pitch
                       style
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                      className="inline-block  mr-1 sm:mr-5"
                       />
                       Personalized pitches at scale
                     </li>
@@ -593,39 +554,39 @@ const LandingPage: React.FC = () => {
             )}
 
             {smartWorkflowActiveTab === 2 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
                     {/* Content for Content Assistant */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Your PR-optimized writing companion
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
-                    <li className="flex items-start">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                         className="inline-block  mr-1 sm:mr-5"
                       />
                       Streamline your PR writing with an AI assistant
                       experienced in content workflows
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Re purpose new story angles to mirror the brand tone
                     </li>
-                    <li className="flex items-start">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                        className="inline-block  mr-1 sm:mr-5"
                       />
                       Content calendar/Automated Follow-ups
                     </li>
@@ -633,12 +594,11 @@ const LandingPage: React.FC = () => {
                 </div>
               </div>
             )}
-
             {/* image and Description end */}
           </div>
         </div>
         {/*-------------------------  how it works - Analytics ------------------------- */}
-        <div className="mt-20  p-8  mx-5 lg:mx-20 -center sm:px-20 shadow-sm  sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl ">
+        <div className="mt-20 p-8 mx-5 lg:mx-20 sm:px-20 shadow-sm sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start hide-scrollbar">
             <style>
               {`
@@ -647,8 +607,10 @@ const LandingPage: React.FC = () => {
               }
             `}
             </style>
-            <h2 className="text-5xl text-[#454545] font-[250]">Analytics </h2>
-            <h2 className="text-4xl text-gray-400 mt-2 font-extralight">
+            <h2 className="text-3xl sm:text-5xl text-[#454545] font-[250]">
+              Analytics
+            </h2>
+            <h2 className="text-2xl sm:text-4xl text-gray-400 mt-2 font-extralight">
               Real time reporting
             </h2>
             <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
@@ -659,7 +621,7 @@ const LandingPage: React.FC = () => {
                       onClick={() => {
                         console.log(
                           `Manually switching to tab ${index}: ${label}`
-                        ); // Debugging log
+                        );
                         setActiveTab(index);
                       }}
                       className={`border border-[#A2BEA0] font-light text-sm rounded-full px-4 py-1.5 mb-2 relative overflow-hidden bg-white`}
@@ -679,45 +641,39 @@ const LandingPage: React.FC = () => {
             </div>
             {/* image and Description start */}
             {activeTab === 0 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
-                    {/* <img
-                    src="/path/to/curated-news-1-image.png" // Update with actual image path
-                    alt="Curated News 1"
-                    className="h-full w-auto max-w-xs"
-                  /> */}
+                    {/* Image placeholder */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Score Your Media Impact
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
-                    <li className="flex items-start">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                          className="inline-block  mr-1 sm:mr-5"
                       />
                       Evaluate media mentions based on reach, engagement, &
                       sentiment for precise impact assessment
                     </li>
-                    <li className="flex items-start">
-                      {" "}
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
-                      />{" "}
+                        className="inline-block  mr-1 sm:mr-5"
+                      />
                       Gauge public sentiment for deeper insights
                     </li>
-                    <li className="flex items-start">
-                      {" "}
+                    <li className="flex items-center">
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
-                        className="inline-block mr-5"
+                         className="inline-block  mr-1 sm:mr-5"
                       />
                       Predict future impact based on historical performance
                       data, enabling proactive decision-making in media outreach
@@ -728,21 +684,17 @@ const LandingPage: React.FC = () => {
             )}
 
             {activeTab === 1 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
-                    {/* <img
-                    src="/path/to/curated-news-1-image.png" // Update with actual image path
-                    alt="Curated News 1"
-                    className="h-full w-auto max-w-xs"
-                  /> */}
+                    {/* Image placeholder */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Hands-Free Reporting
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-start">
                       <img
                         src="/plus2.png"
@@ -753,17 +705,15 @@ const LandingPage: React.FC = () => {
                       reports in seconds—no manual work required
                     </li>
                     <li className="flex items-start">
-                      {" "}
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
-                      />{" "}
+                      />
                       Access live dashboards that automatically update with
                       real-time insights style
                     </li>
                     <li className="flex items-start">
-                      {" "}
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
@@ -778,21 +728,17 @@ const LandingPage: React.FC = () => {
             )}
 
             {activeTab === 2 && (
-              <div className="sm:flex sm:w-full gap-40 mt-10">
-                <div className="flex justify-center items-center  w-full">
+              <div className="flex flex-col sm:flex-row sm:w-full gap-10 sm:gap-40 mt-10">
+                <div className="flex justify-center items-center w-full sm:w-1/2">
                   <div className="w-full h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
-                    {/* <img
-                    src="/path/to/curated-news-1-image.png" // Update with actual image path
-                    alt="Curated News 1"
-                    className="h-full w-auto max-w-xs"
-                  /> */}
+                    {/* Image placeholder */}
                   </div>
                 </div>
-                <div className="flex flex-col  items-start justify-center w-full">
-                  <h3 className="text-3xl text-[#454545] font-light">
+                <div className="flex flex-col items-start justify-center w-full sm:w-1/2">
+                  <h3 className="text-2xl sm:text-3xl text-[#454545] font-light">
                     Let AI take over your next move
                   </h3>
-                  <ul className=" text-[19px] w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
+                  <ul className="text-base sm:text-[19px] w-full sm:w-[35rem] text-gray-400 space-y-3 font-light list-inside mt-8">
                     <li className="flex items-start">
                       <img
                         src="/plus2.png"
@@ -803,17 +749,15 @@ const LandingPage: React.FC = () => {
                       your campaign’s progress and goals
                     </li>
                     <li className="flex items-start">
-                      {" "}
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
                         className="inline-block mr-5"
-                      />{" "}
+                      />
                       Catch a crisis early— know how to handle it before it
                       erupts
                     </li>
                     <li className="flex items-start">
-                      {" "}
                       <img
                         src="/plus2.png"
                         alt="Plus Icon"
@@ -825,25 +769,10 @@ const LandingPage: React.FC = () => {
                 </div>
               </div>
             )}
-
             {/* image and Description end */}
           </div>
         </div>
-        {/*------------------------- GoogleGeminiEffect ------------------------- */}
-        {/* <div
-      className="h-[400vh] bg-black w-full dark:border dark:border-white/[0.1] rounded-md relative pt-40 overflow-clip"
-      ref={ref}
-    >
-      <GoogleGeminiEffect
-        pathLengths={[
-          pathLengthFirst,
-          pathLengthSecond,
-          pathLengthThird,
-          pathLengthFourth,
-          pathLengthFifth,
-        ]}
-      />
-    </div> */}
+      
         {/*------------------------- New Understanding PR Section ------------------------- */}
         <div className="text-center mt-20 ">
           <h2 className="text-4xl font-light mt-14 text-[#616060]">
@@ -936,15 +865,23 @@ const LandingPage: React.FC = () => {
                 {
                   question: "How is Overtly different from other PR tools?",
                   answer:
-                    "Overtly integrates research, workflows, and analytics to create a connected system. Overtly uses contextual learning to understand your company’s voice and PR strategy. It tailors communications based on historical data and industry trends, unlike other tools that rely on generic models. It's a PR-specific approach where everything—research, workflows, and writing."  },
+                    "Overtly integrates research, workflows, and analytics to create a connected system. Overtly uses contextual learning to understand your company’s voice and PR strategy. It tailors communications based on historical data and industry trends, unlike other tools that rely on generic models. It's a PR-specific approach where everything—research, workflows, and writing.",
+                },
                 {
-                  question: "How does Overtly ensure human control in PR communication?",
+                  question:
+                    "How does Overtly ensure human control in PR communication?",
                   answer:
                     "Overtly is designed to assist, not replace. There is human intervention in every step of the workflow so the final result has a human touch, it automates routine tasks, but always leaves strategic control in your hands. You direct the process, review drafts, and approve content. The platform provides guidance and automates the heavy lifting, but human expertise ensures that every message remains relevant and on-point.",
                 },
-               
                 {
-                  question: "What types of documents can be uploaded to Overtly?",
+                  question:
+                    "Who can use this product, and what are the use cases?",
+                  answer:
+                    "Protecting the data you trust to Preline is our first priority. This part is really crucial in keeping the project in line to completion.",
+                },
+                {
+                  question:
+                    "What types of documents can be uploaded to Overtly?",
                   answer:
                     "You can upload any PR-related documents, including press releases, media lists, media outreach content, campaign reports, and brand guidelines. Overtly processes them to streamline your PR workflows and improve automation.",
                 },
