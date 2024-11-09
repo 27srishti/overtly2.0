@@ -17,7 +17,9 @@ const config = {
         "2xl": "1400px",
       },
     },
-    extend: {
+    extend: {fontFamily: {
+        readex: ['Readex Pro', 'sans-serif'],
+      },
       colors: {
 
         border: "hsl(var(--border))",
@@ -77,13 +79,26 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.3s ease-out",
       },
-      fontFamily: {
-        montserrat: ["var(--font-montserrat)"],
-        raleway: ["var(--font-raleway)"],
-        inter: ["var(--font-inter)"],
-      },
     },
+    fontFamily: {
+      montserrat: ["var(--font-montserrat)"],
+      raleway: ["var(--font-raleway)"],
+      readex: ['Readex Pro', 'sans-serif'], // Keep this entry for Readex Pro
+    },
+   
+      keyframes: {
+          'logo-cloud': {
+              from: { transform: 'translateX(0)' },
+              to: { transform: 'translateX(calc(-100% - 4rem))' },
+          },
+      },
+      animation: {
+          'logo-cloud': 'logo-cloud 30s linear infinite', // Adjust duration and timing as needed for your design.
+      },
+
   },
+
+  
   plugins: [require("tailwindcss-animate")],
 } satisfies Config
 
