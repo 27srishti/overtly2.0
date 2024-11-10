@@ -627,39 +627,23 @@ const FolderView = () => {
                         Generate
                       </Button>
                     </div>
-
                   </div>
-
                   <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
-
                   <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
                     <div className="flex items-center gap-2">
                       <span>Manually fill-up bio</span>
                     </div>
-
-
                     <div
-
                       className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8"
                     >
                       Answer Few Questions
                     </div>
-
-
                   </div>
-
-
                 </div>
               </div>
             )}
-
-
-
-
           </DialogContent>
         </Dialog>
-
-
         {renderedFiletypes}
       </div>
     </div>

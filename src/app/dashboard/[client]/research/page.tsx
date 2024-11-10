@@ -33,7 +33,7 @@ import { auth } from "@/lib/firebase/firebase";
 import Link from "next/link";
 import { Icons } from "@/components/ui/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { TopicsPopup } from "@/components/Customcomponent/topics";
+import "../../../../components/Customcomponent/topics.css";
 
 
 
@@ -120,7 +120,7 @@ const Page = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [ArticleModalData, setArticleModalData] = useState<Article>()
   const [isHovering, setIsHovering] = useState(false)
-  const [isTopicsPopupOpen, setIsTopicsPopupOpen] = useState(false);
+
   const handleClickOutside = (event: MouseEvent) => {
     dropdownRefs.current.forEach((ref, index) => {
       if (ref && !ref.contains(event.target as Node)) {
@@ -203,16 +203,16 @@ const Page = () => {
 
   async function fetchNewsArticles(user: User) {
     try {
-      const response = await fetch("/api/get-curated-articles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await user.getIdToken()}`,
-        },
-        body: JSON.stringify({
-          client_id: clientid,
-        }),
-      });
+      // const response = await fetch("/api/get-curated-articles", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${await user.getIdToken()}`,
+      //   },
+      //   body: JSON.stringify({
+      //     client_id: clientid,
+      //   }),
+      // });
 
       // if (!response.ok) {
       //   const errorData = await response.json();
@@ -330,13 +330,21 @@ const Page = () => {
     }
   }
 
-  const closePopup = () => {
-    setIsTopicsPopupOpen(false);
+
+  const renderSubtopics = (subtopics: Subtopic[], level: number) => {
+    const isSingleSubtopic = subtopics.length === 1;
+    return (
+      <div className={`branch lv${level} ${isSingleSubtopic ? "single-subtopic" : ""}`}>
+        {subtopics.map((subtopic, subIndex) => (
+          <div key={subIndex} className={`entry ${isSingleSubtopic ? "inline" : ""}`}>
+            <span className="label">{subtopic.name}</span>
+            {subtopic.subtopics && subtopic.subtopics.length > 0 && renderSubtopics(subtopic.subtopics, level + 1)}
+          </div>
+        ))}
+      </div>
+    );
   };
 
-  const handleTopicClick = () => {
-    setIsTopicsPopupOpen(true);
-  };
 
   return (
     <div className="p-1">
@@ -859,23 +867,23 @@ const Page = () => {
                             </div>
                           </div>
                           <Tabs
-                            defaultValue="Trends"
+                            defaultValue="Summary"
                             className="w-full font-normal mt-5"
                           >
                             <TabsList className="mb-5 flex flex-row justify-between ml-3">
                               <div className="flex gap-8">
                                 <TabsTrigger
-                                  value="Trends"
+                                  value="Summary"
                                   className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
                                 >
                                   Summary
                                 </TabsTrigger>
-                                <div
-
-                                  className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]" onClick={handleTopicClick}
+                                <TabsTrigger
+                                  value="Topics"
+                                  className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
                                 >
                                   Topics
-                                </div>
+                                </TabsTrigger>
                                 <TabsTrigger
                                   value="EconomicNews"
                                   className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
@@ -890,84 +898,53 @@ const Page = () => {
                                 </TabsTrigger>
                               </div>
                             </TabsList>
-                          </Tabs>
-                          <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
-                            Summary :
-                          </div>
-                          <div className="container mx-auto p-4 text-sm text-[#3E3E3E]">
-                            {ArticleModalData?.summary}
-                          </div>
-                          {/* <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E] font-raleway">
-             
-                              <div className="text-2xl font-semibold mb-4">
-                                MacBook Power Issue Troubleshooting
+
+                            <TabsContent value="Summary" className="bg-none bg-transparent p-0">          <div>
+                              <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
+                                Summary :
                               </div>
-                              <ol className="list-decimal ml-6 space-y-2">
-                                <li>
-                                  <div>Check the Power Adapter:</div>
-                                  <p>
-                                    Inspect your MacBook’s power adapter for any
-                                    signs of damage. If the cable or the adapter
-                                    itself is damaged, consider replacing it.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>Use a Different Outlet:</div>
-                                  <p>
-                                    Try plugging your MacBook into a different
-                                    outlet, preferably one that you know is
-                                    properly grounded.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>
-                                    Test with a Different Power Adapter:
+                              <div className="container mx-auto p-4 text-sm text-[#3E3E3E]">
+                                {ArticleModalData?.summary}
+                              </div>
+                            </div></TabsContent>
+
+                            <TabsContent value="Topics" className="bg-none bg-transparent p-0">
+                              <div className="">
+
+                                <div className="flex flex-col">
+                                  <div className="">
+                                    <div className="flex-1 overflow-y-auto scrollbar-hide max-h-[550px] ">
+                                      <div className="flex items-start  overflow-auto max-h-[500px] absolute z-10">
+                                        <h3 className="border border-yellow-300 rounded-full px-8 py-2 sticky top-0">
+                                          Topics
+                                        </h3>
+                                      </div>
+                                      <div id="wrapper" className="relative ml-12 pt-10">
+                                        {ArticleModalData && ArticleModalData.topics.topics.map((topic, index) => (
+                                          <div key={index} className="entry">
+                                            <span className="label">{topic.name}</span>
+                                            {topic.subtopics &&
+                                              topic.subtopics.length > 0 &&
+                                              renderSubtopics(topic.subtopics, 1)}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
                                   </div>
-                                  <p>
-                                    If possible, borrow a compatible power adapter
-                                    from another MacBook to see if the issue
-                                    persists. This can help determine if the
-                                    problem is with the adapter or the MacBook.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>Use a Grounded Power Adapter:</div>
-                                  <p>
-                                    Some power adapters come with a detachable
-                                    plug. Ensure you are using the grounded plug
-                                    version if available.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>Check for Software Updates:</div>
-                                  <p>
-                                    Ensure your MacBook is running the latest
-                                    version of macOS. Sometimes, software updates
-                                    can address hardware-related issues.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>
-                                    Reset the SMC (System Management Controller):
-                                  </div>
-                                  <p>
-                                    Resetting the SMC can sometimes resolve
-                                    power-related issues on MacBooks. Here’s how
-                                    you can reset it:
-                                    <ul className="list-disc ml-6 mt-2">
-                                      <li>Shut down your MacBook.</li>
-                                      <li>
-                                        On the built-in keyboard, press and hold
-                                        the Shift, Control, and Option keys on the
-                                        left side, then press the power button at
-                                        the same time.
-                                      </li>
-                                    </ul>
-                                  </p>
-                                </li>
-                              </ol>
-                            </div>
-                          </div> */}
+                                </div>
+                              </div>
+                            </TabsContent>
+                          </Tabs>
+
+
+
+
+
+
+
+
+
+
                         </div>
                         <div className="flex flex-col gap-4">
                           <div className="flex flex-col gap-3 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">
@@ -1025,11 +1002,6 @@ const Page = () => {
                           </div>
                         </div>
                       </div>
-                      <TopicsPopup
-                        topics={(ArticleModalData?.topics.topics ?? []) as Topic[]}
-                        isOpen={isTopicsPopupOpen}
-                        onClose={closePopup}
-                      ></TopicsPopup>
                     </DialogContent>
                   </Dialog>
                 ))}
@@ -1038,7 +1010,7 @@ const Page = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="Competition">Competition</TabsContent>
+        <TabsContent value="Topic">f</TabsContent>
         <TabsContent value="EconomicNews">Economic News</TabsContent>
         <TabsContent value="Digest">Digest</TabsContent>
       </Tabs >
