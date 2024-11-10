@@ -270,9 +270,10 @@ const FolderView = () => {
           onClick={() => handleFileTypeSelect(option.value)}
         >
           <div className="flex flex-row justify-between items-center">
-            <span
-              className={`p-2 rounded-full h-[32px] w-[32px] ${option.colorwheel}`}
-            ></span>
+            <div
+              className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
+            >
+              <option.icon className="" /> </div>
             <div>
               <Icons.Expand className="w-[12px] h-[12px] mr-5" />
             </div>
@@ -470,20 +471,25 @@ const FolderView = () => {
         <Dialog>
           <DialogTrigger className="text-left">
             <div
-              className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${""}`}
+              className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 bg-[#62CBFF] bg-opacity-20`}
               onClick={() => handleOpenCompanyBio()}
             >
               <div className="flex flex-row justify-between items-center">
-                <span
-                  className={`p-2 rounded-full h-[32px] w-[32px] `}
-                ></span>
+              <div
+              className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
+            >
+              <Icons.PitchedCard className="" /> </div>
+
+
+
+                
                 <div>
                   <Icons.Expand className="w-[12px] h-[12px] mr-5" />
                 </div>
               </div>
               <div className="flex flex-col gap-[10px] font-medium font-montserrat">
                 <div className="text-[14px] break-words leading-tight">
-                  hh
+                  Company Bio
                 </div>
                 <div className="text-[10px] leading-tight">
                   This is the second vehicle company Henrik Fisker
@@ -491,8 +497,8 @@ const FolderView = () => {
               </div>
             </div>
           </DialogTrigger>
-          <DialogContent className="max-w-[80vw] max-h-[85vh] min-w-[80vw] min-h-[85vh] p-10 px-14 pb-8 font-montserrat pt-5 text-[#545454] py-9">
 
+          <DialogContent className="max-w-[80vw] max-h-[85vh] min-w-[80vw] min-h-[85vh] p-10 px-14 pb-8 font-montserrat pt-5 text-[#545454] py-9">
             {coreContextExists ? (
               <div>
                 <div>
@@ -587,24 +593,7 @@ const FolderView = () => {
                     <div className="flex items-center gap-2">
                       <span>Upload company bio documents</span>
                     </div>
-                    <div className="gap-6 b-0 shadow-none outline-none hover:bg-[#e8e8e8] transcition-all rounded-2xl grey transition-all flex items-center px-3 py-[.6rem] cursor-pointer">
-                      <div className="ml-1 font-montserrat text-[#545454] text-base">
-                        Upload files
-                      </div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="23px"
-                        viewBox="0 0 24 24"
-                        width="23px"
-                        fill="#545454"
-                      >
-                        <path d="M0 0h24v24H0z" fill="none" />
-                        <path
-                          d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"
-                          className="w-6 h-6"
-                        />
-                      </svg>
-                    </div>
+                    <Uploadbtn data={"CompanyBio"} />
                   </div>
 
 

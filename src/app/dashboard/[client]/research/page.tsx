@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +24,6 @@ import { Calendar } from "@/components/ui/calendar";
 import debounce from 'lodash/debounce';
 import { Input } from "@/components/ui/input";
 import { OpenInNewWindowIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Slider } from "@/components/ui/slider";
 import { toast } from "@/components/ui/use-toast";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useParams } from "next/navigation";
@@ -34,6 +32,7 @@ import Link from "next/link";
 import { Icons } from "@/components/ui/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import "../../../../components/Customcomponent/topics.css";
+import { Progress } from "@/components/ui/progress";
 
 
 
@@ -102,7 +101,7 @@ const Page = () => {
     to: addDays(new Date(2022, 0, 20), 20),
   });
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-
+  const [progress, setProgress] = useState(0)
   const toggleAdvancedFilter = () => {
     setIsAdvancedOpen((prev) => !prev);
   };
@@ -203,6 +202,7 @@ const Page = () => {
 
   async function fetchNewsArticles(user: User) {
     try {
+      setProgress(10);
       // const response = await fetch("/api/get-curated-articles", {
       //   method: "POST",
       //   headers: {
@@ -218,7 +218,8 @@ const Page = () => {
       //   const errorData = await response.json();
       //   console.log(response);
       //   throw new Error(errorData.message || "Something went wrong");
-      // // }
+      // }
+
       // console.log("dsds" + await response.json());
       // const data = await response.json();
 
@@ -226,6 +227,9 @@ const Page = () => {
       // setAuthorSuggestions(authors);
 
 
+      setProgress(60);
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      setProgress(100);
 
       return [{
         "title": "Biden-Harris Administration Releases New Report that Shows Gains in Health Care Coverage for Rural Americans",
@@ -318,7 +322,6 @@ const Page = () => {
         },
         "sentiment": null
       }] as Article[];
-
 
 
     } catch (error) {
@@ -735,7 +738,7 @@ const Page = () => {
           <div className="flex flex-col gap-40">
             <div>
               <div className="flex flex-col gap-4 mt-5">
-                {articles.map((article, index) => (
+                {articles.length > 0 ? articles.map((article, index) => (
                   <Dialog key={index} >
                     <DialogTrigger>
                       <div className="bg-[#E6E5E5] bg-opacity-15 flex flex gap-6 p-2 rounded-[21px] border border-[#A2BEA0] border-opacity-25" onClick={() => setArticleModalData(article)}>
@@ -935,16 +938,6 @@ const Page = () => {
                               </div>
                             </TabsContent>
                           </Tabs>
-
-
-
-
-
-
-
-
-
-
                         </div>
                         <div className="flex flex-col gap-4">
                           <div className="flex flex-col gap-3 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">
@@ -1004,12 +997,27 @@ const Page = () => {
                       </div>
                     </DialogContent>
                   </Dialog>
-                ))}
+                )) : <div>
+
+
+
+                  <div className="w-full max-w-md mx-auto p-4 space-y-4 mt-20">
+                    <div className="text-[#6B8A6B] text-center">
+                      Extracting Relevant Articles...
+                    </div>
+                    <Progress
+                      value={progress}
+                      className="h-2 w-full "
+                      indicatorColor="bg-[#EBF1D5]" />
+                  </div>
+                  <div className="text-center text-sm text-[#6B8A6B]">
+                    {progress}%
+                  </div>
+                </div>}
               </div>
             </div>
           </div>
         </TabsContent>
-
         <TabsContent value="Topic">f</TabsContent>
         <TabsContent value="EconomicNews">Economic News</TabsContent>
         <TabsContent value="Digest">Digest</TabsContent>

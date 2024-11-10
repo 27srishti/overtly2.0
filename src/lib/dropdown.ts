@@ -1,3 +1,7 @@
+import { Icons } from "@/components/ui/Icons";
+
+
+
 const Demographics = [
     "Any",
     "United Kingdom (UK)",
@@ -184,18 +188,15 @@ const Industry = [
 ]
 
 const Filetypes = [
-    { value: "Corporate Information", color: "bg-[#FFC8C8] bg-opacity-60", colorwheel: "bg-[#FFEBEB]" },
-    { value: "Press Releases", color: "bg-[#FFEAB5] bg-opacity-40", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
-    { value: "Reports", color: "bg-[#C7E3FF] bg-opacity-30", colorwheel: "bg-[#FFFFFF] bg-opacity-70" },
-    { value: "Case Studies", color: "bg-[#A1FFB0] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
-    { value: "Media Hits", color: "bg-[#77D7D7] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-50" },
-    { value: "Press Kits", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
-    { value: "Media Kits", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
-    { value: "White Paper", color: "bg-[#FFC8C8] bg-opacity-60", colorwheel: "bg-[#FFEBEB]" },
-    { value: "Media/Brand Presence", color: "bg-[#77D7D7] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-50" },
-    { value: "Marketing Material", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
-    { value: "Emails", color: "bg-[#D8D8D8] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20" },
-    { value: "Important Docs (others)", color: "bg-[#A1FFB0] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-60" },
+    { value: "AAA", color: "bg-[#FFC8C8] bg-opacity-60", colorwheel: "bg-[#FFEBEB]", icon: Icons.ProfileCard },
+    { value: "Press Releases & Announcement", color: "bg-[#FFEAB5] bg-opacity-40", colorwheel: "bg-[#FFFFFF] bg-opacity-60", icon: Icons.AnnouncmentCard },
+    { value: "Coverage Received", color: "bg-[#C7E3FF] bg-opacity-30", colorwheel: "bg-[#FFFFFF] bg-opacity-70", icon: Icons.CoverageCard },
+    { value: "Briefing & Debrief  Documents", color: "bg-[#C2ABFF] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-60", icon: Icons.BrefingCard },
+    { value: "Customer Stories & Case Studies", color: "bg-[#77D7D7] bg-opacity-20", colorwheel: "bg-[#FFFFFF] bg-opacity-50", icon: Icons.CustomerCard },
+    { value: "Interviwes", color: "bg-[#62CBFF] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20", icon: Icons.InterviwesCard },
+    { value: "Reports", color: "bg-[#FFB65C] bg-opacity-20", colorwheel: "bg-[#C6C6C6] bg-opacity-20", icon: Icons.ReportsCard },
+    { value: "Pitched Sent", color: "bg-[#A1FFB0] bg-opacity-20", colorwheel: "bg-[#FFEBEB]", icon: Icons.PitchedCard },
+    { value: "Others", color: "bg-[#959595] bg-opacity-10", colorwheel: "bg-[#FFFFFF] bg-opacity-50", icon: Icons.OthersCard },
 ];
 
 

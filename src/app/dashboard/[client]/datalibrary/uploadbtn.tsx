@@ -47,7 +47,6 @@ const Uploadbtn = () => {
   const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
     null
   );
-  const [fetchedFiles, setFetchedFiles] = useState<FileCollection[]>([]);
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
