@@ -339,19 +339,6 @@ const Uploadbtn = (props: { data: any }) => {
         }),
       });
 
-      const fileId = uniqueId;
-      await fetch('api/update-core-context', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await authUser?.getIdToken()}`,
-        },
-        body: JSON.stringify({
-          file_id: fileId,
-          client_id: params.client,
-        }),
-      });
-
 
 
       return response.json();
@@ -546,18 +533,7 @@ const Uploadbtn = (props: { data: any }) => {
               uploadedCount++;
               setUploadProgress((uploadedCount / files.length) * 100);
 
-              const fileId = uniqueId;
-              await fetch('api/update-core-context', {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${await authUser?.getIdToken()}`,
-                },
-                body: JSON.stringify({
-                  file_id: fileId,
-                  client_id: params.client,
-                }),
-              });
+      
 
 
               return data;

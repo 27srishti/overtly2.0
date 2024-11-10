@@ -342,18 +342,7 @@ const Uploadbtn = () => {
           file_path: filePath,
         }),
       })
-      const fileId = uniqueId;
-      await fetch('api/update-core-context', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${await authUser?.getIdToken()}`,
-        },
-        body: JSON.stringify({
-          file_id: fileId,
-          client_id: params.client,
-        }),
-      });
+
 
 
       return response.json();
@@ -537,23 +526,6 @@ const Uploadbtn = () => {
                     }`
                   );
                 }
-
-                const fileId = uniqueId;
-                await fetch('api/update-core-context', {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
-                  },
-                  body: JSON.stringify({
-                    file_id: fileId,
-                    client_id: params.client,
-                  }),
-                });
-
-
-
-
                 return response.json();
               } catch (error) {
                 console.error("Error during data extraction:", error);
