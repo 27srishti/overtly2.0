@@ -130,6 +130,8 @@ const Page = () => {
     });
   };
 
+
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
@@ -200,128 +202,137 @@ const Page = () => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgress(prevProgress => prevProgress < 80 ? prevProgress + 1 : prevProgress)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [progress]);
+
   async function fetchNewsArticles(user: User) {
     try {
       setProgress(10);
-      // const response = await fetch("/api/get-curated-articles", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${await user.getIdToken()}`,
-      //   },
-      //   body: JSON.stringify({
-      //     client_id: clientid,
-      //   }),
-      // });
-
-      // if (!response.ok) {
-      //   const errorData = await response.json();
-      //   console.log(response);
-      //   throw new Error(errorData.message || "Something went wrong");
-      // }
-
-      // console.log("dsds" + await response.json());
-      // const data = await response.json();
-
-      // const authors = data.map((item: { name: string }) => item.name);
-      // setAuthorSuggestions(authors);
-
-
-      setProgress(60);
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      setProgress(100);
-
-      return [{
-        "title": "Biden-Harris Administration Releases New Report that Shows Gains in Health Care Coverage for Rural Americans",
-        "link": "https://www.hhs.gov/about/news/2024/11/01/biden-harris-administration-releases-new-report-shows-gains-health-care-coverage-rural-americans.html",
-        "snippet": "President Biden and Vice President Harris's efforts to strengthen access to health care are linked to historic gains in rural Americans' health insurance...",
-        "source": "HHS.gov",
-        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhFKbHA-GxjrTr5Q14Cu-Ig6oFPGAOokAqOKQ2HW6NDIl2urZksiDlXFnIJQ&s",
-        "body": null,
-        "social_score": null,
-        "date": "5 days ago",
-        "relevance": 1,
-        "authors": null,
-        "summary": "The Biden-Harris Administration has released a new report highlighting improvements in health care coverage for rural Americans. This report is part of the ongoing efforts by the Department of Health and Human Services (HHS) to enhance access to health care services in rural areas. The report underscores the administration's commitment to addressing health disparities and ensuring that rural populations receive adequate health care coverage. The article also includes a disclaimer about the limitations of linking to non-federal websites, emphasizing that HHS does not endorse external content and is not responsible for the accessibility compliance of private websites.",
-        "topics": {
-          "topics": [
-            {
-              "name": "Biden-Harris Administration",
-              "subtopics": [
-                {
-                  "name": "Health Care Initiatives",
-                  "subtopics": [
-                    {
-                      "name": "Rural Health Care Coverage",
-                      "subtopics": []
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "Department of Health and Human Services (HHS)",
-              "subtopics": [
-                {
-                  "name": "Reports and Publications",
-                  "subtopics": [
-                    {
-                      "name": "Health Care Coverage Reports",
-                      "subtopics": []
-                    }
-                  ]
-                },
-                {
-                  "name": "Web Notification Policies",
-                  "subtopics": [
-                    {
-                      "name": "Website Disclaimers",
-                      "subtopics": []
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "Health Care Coverage",
-              "subtopics": [
-                {
-                  "name": "Rural Americans",
-                  "subtopics": [
-                    {
-                      "name": "Access to Health Services",
-                      "subtopics": []
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "Website Disclaimers",
-              "subtopics": [
-                {
-                  "name": "Non-Federal Websites",
-                  "subtopics": [
-                    {
-                      "name": "Accuracy and Endorsement",
-                      "subtopics": []
-                    },
-                    {
-                      "name": "Privacy Policy and Terms of Service",
-                      "subtopics": []
-                    },
-                    {
-                      "name": "Section 508 Compliance",
-                      "subtopics": []
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
+      const response = await fetch("/api/get-curated-articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${await user.getIdToken()}`,
         },
-        "sentiment": null
-      }] as Article[];
+        body: JSON.stringify({
+          client_id: clientid,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(response);
+        throw new Error(errorData.message || "Something went wrong");
+      }
+
+      console.log("dsds" + await response.json());
+      const data = await response.json();
+
+      const authors = data.map((item: { name: string }) => item.name);
+      setAuthorSuggestions(authors);
+      setProgress(80);
+      setTimeout(() => {
+        setProgress(100);
+      }, 100); 
+
+      return data;
+
+      // return [{
+      //   "title": "Biden-Harris Administration Releases New Report that Shows Gains in Health Care Coverage for Rural Americans",
+      //   "link": "https://www.hhs.gov/about/news/2024/11/01/biden-harris-administration-releases-new-report-shows-gains-health-care-coverage-rural-americans.html",
+      //   "snippet": "President Biden and Vice President Harris's efforts to strengthen access to health care are linked to historic gains in rural Americans' health insurance...",
+      //   "source": "HHS.gov",
+      //   "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhFKbHA-GxjrTr5Q14Cu-Ig6oFPGAOokAqOKQ2HW6NDIl2urZksiDlXFnIJQ&s",
+      //   "body": null,
+      //   "social_score": null,
+      //   "date": "5 days ago",
+      //   "relevance": 1,
+      //   "authors": null,
+      //   "summary": "The Biden-Harris Administration has released a new report highlighting improvements in health care coverage for rural Americans. This report is part of the ongoing efforts by the Department of Health and Human Services (HHS) to enhance access to health care services in rural areas. The report underscores the administration's commitment to addressing health disparities and ensuring that rural populations receive adequate health care coverage. The article also includes a disclaimer about the limitations of linking to non-federal websites, emphasizing that HHS does not endorse external content and is not responsible for the accessibility compliance of private websites.",
+      //   "topics": {
+      //     "topics": [
+      //       {
+      //         "name": "Biden-Harris Administration",
+      //         "subtopics": [
+      //           {
+      //             "name": "Health Care Initiatives",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Rural Health Care Coverage",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "name": "Department of Health and Human Services (HHS)",
+      //         "subtopics": [
+      //           {
+      //             "name": "Reports and Publications",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Health Care Coverage Reports",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           },
+      //           {
+      //             "name": "Web Notification Policies",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Website Disclaimers",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "name": "Health Care Coverage",
+      //         "subtopics": [
+      //           {
+      //             "name": "Rural Americans",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Access to Health Services",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "name": "Website Disclaimers",
+      //         "subtopics": [
+      //           {
+      //             "name": "Non-Federal Websites",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Accuracy and Endorsement",
+      //                 "subtopics": []
+      //               },
+      //               {
+      //                 "name": "Privacy Policy and Terms of Service",
+      //                 "subtopics": []
+      //               },
+      //               {
+      //                 "name": "Section 508 Compliance",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   },
+      //   "sentiment": null
+      // }] as Article[];
 
 
     } catch (error) {

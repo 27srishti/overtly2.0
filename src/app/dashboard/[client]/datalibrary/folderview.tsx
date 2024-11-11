@@ -31,7 +31,7 @@ import { Filetypes } from "@/lib/dropdown";
 import { DashboardIcon, ListBulletIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth, db, storage } from "@/lib/firebase/firebase";
-import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {
   Table,
@@ -54,6 +54,7 @@ import Uploadbtn from "./specificfileupload";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
 import { Upload } from "lucide-react";
 import { SelectSeparator } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/normaltextarea";
 
 interface File {
   name: string;
@@ -85,7 +86,9 @@ const FolderView = () => {
   const [files, setFiles] = useState<FilesData[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files);
   const [coreContextExists, setCoreContextExists] = useState(false);
-
+  const [companyBioData, setCompanyBioData] = useState<any>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const createQueryString = useCallback(
     (params: { [s: string]: unknown } | ArrayLike<unknown>) => {
@@ -250,6 +253,7 @@ const FolderView = () => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setCoreContextExists(!!data.core_context);
+        setCompanyBioData(data.core_context);
       } else {
         console.log("No such document!");
       }
@@ -258,8 +262,33 @@ const FolderView = () => {
     }
   };
 
+  const handleInputChange = (key: string, value: any) => {
+    setCompanyBioData((prevData: any) => ({
+      ...prevData,
+      [key]: value,
+    }));
+  };
 
+  const handleSave = async () => {
+    setIsSaving(true);
+    const authUser = auth.currentUser;
+    if (!authUser) {
+      console.error("User is not authenticated");
+      setIsSaving(false);
+      return;
+    }
 
+    try {
+      const docRef = doc(db, `users/${authUser.uid}/clients/${params.client}`);
+      await setDoc(docRef, { core_context: companyBioData }, { merge: true });
+      console.log("Document successfully updated!");
+      setEditingField(null);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
 
   const renderedFiletypes = Filetypes.map((option) => (
@@ -475,14 +504,10 @@ const FolderView = () => {
               onClick={() => handleOpenCompanyBio()}
             >
               <div className="flex flex-row justify-between items-center">
-              <div
-              className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
-            >
-              <Icons.PitchedCard className="" /> </div>
-
-
-
-                
+                <div
+                  className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
+                >
+                  <Icons.PitchedCard className="" /> </div>
                 <div>
                   <Icons.Expand className="w-[12px] h-[12px] mr-5" />
                 </div>
@@ -500,89 +525,62 @@ const FolderView = () => {
 
           <DialogContent className="max-w-[80vw] max-h-[85vh] min-w-[80vw] min-h-[85vh] p-10 px-14 pb-8 font-montserrat pt-5 text-[#545454] py-9">
             {coreContextExists ? (
-              <div>
-                <div>
-                  <div className="flex flex-row justify-between">
-                    <div className="font-medium text-2xl ">Company Bio</div>
-                    <div className="flex gap-3 text-sm">
-                      <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Uploaded Files</div>
-                      <div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5"> Regenerate</div>
-                    </div>
+              <div className="p-6 space-y-6">
+                <div className="flex justify-between">
+                  <h2 className="text-2xl font-medium">Company Bio</h2>
+                  <div className="flex gap-3 text-sm">
+                    <button className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5">Uploaded Files</button>
+                    <button className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5" onClick={() => { setCoreContextExists(false) }}>Regenerate</button>
                   </div>
                 </div>
-                <hr className="mt-5"></hr>
-                <div className="w-full p-6">
-                  <div className="space-y-6">
-                    <div className="flex gap-8">
-                      <div className="w-48 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground"># Company Name</span>
+                <hr className="mt-5" />
+                <div className="max-h-[55vh] overflow-y-auto scrollbar-hide space-y-3">
+                  {Object.entries(companyBioData).map(([key, value]) => (
+                    <div key={key} className="flex gap-8">
+                      <div className="w-48 text-sm text-muted-foreground font-medium">
+                        # {key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
                       </div>
-                      <div className="flex-1">
-                        <span>Amazon Web Services</span>
+                      <div className="flex-1 text-sm">
+                        {editingField === key ? (
+                          Array.isArray(value) ? (
+                            <div className="border border-gray-600 rounded-md p-1 scrollbar-hide">
+                              <Textarea
+                                value={value.length > 0 ? value.join(', ') : '--'}
+                                onChange={(e) => handleInputChange(key, e.target.value.split(',').map((item) => item.trim()))}
+                                onBlur={() => setEditingField(null)}
+                                className="w-full rounded p-1 border-none outline-none shadow-none focus-visible:ring-transparent scrollbar-hide"
+                                autoFocus
+                              />
+                            </div>
+                          ) : (
+                            <div className="border border-gray-600 rounded-md p-1 scrollbar-hide">
+                              <Textarea
+                                value={typeof value === 'string' ? value : '---'}
+                                onChange={(e) => handleInputChange(key, e.target.value)}
+                                onBlur={() => setEditingField(null)}
+                                className="w-full rounded p-1 border-none outline-none shadow-none focus-visible:ring-transparent scrollbar-hide"
+                                autoFocus
+                              />
+                            </div>
+                          )
+                        ) : (
+                          <span onClick={() => setEditingField(key)} className="cursor-pointer">
+                            {Array.isArray(value) ? (value.length > 0 ? value.join(', ') : '--') : (value || '--') as string}
+                          </span>
+                        )}
                       </div>
                     </div>
+                  ))}
 
-                    <div className="flex gap-8">
-                      <div className="w-48 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground"># Domain / Industry</span>
-                      </div>
-                      <div className="flex-1">
-                        <span>Cloud infra, compute</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-8">
-                      <div className="w-48 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground"># HQ / Location</span>
-                      </div>
-                      <div className="flex-1">
-                        <span>Australia, India</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-8">
-                      <div className="w-48 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground"># Company Overview</span>
-                      </div>
-                      <div className="flex-1 space-y-4">
-                        <p className="text-sm">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                        </p>
-                        <p className="text-sm">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-8">
-                      <div className="w-48 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground"># Vision & mission</span>
-                      </div>
-                      <div className="flex-1 space-y-4">
-                        <p className="text-sm">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                        </p>
-                        <p className="text-sm">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapibus.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-8">
-                      <div className="w-48 flex-shrink-0">
-                        <span className="text-sm text-muted-foreground"># Services / Products</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis viverra nulla non tristique gravida. Nam eget facilisis massa, ut faucibus ligula. Aenean sed sollicitudin dolor. Nullam consectetur tristique massa vitae lacinia. Mauris est augue, aliquam at blandit non, viverra vel augue. Integer cursus nibh et sodales tincidunt. Cras blandit a ipsum et posuere. Fusce consequat blandit magna ut dapib
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
-                <div className="justify-end flex items-center"><div className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5"> Save</div> </div>
-              </div>) : (
+                <div className="flex justify-end">
+                  <button onClick={handleSave} className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5" disabled={isSaving}>
+                    {isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            ) : (
 
               <div>
                 <div> <div className="font-medium text-2xl mb-5">Company Bio</div>
