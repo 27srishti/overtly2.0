@@ -3,9 +3,7 @@
 import React, {
   useState,
   useCallback,
-  useMemo,
   useEffect,
-  useRef,
 } from "react";
 import {
   useRouter,
@@ -37,23 +35,13 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { deleteObject, ref } from "firebase/storage";
 import clearCachesByServerAction from "@/lib/revalidation";
 import Uploadbtn from "./specificfileupload";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
-import { Upload } from "lucide-react";
-import { SelectSeparator } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/normaltextarea";
 
 interface File {
@@ -227,7 +215,7 @@ const FolderView = () => {
             await logErrorToFirestore(authUser.uid, params.client, "file", error.message, {
               client_id: params.client,
               file_name: file.bucketName,
-            }); // Log the error
+            });
           });
       }
     } catch (error) {
@@ -295,7 +283,7 @@ const FolderView = () => {
     <Dialog key={option.value}>
       <DialogTrigger className="text-left">
         <div
-          className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${option.color}`}
+          className={`flex flex-col p-5 rounded-[20px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${option.color} transition-all duration-300`}
           onClick={() => handleFileTypeSelect(option.value)}
         >
           <div className="flex flex-row justify-between items-center">
@@ -319,7 +307,7 @@ const FolderView = () => {
       </DialogTrigger>
       <DialogContent className="max-w-[90vw] max-h-[90vh] min-w-[90vw] min-h-[90vh] p-10 px-12 pb-8 font-montserrat pt-5">
         <div>
-          <div className="mb0-10">
+          <div className="mb-10">
             <div className="text-xl mt-3 ml-1 font-medium mb-2">
               {option.value}
             </div>
@@ -350,9 +338,7 @@ const FolderView = () => {
                       </svg>
                     </div>
                   </div>
-                  <>
-                    <Uploadbtn data={option} />
-                  </>
+                  <Uploadbtn data={option} />
                 </div>
 
                 <div>
@@ -362,10 +348,10 @@ const FolderView = () => {
                         filteredFiles.map((file, index) => (
                           <div
                             key={index}
-                            className="bg-[#D8D8D8] bg-opacity-20 bg-opacity-[20%] flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828] "
+                            className="bg-[#D8D8D8] bg-opacity-20 flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828]"
                           >
-                            <div className="flex gap-10 text-center items-center font-medium ">
-                              <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
+                            <div className="flex gap-10 text-center items-center font-medium">
+                              <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5]">
                                 <svg
                                   width="13"
                                   height="16"
@@ -379,7 +365,6 @@ const FolderView = () => {
                                   />
                                 </svg>
                               </div>
-
                               {file.name}
                             </div>
                             <AlertDialog>
@@ -495,29 +480,29 @@ const FolderView = () => {
         </div>
       </div>
 
-      <div className="mx-10 grid grid-cols-4 gap-5 mt-5 font-montserrat">
-
+      <div className="mx-5 grid grid-cols-1 sm:grid-cols-2 2md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-5 place-items-center gap-5 mt-5 font-montserrat">
         <Dialog>
           <DialogTrigger className="text-left">
             <div
-              className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 bg-[#62CBFF] bg-opacity-20`}
+              className={`flex flex-col p-5 rounded-[20px] gap-5 text-[#3B3B3B] max-w-[275px]  bg-[#FFC8C8] bg-opacity-60`}
               onClick={() => handleOpenCompanyBio()}
             >
               <div className="flex flex-row justify-between items-center">
                 <div
                   className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
                 >
-                  <Icons.PitchedCard className="" /> </div>
+                  <Icons.ProfileCard className="" />
+                </div>
                 <div>
                   <Icons.Expand className="w-[12px] h-[12px] mr-5" />
                 </div>
               </div>
               <div className="flex flex-col gap-[10px] font-medium font-montserrat">
                 <div className="text-[14px] break-words leading-tight">
-                  Company Bio
+                  AAA
                 </div>
                 <div className="text-[10px] leading-tight">
-                  This is the second vehicle company Henrik Fisker
+                  All document relation general information on company details
                 </div>
               </div>
             </div>
@@ -571,9 +556,7 @@ const FolderView = () => {
                       </div>
                     </div>
                   ))}
-
                 </div>
-
                 <div className="flex justify-end">
                   <button onClick={handleSave} className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5" disabled={isSaving}>
                     {isSaving ? 'Saving...' : 'Save'}
@@ -581,24 +564,21 @@ const FolderView = () => {
                 </div>
               </div>
             ) : (
-
               <div>
-                <div> <div className="font-medium text-2xl mb-5">Company Bio</div>
-                  <hr></hr>
-                </div>
+                <div className="font-medium text-2xl mb-5">Company Bio</div>
+                <hr />
                 <div className="p-6 sm:p-16 flex flex-col gap-4 sm:gap-5 items-center sm:px-28 mt-[4rem]">
-                  <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                  <div className="flex items-center font-raleway text-xl font-medium gap flex justify-between w-full">
                     <div className="flex items-center gap-2">
                       <span>Upload company bio documents</span>
                     </div>
                     <Uploadbtn data={"CompanyBio"} />
                   </div>
 
+                  <div className="p-2 rounded-full font-medium text-sm bg-[#F5F4F4]">OR</div>
 
-                  <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
-
-                  <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
-                    <div className="flex items-center gap-2 ">
+                  <div className="flex items-center font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2">
                       <span>Generate Company bio</span>
                     </div>
 
@@ -608,21 +588,17 @@ const FolderView = () => {
                         placeholder="www.amazon.com"
                         className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
                       />
-                      <Button
-                        className="rounded-full bg-[#2D2D2D] px-6 hover:bg-[#1a1a1a]"
-                      >
+                      <Button className="rounded-full bg-[#2D2D2D] px-6 hover:bg-[#1a1a1a]">
                         Generate
                       </Button>
                     </div>
                   </div>
-                  <div className="p-2 rounded-full font-medium  text-sm bg-[#F5F4F4] ">OR</div>
-                  <div className="flex items-center  font-raleway text-xl font-medium gap flex justify-between w-full">
+                  <div className="p-2 rounded-full font-medium text-sm bg-[#F5F4F4]">OR</div>
+                  <div className="flex items-center font-raleway text-xl font-medium gap flex justify-between w-full">
                     <div className="flex items-center gap-2">
                       <span>Manually fill-up bio</span>
                     </div>
-                    <div
-                      className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8"
-                    >
+                    <div className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8">
                       Answer Few Questions
                     </div>
                   </div>
