@@ -163,7 +163,6 @@ const Page = () => {
     };
 
     try {
-      // Check if a project with the same name (case insensitive) already exists
       const projectQuery = query(
         collection(
           db,
@@ -283,7 +282,6 @@ const Page = () => {
     setproject(project);
     console.log(auth.currentUser?.uid);
     try {
-      // Fetch the current step from the database
       const projectDocRef = doc(
         db,
         `users/${auth.currentUser?.uid}/clients/${clientid}/projects/${project.id}`
@@ -303,7 +301,7 @@ const Page = () => {
           );
         }
 
-        // Redirect to the appropriate URL based on the current step
+ 
       } else {
         console.error("Project document does not exist");
       }
@@ -312,7 +310,7 @@ const Page = () => {
     }
   };
   return (
-    // <div className="w-full px-5 mt-4 ml-16 sm:ml-44">
+
     <div className="w-full px-16 mt-4 font-montserrat">
       <div className="flex gap-16 mt-11 mb-14">
         <div className="text-3xl mt-4 ml-2 font-montserrat capitalize">

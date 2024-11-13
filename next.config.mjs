@@ -15,7 +15,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://pr-ai-99.uc.r.appspot.com/:path*',
+        destination: 'https://overtly-backend-87008435117.us-central1.run.app/:path*',
       },
     ];
   },

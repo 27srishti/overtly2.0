@@ -47,7 +47,6 @@ const Uploadbtn = () => {
   const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
     null
   );
-  const [fetchedFiles, setFetchedFiles] = useState<FileCollection[]>([]);
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -326,6 +325,8 @@ const Uploadbtn = () => {
 
       await setDoc(docRef, data);
 
+
+
       const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
       const response = await fetch(url, {
@@ -339,7 +340,9 @@ const Uploadbtn = () => {
           bucket_name: bucketName,
           file_path: filePath,
         }),
-      });
+      })
+
+
 
       return response.json();
     } catch (error: any) {
@@ -518,12 +521,10 @@ const Uploadbtn = () => {
                 if (!response.ok) {
                   const errorData = await response.json();
                   throw new Error(
-                    `Error ${response.status}: ${
-                      errorData.message || "Unknown error"
+                    `Error ${response.status}: ${errorData.message || "Unknown error"
                     }`
                   );
                 }
-
                 return response.json();
               } catch (error) {
                 console.error("Error during data extraction:", error);

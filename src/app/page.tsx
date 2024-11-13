@@ -943,6 +943,7 @@ const LandingPage: React.FC = () => {
               )}
             </div>
 
+
             {/* Content section with fixed image and changing text */}
             <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
               {/* Fixed image container */}

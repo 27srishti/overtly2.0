@@ -9,33 +9,36 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { auth, db, drive, storage } from "@/lib/firebase/firebase";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 import React, { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { toast } from "sonner";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from "firebase/firestore";
 import clearCachesByServerAction from "@/lib/revalidation";
 import useDrivePicker from "react-google-drive-picker";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
 import { canOpenDropbox } from "react-cloud-chooser";
-import { toast } from "sonner";
 
-interface FileCollection {
-  id: string;
-  url: string;
-  name: string;
-  type: string;
-  createdAt: number;
-  bucketName: string;
-  filesCategory: string;
-}
+
 
 const Uploadbtn = (props: { data: any }) => {
   const [files, setFiles] = useState<File[]>([]);
   const [DownloadfromDriven, setDownloadfromDrive] = useState<null | number>(
     null
   );
-  const [fetchedFiles, setFetchedFiles] = useState<FileCollection[]>([]);
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -145,22 +148,10 @@ const Uploadbtn = (props: { data: any }) => {
     setUploadProgress(0);
     setFakeProgress(0);
     let uploadedCount = 0;
-
     const uploadPromises = driveFiles.map(async (file) => {
-      try {
-        const fileBlob = await downloadFileFromDrive(file.id, file.mimeType);
-        if (fileBlob) {
-          await uploadFileToFirebase(fileBlob, file.name);
-          uploadedCount++;
-          setUploadProgress((uploadedCount / driveFiles.length) * 100);
-        } else {
-          throw new Error(`Failed to download file: ${file.name}`);
-        }
-      } catch (error) {
-        console.error(`Error with file ${file.name}:`, error);
-        alert(
-          `An error occurred while uploading ${file.name}. Please try again.`
-        );
+      const fileBlob = await downloadFileFromDrive(file.id, file.mimeType);
+      if (fileBlob) {
+        return uploadFileToFirebase(fileBlob, file.name);
       }
     });
 
@@ -172,11 +163,14 @@ const Uploadbtn = (props: { data: any }) => {
     }, 150);
 
     try {
-      await Promise.all(uploadPromises);
+      await Promise.all(uploadPromises).then((data) => {
+        uploadedCount++;
+        setUploadProgress((uploadedCount / files.length) * 100);
+        return data;
+      });
       clearCachesByServerAction(pathname);
     } catch (error: any) {
       console.error("Error uploading files:", error);
-      alert("An error occurred while uploading files. Please try again.");
     } finally {
       setDownloadfromDrive(null);
       setLoading(false);
@@ -200,10 +194,11 @@ const Uploadbtn = (props: { data: any }) => {
           },
         }
       );
+      console.log(fileMetadataResponse);
 
       if (!fileMetadataResponse.ok) {
         throw new Error(
-          `Failed to retrieve file metadata. Status: ${fileMetadataResponse.status} - ${fileMetadataResponse.statusText}`
+          `Failed to retrieve file metadata. Status: ${fileMetadataResponse.status}`
         );
       }
 
@@ -216,7 +211,6 @@ const Uploadbtn = (props: { data: any }) => {
       if (isGoogleDocsFile) {
         url = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=application/pdf`;
       }
-
       const response = await fetch(url, {
         headers: {
           Authorization: `Bearer ${token.current}`,
@@ -225,7 +219,7 @@ const Uploadbtn = (props: { data: any }) => {
 
       if (!response.ok) {
         throw new Error(
-          `Failed to download file from Drive. Status: ${response.status} - ${response.statusText}`
+          `Failed to download file from Drive. Status: ${response.status}`
         );
       }
 
@@ -318,11 +312,13 @@ const Uploadbtn = (props: { data: any }) => {
         bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
         type: fileBlob.type,
         createdAt: Date.now(),
-        file_type: props.data.value,
         size: fileBlob.size,
+        file_type: props.data.value || props.data,
       };
 
       await setDoc(docRef, data);
+
+
 
       const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
@@ -337,7 +333,25 @@ const Uploadbtn = (props: { data: any }) => {
           bucket_name: bucketName,
           file_path: filePath,
         }),
-      });
+      })
+
+      if (props.data == "CompanyBio") {
+        const fileId = uniqueId;
+        const clientId = params.client;
+
+        await fetch(`/api/update-core-context`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${await authUser?.getIdToken()}`,
+          },
+          body: JSON.stringify({
+            file_id: fileId,
+            client_id: clientId,
+          }),
+        });
+      }
+
 
       return response.json();
     } catch (error: any) {
@@ -346,12 +360,16 @@ const Uploadbtn = (props: { data: any }) => {
         authUser.uid,
         params.client,
         "process-file",
-        error.message,
+        error,
         {
-          client_id: params.client,
+          name: originalFileName,
+          bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+          type: fileBlob.type,
+          createdAt: Date.now(),
+          size: fileBlob.size,
+          file_type: props.data.value || props.data,
         }
       );
-      return "";
     }
   };
 
@@ -405,18 +423,17 @@ const Uploadbtn = (props: { data: any }) => {
           return nextProgress;
         });
       }, 150);
+      const clientRef = doc(
+        db,
+        `users/${authUser.uid}/clients/${params.client}`
+      );
+      const docSnap = await getDoc(clientRef);
+      const clientData = docSnap.exists() ? docSnap : null;
+      const overallClientDataSize = clientData
+        ? clientData.data()?.overallClientDataSize || 0
+        : 0;
 
       files.forEach(async (file) => {
-        const clientRef = doc(
-          db,
-          `users/${authUser.uid}/clients/${params.client}`
-        );
-        const docSnap = await getDoc(clientRef);
-        const clientData = docSnap.exists() ? docSnap : null;
-        const overallClientDataSize = clientData
-          ? clientData.data()?.overallClientDataSize || 0
-          : 0;
-
         const totalFilesSize = files.reduce((acc, file) => acc + file.size, 0);
 
         if (overallClientDataSize + totalFilesSize > 2 * 1024 * 1024 * 1024) {
@@ -488,16 +505,16 @@ const Uploadbtn = (props: { data: any }) => {
                 bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
                 type: file.type,
                 createdAt: Date.now(),
-                file_type: props.data.value,
                 size: file.size,
+                file_type: props.data.value || props.data,
               };
 
               await setDoc(docRef, data);
 
               const url = `https://data-extractor-87008435117.us-central1.run.app/process-file`;
 
-              if (tab === "mediadatabase") {
-                return fetch(url, {
+              try {
+                const response = await fetch(url, {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -507,23 +524,69 @@ const Uploadbtn = (props: { data: any }) => {
                     client_id: params.client,
                     bucket_name: bucketName,
                     file_path: filePath,
-                    file_type: "media_db",
+                    file_type:
+                      tab === "mediadatabase" ? "media_db" : "document",
                   }),
-                }).then((response) => response.json());
-              } else {
-                return fetch(url, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${await authUser?.getIdToken()}`,
-                  },
-                  body: JSON.stringify({
-                    client_id: params.client,
-                    bucket_name: bucketName,
-                    file_path: filePath,
-                    file_type: "document",
-                  }),
-                }).then((response) => response.json());
+                });
+
+                if (!response.ok) {
+                  const errorData = await response.json();
+                  throw new Error(
+                    `Error ${response.status}: ${errorData.message || "Unknown error"
+                    }`
+                  );
+                }
+
+                if (props.data == "CompanyBio") {
+                  const fileId = uniqueId;
+                  const clientId = params.client;
+          
+                  await fetch(`/api/update-core-context`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${await authUser?.getIdToken()}`,
+                    },
+                    body: JSON.stringify({
+                      file_id: fileId,
+                      client_id: clientId,
+                    }),
+                  });
+                }
+
+
+                return response.json();
+              } catch (error) {
+                console.error("Error during data extraction:", error);
+                await logErrorToFirestore(
+                  authUser.uid,
+                  params.client,
+                  "process-file",
+                  error as string,
+                  data
+                );
+                await deleteObject(storageRef).catch((deleteError) => {
+                  console.error(
+                    "Error deleting file from storage:",
+                    deleteError
+                  );
+                });
+                await deleteDoc(
+                  doc(
+                    db,
+                    `users/${authUser.uid}/clients/${params.client}/files`,
+                    uniqueId
+                  )
+                ).catch((deleteError) => {
+                  console.error(
+                    "Error deleting document from Firestore:",
+                    deleteError
+                  );
+                });
+                toast("Error during data extraction", {
+                  description: "An error occurred during data extraction",
+                });
+                throw error;
               }
             })
             .then((data) => {
@@ -539,11 +602,35 @@ const Uploadbtn = (props: { data: any }) => {
                 "process-file",
                 error.message,
                 {
-                  client_id: params.client,
-                  file_type: "document",
+                  name: originalFileName,
+                  bucketName: `${fileNameWithoutExtension}_${uniqueId}.${fileExtension}`,
+                  type: file.type,
+                  createdAt: Date.now(),
+                  size: file.size,
                 }
-              ); // Log the error
-              return "";
+              );
+
+              // await deleteObject(storageRef).catch((deleteError) => {
+              //   console.error("Error deleting file from storage:", deleteError);
+              // });
+              // // Remove the document from Firestore
+              // await deleteDoc(
+              //   doc(
+              //     db,
+              //     `users/${authUser.uid}/clients/${params.client}/files`,
+              //     uniqueId
+              //   )
+              // ).catch((deleteError) => {
+              //   console.error(
+              //     "Error deleting document from Firestore:",
+              //     deleteError
+              //   );
+              // });
+
+              // Inform the user about the error
+              toast("Error during data extraction", {
+                description: "An error occurred during data extraction",
+              });
             })
         );
       });
@@ -558,7 +645,7 @@ const Uploadbtn = (props: { data: any }) => {
           params.client,
           "process-file",
           error.message
-        ); // Log the error
+        );
       } finally {
         clearInterval(fakeProgressInterval);
         setLoading(false);
@@ -568,6 +655,7 @@ const Uploadbtn = (props: { data: any }) => {
       }
     }
   };
+
   const DropboxUpload = async (
     processedFiles: { link: string; name: string }[]
   ) => {
