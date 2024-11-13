@@ -44,49 +44,26 @@ const LandingPage: React.FC = () => {
   const [currentScrollTab, setCurrentScrollTab] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  // 1st animation
-  const { rive: riveFirst, RiveComponent: RiveFirstComponent } = useRive({
-    src: "/research.riv",
-    stateMachines: "State Machine 1",
-    animations: "Timeline 1",
+  const { rive, RiveComponent } = useRive({
+    src: "/riveani.riv", // Make sure this matches your file name exactly
+    stateMachines: "State Machine 1", // Exact name from your editor
+    animations: "Timeline 1", // Exact name from your editor
     layout: new Layout({
       fit: Fit.Contain,
-      alignment: Alignment.Center,
+      alignment: Alignment.Center
     }),
     autoplay: true,
     onStateChange: (event) => {
-      console.log("State Changed:", event);
+      console.log('State Changed:', event);
     },
     onLoad: () => {
-      console.log("First Animation loaded");
-      if (riveFirst) {
-        // Changed from 'rive' to 'riveFirst'
-        riveFirst.play("State Machine 1");
-        riveFirst.play("Timeline 1");
+      console.log('Animation loaded');
+      if (rive) {
+        // Play both state machine and timeline
+        rive.play("State Machine 1");
+        rive.play("Timeline 1");
       }
-    },
-  });
-
-  // second Rive animation
-  const { rive: riveSecond, RiveComponent: RiveSecondComponent } = useRive({
-    src: "/workflow.riv",
-    stateMachines: "State Machine 1", // Update this to match your workflow.riv state machine name
-    animations: "Timeline 1", // Update this to match your workflow.riv animation name
-    layout: new Layout({
-      fit: Fit.Contain,
-      alignment: Alignment.Center,
-    }),
-    autoplay: true,
-    onStateChange: (event) => {
-      console.log("Workflow State Changed:", event);
-    },
-    onLoad: () => {
-      console.log("Workflow Animation loaded");
-      if (riveSecond) {
-        riveSecond.play("State Machine 1"); // Update with your state machine name
-        riveSecond.play("Timeline 1"); // Update with your animation name
-      }
-    },
+    }
   });
 
   // Setup intersection observer for the research section
@@ -479,7 +456,10 @@ const LandingPage: React.FC = () => {
           </p>
         </div>
         {/*-------------------------  how it works - research ------------------------- */}
-        <div className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
+        <div
+          ref={setRefs}
+          className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20  sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl"
+        >
           <div className="flex flex-col max-w-7xl mx-auto items-start">
             <h2 className="mt-5 sm:mt-0 text-3xl md:text-4xl lg:text-5xl text-[#454545] font-[250]">
               Research &
@@ -494,7 +474,7 @@ const LandingPage: React.FC = () => {
                 (label, index) => (
                   <div key={index} className="relative">
                     <button
-                      onClick={() => setActiveTab(index)}
+                      onClick={() => setCurrentScrollTab(index)}
                       className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
                     >
                       <div
@@ -516,39 +496,16 @@ const LandingPage: React.FC = () => {
               )}
             </div>
 
-            {/* Content section with fixed image and changing text */}
-            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
-              {/* Fixed image container */}
-              <div className="flex justify-center items-center w-full md:w-1/2">
-                <div className="w-full h-48 md:h-56 lg:h-64  rounded-3xl flex items-center justify-center relative">
-                  {/* Base Layer - SVG */}
-                  <div className="absolute inset-0 pointer-events-none z-0">
-                    <Image
-                      src="/research.svg"
-                      alt="Overlay Pattern"
-                      layout="fill"
-                      className="w-full h-full py-10"
-                    />
+            {/* Tab content */}
+            <div className="w-full">
+              {activeTab === 0 && (
+                <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                  <div className="flex justify-center items-center w-full md:w-1/2">
+                    <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                      {/* Image placeholder */}
+                    </div>
                   </div>
-
-                  {/* Top Layer - Rive Animation */}
-                  <div className="absolute inset-0 z-10 ">
-                    <RiveFirstComponent
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: "30px",
-                        background: "transparent", // Changed to transparent to see SVG below
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Dynamic text content */}
-              <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
-                {activeTab === 0 && (
-                  <>
+                  <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
                     <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
                       Read 1000s of articles in seconds
                     </h3>
@@ -590,11 +547,18 @@ const LandingPage: React.FC = () => {
                         </span>
                       </li>
                     </ul>
-                  </>
-                )}
+                  </div>
+                </div>
+              )}
 
-                {activeTab === 1 && (
-                  <>
+              {activeTab === 1 && (
+                <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                  <div className="flex justify-center items-center w-full md:w-1/2">
+                    <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                      {/* Image placeholder */}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
                     <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
                       Spot trends before it becomes one
                     </h3>
@@ -638,11 +602,18 @@ const LandingPage: React.FC = () => {
                         </span>
                       </li>
                     </ul>
-                  </>
-                )}
+                  </div>
+                </div>
+              )}
 
-                {activeTab === 2 && (
-                  <>
+              {activeTab === 2 && (
+                <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                  <div className="flex justify-center items-center w-full md:w-1/2">
+                    <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                      {/* Image placeholder */}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
                     <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
                       Story ideas on demand, every hour
                     </h3>
@@ -686,23 +657,28 @@ const LandingPage: React.FC = () => {
                         </span>
                       </li>
                     </ul>
-                  </>
-                )}
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
         {/*-------------------------  how it works - Smart Workflows ------------------------- */}
-        <div className="mt-16 py-16 lg:py-28 md:mt-20 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
-          <div className="flex flex-col max-w-7xl mx-auto items-start">
+        <div className="mt-16 py-16 lg:py-28 md:mt-20 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20  sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
+          <div className="flex flex-col max-w-7xl mx-auto items-start hide-scrollbar">
+            <style>
+              {`
+              .hide-scrollbar::-webkit-scrollbar {
+                display: none; /* Safari and Chrome */
+              }
+            `}
+            </style>
             <h2 className="text-3xl lg:text-4xl text-[#454545] font-[250]">
               Smart Workflows &
             </h2>
-            <h2 className="text-xl md:text-2xl text-gray-400 mt-2 font-extralight">
+            <h2 className="text-xl md:text-2xl  text-gray-400 mt-2 font-extralight">
               Easy Task Automation
             </h2>
-
-            {/* Tab buttons */}
             <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
               {["AI Journalist Selector", "Pitch", "Content Assistant"].map(
                 (label, index) => (
@@ -732,190 +708,192 @@ const LandingPage: React.FC = () => {
                 )
               )}
             </div>
-
-            {/* Content section with fixed image and changing text */}
-            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
-              {/* Fixed image container */}
-              <div className="flex justify-center items-center w-full md:w-1/2">
-                <div className="w-full h-48 md:h-56 lg:h-64  rounded-3xl flex items-center justify-center relative">
-                  <RiveSecondComponent
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      background: "white",
-                      borderRadius: "30px",
-                    }}
-                  />
-
-                  {/* SVG Overlay */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <Image
-                      src="/workflow.svg" // Replace with your SVG file path
-                      alt="Overlay Pattern"
-                      layout="fill"
-                      className="w-full h-full py-[0.30rem]" // Adjust opacity as needed
-                    />
+            {/* image and Description start */}
+            {smartWorkflowActiveTab === 0 && (
+              <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                <div className="flex justify-center items-center w-full md:w-1/2">
+                  <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                  <RiveComponent 
+            style={{
+              width: '100%',
+              height: '100%',
+              background: 'white'
+            }}
+          />
                   </div>
                 </div>
+                <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
+                    Find the right journalist to tell your story
+                  </h3>
+                  <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Choose whom to pitch with customized automated databases
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Personalize outreach based on their content
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Track past interactions with relevant journalists
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
+            )}
 
-              {/* Dynamic text content */}
-              <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
-                {smartWorkflowActiveTab === 0 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Find the right journalist to tell your story
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Choose whom to pitch with customized automated
-                          databases
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Personalize outreach based on their content
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Track past interactions with relevant journalists
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {smartWorkflowActiveTab === 1 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Write Specialized Pitches in minutes
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Write well researched pitches easily in no time
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Mimic your pitch & have the model write in your pitch
-                          style
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Personalized pitches at scale
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {smartWorkflowActiveTab === 2 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Your PR-optimized writing companion
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Streamline your PR writing with an AI assistant
-                          experienced in content workflows
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Re purpose new story angles to mirror the brand tone
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Plan content timelines with automated next steps
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
+            {smartWorkflowActiveTab === 1 && (
+              <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                <div className="flex justify-center items-center w-full md:w-1/2">
+                  <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                    {/* Content for Pitch */}
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
+                    Write Specialized Pitches in minutes
+                  </h3>
+                  <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Write well researched pitches easily in no time
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Mimic your pitch & have the model write in your pitch
+                        style
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Personalized pitches at scale
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
+            )}
+
+            {smartWorkflowActiveTab === 2 && (
+              <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                <div className="flex justify-center items-center w-full md:w-1/2">
+                  <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                    {/* Content for Content Assistant */}
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
+                    Your PR-optimized writing companion
+                  </h3>
+                  <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Streamline your PR writing with an AI assistant
+                        experienced in content workflows
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Re purpose new story angles to mirror the brand tone
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Plan content timelines with automated next steps
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+            {/* image and Description end */}
           </div>
         </div>
         {/*-------------------------  how it works - Analytics ------------------------- */}
-        <div className="mt-1 py-16 lg:py-28 md:mt-20 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
-          <div className="flex flex-col max-w-7xl mx-auto items-start">
+        <div className="mt-1  py-16 lg:py-28  md:mt-20 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20  sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
+          <div className="flex flex-col max-w-7xl mx-auto items-start hide-scrollbar">
+            <style>
+              {`
+              .hide-scrollbar::-webkit-scrollbar {
+                display: none; /* Safari and Chrome */
+              }
+            `}
+            </style>
             <h2 className="text-3xl lg:text-4xl text-[#454545] font-[250]">
               Analytics
             </h2>
-            <h2 className="text-xl md:text-2xl text-gray-400 mt-2 font-extralight">
+            <h2 className="text-xl md:text-2xl  text-gray-400 mt-2 font-extralight">
               Real time reporting
             </h2>
-
-            {/* Tab buttons */}
             <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
               {["Curated News", "Trend Spotter", "Insights"].map(
                 (label, index) => (
@@ -942,163 +920,174 @@ const LandingPage: React.FC = () => {
                 )
               )}
             </div>
-
-            {/* Content section with fixed image and changing text */}
-            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
-              {/* Fixed image container */}
-              <div className="flex justify-center items-center w-full md:w-1/2">
-                <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center"></div>
+            {/* image and Description start */}
+            {activeTab === 0 && (
+              <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                <div className="flex justify-center items-center w-full md:w-1/2">
+                  <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                    {/* Image placeholder */}
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
+                    Score Your Media Impact
+                  </h3>
+                  <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Evaluate media mentions based on reach, engagement, &
+                        sentiment for precise impact assessment
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Gauge public sentiment for deeper insights
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Predict future impact based on historical performance
+                        data, enabling proactive decision-making in media
+                        outreach
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
+            )}
 
-              {/* Dynamic text content */}
-              <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
-                {activeTab === 0 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Score Your Media Impact
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Evaluate media mentions based on reach, engagement, &
-                          sentiment for precise impact assessment
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Gauge public sentiment for deeper insights
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Predict future impact based on historical performance
-                          data, enabling proactive decision-making in media
-                          outreach
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {activeTab === 1 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Hands-Free Reporting
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Automate complex data consolidation into detailed PR
-                          reports in seconds—no manual work required
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Access live dashboards that automatically update with
-                          real-time insights style
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Create concise report summaries that highlight key
-                          takeaways for quick stakeholder review
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {activeTab === 2 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Let AI take over your next move
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          AI pinpoints your next PR move, adapting suggestions
-                          to your campaign&apos;s progress and goals
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Catch a crisis early— know how to handle it before it
-                          erupts
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Plan content timelines with automated next steps
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
+            {activeTab === 1 && (
+              <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                <div className="flex justify-center items-center w-full md:w-1/2">
+                  <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                    {/* Image placeholder */}
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
+                    Hands-Free Reporting
+                  </h3>
+                  <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Automate complex data consolidation into detailed PR
+                        reports in seconds—no manual work required
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Access live dashboards that automatically update with
+                        real-time insights style
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Create concise report summaries that highlight key
+                        takeaways for quick stakeholder review
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
+            )}
+
+            {activeTab === 2 && (
+              <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+                <div className="flex justify-center items-center w-full md:w-1/2">
+                  <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center">
+                    {/* Image placeholder */}
+                  </div>
+                </div>
+                <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
+                  <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
+                    Let AI take over your next move
+                  </h3>
+                  <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        AI pinpoints your next PR move, adapting suggestions to
+                        your campaign&apos;s progress and goals
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Catch a crisis early— know how to handle it before it
+                        erupts
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
+                      <Image
+                        src="/plus2.svg"
+                        alt="Plus Icon"
+                        className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                        width={16}
+                        height={16}
+                      />
+                      <span className="flex-1">
+                        Plan content timelines with automated next steps
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
+            {/* image and Description end */}
           </div>
         </div>
         {/*------------------------- New Understanding PR Section ------------------------- */}

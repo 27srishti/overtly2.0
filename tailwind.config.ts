@@ -1,12 +1,15 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
 
-const config = {
+const config: Config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -17,11 +20,11 @@ const config = {
         "2xl": "1400px",
       },
     },
-    extend: {fontFamily: {
-        readex: ['Readex Pro', 'sans-serif'],
+    extend: {
+      fontFamily: {
+        readex: ["Readex Pro", "sans-serif"],
       },
       colors: {
-
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -33,7 +36,8 @@ const config = {
         },
         gradientbg: {
           DEFAULT: "var(--gradientbg)",
-          foreground: "linear-gradient(134.2deg, rgba(213, 230, 255, 0.2) 20.86%, rgba(255, 252, 169, 0.128) 85.59%), #FFFFFF",
+          foreground:
+            "linear-gradient(134.2deg, rgba(213, 230, 255, 0.2) 20.86%, rgba(255, 252, 169, 0.128) 85.59%), #FFFFFF",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -74,32 +78,53 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "logo-cloud": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(calc(-100% - 4rem))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.3s ease-out",
+        "logo-cloud": "logo-cloud 30s linear infinite",
       },
     },
     fontFamily: {
       montserrat: ["var(--font-montserrat)"],
       raleway: ["var(--font-raleway)"],
-      readex: ['Readex Pro', 'sans-serif'], // Keep this entry for Readex Pro
+      readex: ["Readex Pro", "sans-serif"],
     },
-   
-      keyframes: {
-          'logo-cloud': {
-              from: { transform: 'translateX(0)' },
-              to: { transform: 'translateX(calc(-100% - 4rem))' },
-          },
-      },
-      animation: {
-          'logo-cloud': 'logo-cloud 30s linear infinite', // Adjust duration and timing as needed for your design.
-      },
-
   },
+  plugins: [
+    require("tailwindcss-animate"),
+    addVariablesForColors,
+    addNoScrollbar,
+  ],
+};
 
-  
-  plugins: [require("tailwindcss-animate")],
-} satisfies Config
+export default config;
 
-export default config
+function addVariablesForColors({ addBase, theme }: any) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ":root": newVars,
+  });
+}
+
+function addNoScrollbar({ addUtilities }: { addUtilities: Function }) {
+  addUtilities({
+    '.no-scrollbar': {
+      /* Hide scrollbar for Chrome, Safari, and Opera */
+      '&::-webkit-scrollbar': {
+        display: 'none',
+      },
+      /* Hide scrollbar for IE, Edge, and Firefox */
+      '-ms-overflow-style': 'none', /* IE and Edge */
+      'scrollbar-width': 'none', /* Firefox */
+    },
+  });
+}
