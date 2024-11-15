@@ -25,6 +25,9 @@ const LandingPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  // Add state to track if user is hovering/interacting with tabs
+  const [isPaused, setIsPaused] = useState(false);
+
   // 1st animation
   const { rive: riveFirst, RiveComponent: RiveFirstComponent } = useRive({
     src: "/research.riv",
@@ -75,15 +78,22 @@ const LandingPage: React.FC = () => {
   };
 
   const handleResearchTabClick = (index: number) => {
+    setIsPaused(true);
     setResearchActiveTab(index);
+    // Resume auto-switching after 10 seconds of inactivity
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   const handleWorkflowTabClick = (index: number) => {
+    setIsPaused(true);
     setSmartWorkflowActiveTab(index);
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   const handleAnalyticsTabClick = (index: number) => {
+    setIsPaused(true);
     setActiveTab(index);
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   const handleJoinWaitlist = async () => {
@@ -233,6 +243,30 @@ const LandingPage: React.FC = () => {
       ],
     },
   };
+
+  // Add auto-switching functionality for tabs
+  useEffect(() => {
+    if (isPaused) return; // Don't run interval if paused
+
+    const interval = setInterval(() => {
+      // Research tabs
+      setResearchActiveTab((prev) => 
+        prev === SECTION_CONTENT.research.tabs.length - 1 ? 0 : prev + 1
+      );
+      
+      // Workflow tabs
+      setSmartWorkflowActiveTab((prev) => 
+        prev === SECTION_CONTENT.workflows.tabs.length - 1 ? 0 : prev + 1
+      );
+      
+      // Analytics tabs
+      setActiveTab((prev) => 
+        prev === SECTION_CONTENT.analytics.tabs.length - 1 ? 0 : prev + 1
+      );
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isPaused]); // Re-run effect when isPaused changes
 
   return (
     <section className="font-readex">
