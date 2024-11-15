@@ -16,11 +16,17 @@ const config: Config = {
     container: {
       center: true,
       padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
+     
     },
     extend: {
+      screens: {
+        'sm': '640px',
+        'md': '768px',
+        'lg': '1024px',
+        'xl': '1280px',    // ~15 inch screens
+        '2xl': '1536px',   // ~16 inch screens
+        '4xl': '1920px',   // Larger screens
+      },
       fontFamily: {
         readex: ["Readex Pro", "sans-serif"],
       },

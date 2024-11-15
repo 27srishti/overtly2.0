@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { HoverBorderGradient } from "@/components/ui/HoverBorderGradient";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
 import Image from "next/image";
-import { useInView } from "react-intersection-observer";
 
 const logos = [
   { name: "Vercel", url: "/pubs1.svg" },
@@ -17,31 +16,13 @@ const logos = [
   { name: "Stackoverflow", url: "/pubs8.svg" },
 ];
 
-// Add these styles to your global CSS or component
-const scrollSnapStyles = `
-  .scroll-snap-container {
-    scroll-snap-type: y mandatory;
-    overflow-y: scroll;
-    height: 100vh;
-  }
-
-  .scroll-snap-section {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-    height: 100vh;
-  }
-`;
-
 const LandingPage: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<number>(0);
-  const [progress, setProgress] = useState(0);
-  const [smartWorkflowProgress, setSmartWorkflowProgress] = useState(0);
   const [smartWorkflowActiveTab, setSmartWorkflowActiveTab] =
     useState<number>(0);
+  const [researchActiveTab, setResearchActiveTab] = useState<number>(0);
   const [email, setEmail] = useState("");
-  const [isScrollingTabs, setIsScrollingTabs] = useState(false);
-  const [currentScrollTab, setCurrentScrollTab] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // 1st animation
@@ -89,171 +70,21 @@ const LandingPage: React.FC = () => {
     },
   });
 
-  // Setup intersection observer for the research section
-  const { ref: researchSectionRef, inView } = useInView({
-    threshold: 0.5, // Trigger when 50% of section is visible
-  });
-
-  // Create a separate ref to store the HTML element
-  const sectionRef = useRef<HTMLDivElement | null>(null);
-
-  // Combine the refs
-  const setRefs = useCallback(
-    (node: HTMLDivElement | null) => {
-      // Set the ref from useInView
-      researchSectionRef(node);
-      // Set our local ref
-      sectionRef.current = node;
-    },
-    [researchSectionRef]
-  );
-
-  const handleResearchScroll = useCallback(
-    (e: WheelEvent) => {
-      if (!inView || isScrollingTabs) {
-        // Always prevent scroll while tabs are switching
-        e.preventDefault();
-        return;
-      }
-
-      // Detect scroll direction
-      const scrollingDown = e.deltaY > 0;
-      const scrollingUp = e.deltaY < 0;
-
-      if (scrollingDown) {
-        setCurrentScrollTab((prev) => {
-          const next = prev + 1;
-          if (next >= 3) {
-            // Allow natural scroll behavior after last tab
-            return prev;
-          }
-          // Prevent scroll and start tab transition
-          e.preventDefault();
-          setIsScrollingTabs(true);
-
-          // Reset scroll lock after animation
-          setTimeout(() => {
-            setIsScrollingTabs(false);
-          }, 1000); // Match this with your transition duration
-
-          return next;
-        });
-      } else if (scrollingUp && currentScrollTab > 0) {
-        e.preventDefault();
-        setIsScrollingTabs(true);
-        setCurrentScrollTab((prev) => Math.max(0, prev - 1));
-
-        setTimeout(() => {
-          setIsScrollingTabs(false);
-        }, 1000); // Match this with your transition duration
-      }
-    },
-    [inView, isScrollingTabs, currentScrollTab]
-  );
-
-  // Add/remove scroll event listeners when section is in view
-  useEffect(() => {
-    const wheelHandler = (e: WheelEvent) => {
-      if (inView) {
-        handleResearchScroll(e);
-      }
-    };
-
-    if (inView) {
-      // Add wheel event listeners with passive: false to allow preventDefault
-      window.addEventListener("wheel", wheelHandler, { passive: false });
-      window.addEventListener("mousewheel", wheelHandler as any, {
-        passive: false,
-      });
-      window.addEventListener("DOMMouseScroll", wheelHandler as any, {
-        passive: false,
-      });
-    }
-
-    return () => {
-      window.removeEventListener("wheel", wheelHandler);
-      window.removeEventListener("mousewheel", wheelHandler as any);
-      window.removeEventListener("DOMMouseScroll", wheelHandler as any);
-    };
-  }, [inView, handleResearchScroll]);
-
-  // Handle scroll events
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!sectionRef.current) return;
-
-      const sectionRect = sectionRef.current.getBoundingClientRect();
-      const sectionHeight = sectionRect.height;
-      const viewportHeight = window.innerHeight;
-      const sectionPosition = sectionRect.top;
-
-      // Calculate progress through the section
-      const progress = -sectionPosition / (sectionHeight - viewportHeight);
-
-      // Determine which tab should be active based on scroll progress
-      if (progress >= 0 && progress <= 1) {
-        const tabIndex = Math.min(2, Math.floor(progress * 3));
-        setCurrentScrollTab(tabIndex);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Update activeTab when currentScrollTab changes
-  useEffect(() => {
-    setActiveTab(currentScrollTab);
-  }, [currentScrollTab]);
-
   const toggleAccordion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  const updateProgressAndTab = () => {
-    setProgress((prev) => {
-      if (prev >= 100) {
-        setActiveTab((prevTab) => {
-          const order = [2, 1, 0]; // Define the custom order for cycling
-          const currentIndex = order.indexOf(prevTab);
-          const nextIndex = (currentIndex + 1) % order.length;
-          const nextTab = order[nextIndex];
-
-          return nextTab;
-        });
-        return 0; // Reset progress
-      } else {
-        return prev + 0; // Increment progress + 10
-      }
-    });
+  const handleResearchTabClick = (index: number) => {
+    setResearchActiveTab(index);
   };
 
-  const updateSmartWorkflowProgressAndTab = () => {
-    setSmartWorkflowProgress((prev) => {
-      if (prev >= 100) {
-        setSmartWorkflowActiveTab((prevTab) => {
-          const order = [2, 1, 0]; // Define the custom order for cycling
-          const currentIndex = order.indexOf(prevTab);
-          const nextIndex = (currentIndex + 1) % order.length;
-          const nextTab = order[nextIndex];
-          return nextTab;
-        });
-        return 0; // Reset progress
-      } else {
-        return prev + 0; // Increment progress + 10
-      }
-    });
+  const handleWorkflowTabClick = (index: number) => {
+    setSmartWorkflowActiveTab(index);
   };
 
-  useEffect(() => {
-    const interval = setInterval(updateProgressAndTab, 200);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(updateSmartWorkflowProgressAndTab, 200);
-    return () => clearInterval(interval);
-  }, []);
+  const handleAnalyticsTabClick = (index: number) => {
+    setActiveTab(index);
+  };
 
   const handleJoinWaitlist = async () => {
     if (!email) {
@@ -299,38 +130,112 @@ const LandingPage: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  // Create separate observers for each tab section
-  const [activeSection, setActiveSection] = useState(0);
-
-  useEffect(() => {
-    const options = {
-      threshold: 0.5,
-      rootMargin: "0px",
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const sectionIndex = parseInt(
-            entry.target.getAttribute("data-section-index") || "0"
-          );
-          setActiveSection(sectionIndex);
-          setCurrentScrollTab(sectionIndex);
-        }
-      });
-    }, options);
-
-    // Observe all tab sections
-    document.querySelectorAll(".tab-section").forEach((section) => {
-      observer.observe(section);
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  //feature content
+  const SECTION_CONTENT = {
+    research: {
+      title: "Research &",
+      subtitle: "Brainstorm With Ease",
+      tabs: [
+        {
+          label: "Daily News Scans",
+          title: "Read 1000s of articles in minutes",
+          points: [
+            "Daily scans made easy with a consolidated news feed delivered to you every day",
+            "Easily pull data from multiple sources, all in one place",
+            "Break down complex news and topic to create specialized narratives to form niche insights",
+          ],
+        },
+        {
+          label: "Trend Spotter",
+          title: "Spot trends before it becomes one",
+          points: [
+            "Spot trends, and find new connections in your coverage",
+            "Detect Precursor Trends, Trend Watch, seasonal patterns, cyclical trends, & Future-Proof your narratives",
+            "Consolidated Report on Journalists & Outlets covering your niche",
+          ],
+        },
+        {
+          label: "Insight Engine",
+          title: "Story ideas on demand, every hour",
+          points: [
+            "Get Daily Inspiration for Creative Pitches based on Trend Maps",
+            "Receive ideas based on forecasted shifts—so you’re setting the story agenda, not following it",
+            "Find insights that point you to great follow-up story ideas for every news",
+          ],
+        },
+      ],
+    },
+    workflows: {
+      title: "Smart Workflows &",
+      subtitle: "Easy Task Automation",
+      tabs: [
+        {
+          label: "PR Writing Assisstant",
+          title: "Your PR-optimized writing companion",
+          points: [
+            "Write Messages That Sound Just Like You, Faster",
+            "Speed up your writing with proven, customizable templates",
+            "Refine your message with smart editing for maximum impact",
+          ],
+        },
+        {
+          label: "Pitch Generator",
+          title: "Send hyper-personalized pitches at scale",
+          points: [
+            "Write well researched pitches easily in no time ",
+            "Mimic your pitch & have the model write in your pitch style",
+            "Write Specialised Pitches in minutes",
+          ],
+        },
+        {
+          label: "AI Journalist Selector",
+          title: "Reach Journalists 3x More Likely to Cover Your Story",
+          points: [
+            "Choose whom to pitch with customized automated databases",
+            "Personalize outreach based on what they write about",
+            "Track past interactions with relevant journalists",
+          ],
+        },
+      ],
+    },
+    analytics: {
+      title: "Analytics",
+      subtitle: "Real time reporting",
+      tabs: [
+        {
+          label: "Auto Reports",
+          title:
+            "Effortlessly convert complex data into detailed PR reports in seconds",
+          points: [
+            "Hands free coverage Reports, Debriefing Docs, And Benchmarking",
+            "Get real-time insights with live dashboards that automatically update as news unfolds",
+            "Create concise report summaries & briefings",
+          ],
+        },
+        {
+          label: "Impact Tracker",
+          title: "Quantify Your PR efforts In ease & accuracy",
+          points: [
+            "Automatically monitors - Mentions, Share of Voice (SoV), Media Quality, Coverage Quality Index, & Repeat Coverage rates",
+            "Observe News Cycles Trends to gauge your campaign's impact over time",
+            "Measure Pitch-to-Placement ratio, Time to Coverage, Pitch Conversion, and Media Contact Growth",
+          ],
+        },
+        {
+          label: "PR Visionary",
+          title: "Overtly Empowers your next move with clarity",
+          points: [
+            "Spots content gaps & plans strategic actions to rectify & close them",
+            "Catch a crisis early— know how to handle it before it erupts",
+            "Covert your PR plans into detailed Timelines & strategies ",
+          ],
+        },
+      ],
+    },
+  };
 
   return (
     <section className="font-readex">
-      <style>{scrollSnapStyles}</style>
       <div
         style={{
           background:
@@ -338,9 +243,18 @@ const LandingPage: React.FC = () => {
         }}
         className="bg-gradient-to-b p-2 lg:p-4 relative"
       >
-        <div className="font-readex border-t-[5px]  border-[#eceae7] border-b-0 px-5 flex flex-col items-center justify-center rounded-3xl lg:min-h-screen bg-[#FFFFFF] z-10">
-          {/* Grid lines */}
-          <div className="absolute inset-0 h-full w-full flex justify-center z-0">
+        <div
+          className="font-readex relative px-5 flex flex-col items-center justify-center rounded-t-3xl lg:min-h-screen bg-[#f7e3e5] z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, #FFFFFF 0%, #FFFFFF) padding-box, linear-gradient(to bottom, #f7e3e5 10%, transparent) border-box",
+            border: "5px solid transparent",
+            borderBottom: "0",
+            borderRadius: "24px 24px 0 0",
+          }}
+        >
+   
+        <div className="absolute inset-0 h-full w-full flex justify-center z-0">
             <div className="h-full w-full bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:60px_60px] opacity-5"></div>
           </div>
           <div className="absolute top-8 left-5 lg:top-10 lg:left-10">
@@ -352,7 +266,7 @@ const LandingPage: React.FC = () => {
               height={128}
             />
           </div>
-          <div className="sm:text-center mb-10 ">
+          <div className="sm:text-center mb-10  ">
             <div className="hidden  sm:flex flex-col sm:flex-row justify-center mb-4 ">
               <div className="flex  items-center border px-5 py-1 rounded-3xl font-light shadow-sm border-[#B57F19]/[0.17] z-0">
                 <Image
@@ -376,18 +290,27 @@ const LandingPage: React.FC = () => {
               </div>
             </div>
             <div className="m-4">
-              <div className="text-[2.9rem] sm:text-[4rem] 4xl:text-[5rem] mt-40 lg:mt-10  font-light text-[#454545]">
-                <h1 className="leading-[1.5] sm:leading-[1.2]">
-                  The Complete AI Engine for your
-                  <br className="hidden lg:block" />
-                  PR workflows
+              <div
+                className="text-[2.9rem] sm:text-[4rem] lg:text-[4rem] xl:text-[4rem] 
+                [@media(min-width:1600px)]:text-[5.5rem] [@media(min-width:1920px)]:text-[6rem] 
+                mt-40 lg:mt-10 font-light text-[#454545]"
+              >
+                <h1 className="leading-[1.5] sm:leading-[1.2] bg-gradient-to-b from-black to-gray-400 bg-clip-text text-transparent">
+                  Revolutionizing How Businesses Tell
+                  <br />
+                  Their Story to the World
                 </h1>
               </div>
 
-              <p className=" mt-5 sm:mt-10 lg:text-lg 4xl:text-3xl font-light text-[#8A8A8A]">
-                Automates in-depth research, simulates brainstorming shapes
-                insights into workflows <br className="hidden lg:flex" />
-                using data and AI for analytics & measurement.
+              <p
+                className="mt-5 sm:mt-10 lg:text-lg xl:text-lg 
+                [@media(min-width:1600px)]:text-xl [@media(min-width:1920px)]:text-2xl 
+                font-light text-[#8A8A8A]"
+              >
+                Drives research, derives insights, replicates human thinking &
+                writing, turns insights
+                <br className="hidden lg:flex" />
+                into actionable PR workflows with analytics & metric tracking.
               </p>
             </div>
           </div>
@@ -466,225 +389,98 @@ const LandingPage: React.FC = () => {
           <button className="bg-[#FFF8E9] border border-[#FFC227] text-gray-600 text-sm font-[500] rounded-full px-8 py-1.5">
             Features
           </button>
-          <div className="text-2xl sm:text-[45px] font-light mt-14  text-[#454545]">
-            Plug in AI without disruption — Your workflow stays{" "}
-            <div className=" ">
-              {" "}
-              <br /> perfectly intact
-            </div>
+          <div className="text-2xl sm:text-[45px] font-light mt-14 text-[#454545]">
+            Transform your workflow into something{" "}
+            <br className="hidden xl:block" />
+            <span className="sm:inline-block sm:mt-3">extraordinary.</span>
           </div>
           <p className="mt-6 text-xl font-light text-gray-500">
-            An AI that coexists, ensuring the human touch remains front and
-            center.
+            An AI that serves as a concierge, ensuring the human touch remains
+            front and center.
           </p>
         </div>
         {/*-------------------------  how it works - research ------------------------- */}
         <div className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start">
             <h2 className="mt-5 sm:mt-0 text-3xl md:text-4xl lg:text-5xl text-[#454545] font-[250]">
-              Research &
+              {SECTION_CONTENT.research.title}
             </h2>
             <h2 className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mt-2 font-extralight">
-              Brainstorm With Ease
+              {SECTION_CONTENT.research.subtitle}
             </h2>
 
-            {/* Tab buttons */}
-            <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
-              {["Curated News", "Trend Spotter", "Insights"].map(
-                (label, index) => (
-                  <div key={index} className="relative">
-                    <button
-                      onClick={() => setActiveTab(index)}
-                      className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
+            {/* Research section tab buttons */}
+            <div className="gap-1 sm:gap-3 mt-8 flex flex-wrap">
+              {SECTION_CONTENT.research.tabs.map((tab, index) => (
+                <div key={index} className="relative">
+                  <button
+                    onClick={() => handleResearchTabClick(index)}
+                    className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
+                  >
+                    <div
+                      className={`absolute inset-0 h-full bg-[#A2BEA0] transition-all duration-500 ease-in-out`}
+                      style={{
+                        width: researchActiveTab === index ? "100%" : "0%",
+                      }}
+                    />
+                    <span
+                      className={`relative z-10 ${
+                        researchActiveTab === index
+                          ? "text-white"
+                          : "text-[#486946]"
+                      }`}
                     >
-                      <div
-                        className={`absolute inset-0 h-full bg-[#A2BEA0] transition-all duration-500 ease-in-out`}
-                        style={{
-                          width: activeTab === index ? "100%" : "0%",
-                        }}
-                      />
-                      <span
-                        className={`relative z-10 ${
-                          activeTab === index ? "text-white" : "text-[#486946]"
-                        }`}
-                      >
-                        {label}
-                      </span>
-                    </button>
-                  </div>
-                )
-              )}
+                      {tab.label}
+                    </span>
+                  </button>
+                </div>
+              ))}
             </div>
 
-            {/* Content section with fixed image and changing text */}
-            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+            {/* Research content section */}
+            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-20">
               {/* Fixed image container */}
               <div className="flex justify-center items-center w-full md:w-1/2">
-                <div className="w-full h-48 md:h-56 lg:h-64  rounded-3xl flex items-center justify-center relative">
-                  {/* Base Layer - SVG */}
+                <div className="w-full h-48 md:h-56 lg:h-64 rounded-3xl flex items-center justify-center relative">
                   <div className="absolute inset-0 pointer-events-none z-0">
                     <Image
                       src="/research.svg"
                       alt="Overlay Pattern"
                       layout="fill"
-                      className="w-full h-full py-10"
+                      className="w-full h-full"
                     />
                   </div>
-
-                  {/* Top Layer - Rive Animation */}
-                  <div className="absolute inset-0 z-10 ">
-                    <RiveFirstComponent
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        borderRadius: "30px",
-                        background: "transparent", // Changed to transparent to see SVG below
-                      }}
-                    />
+                  <div className="absolute inset-0 z-10 -top-4 -left-[2rem] md:-top-44 md:-left-14">
+                    <RiveFirstComponent className="w-full h-full md:w-[600px] md:h-[600px] rounded-3xl bg-transparent" />
                   </div>
                 </div>
               </div>
 
               {/* Dynamic text content */}
               <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
-                {activeTab === 0 && (
+                {SECTION_CONTENT.research.tabs[researchActiveTab] && (
                   <>
                     <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Read 1000s of articles in seconds
+                      {SECTION_CONTENT.research.tabs[researchActiveTab].title}
                     </h3>
                     <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Analyze how stories transform over time
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Instantly breakdown complex news topics
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Outsmart competition with laser-focused insights
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {activeTab === 1 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Spot trends before it becomes one
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Consolidated Report on Journalists and Outlets
-                          covering your niche
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Examine seasonal patterns, cyclical trends, &
-                          anomalies
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Adapt your stories as they evolve
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {activeTab === 2 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Story ideas on demand, every hour
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Find insights that point you to great follow-up story
-                          ideas for every news
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Get Daily Inspiration for Creative Pitches
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Find ideas that bridge your content gaps with competes
-                          & industry
-                        </span>
-                      </li>
+                      {SECTION_CONTENT.research.tabs[
+                        researchActiveTab
+                      ].points.map((point, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 md:gap-3 lg:gap-5"
+                        >
+                          <Image
+                            src="/plus2.svg"
+                            alt="Plus Icon"
+                            className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                            width={16}
+                            height={16}
+                          />
+                          <span className="flex-1">{point}</span>
+                        </li>
+                      ))}
                     </ul>
                   </>
                 )}
@@ -696,64 +492,52 @@ const LandingPage: React.FC = () => {
         <div className="mt-16 py-16 lg:py-28 md:mt-20 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start">
             <h2 className="text-3xl lg:text-4xl text-[#454545] font-[250]">
-              Smart Workflows &
+              {SECTION_CONTENT.workflows.title}
             </h2>
             <h2 className="text-xl md:text-2xl text-gray-400 mt-2 font-extralight">
-              Easy Task Automation
+              {SECTION_CONTENT.workflows.subtitle}
             </h2>
 
             {/* Tab buttons */}
-            <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
-              {["AI Journalist Selector", "Pitch", "Content Assistant"].map(
-                (label, index) => (
-                  <div key={index} className="relative">
-                    <button
-                      onClick={() => setSmartWorkflowActiveTab(index)}
-                      className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
+            <div className="gap-1 sm:gap-3 mt-8 flex flex-wrap">
+              {SECTION_CONTENT.workflows.tabs.map((tab, index) => (
+                <div key={index} className="relative">
+                  <button
+                    onClick={() => handleWorkflowTabClick(index)}
+                    className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
+                  >
+                    <div
+                      className={`absolute inset-0 h-full bg-[#A2BEA0] transition-all duration-500 ease-in-out`}
+                      style={{
+                        width: smartWorkflowActiveTab === index ? "100%" : "0%",
+                      }}
+                    />
+                    <span
+                      className={`relative z-10 ${
+                        smartWorkflowActiveTab === index
+                          ? "text-white"
+                          : "text-[#486946]"
+                      }`}
                     >
-                      <div
-                        className={`absolute inset-0 h-full bg-[#A2BEA0] transition-all duration-500 ease-in-out`}
-                        style={{
-                          width:
-                            smartWorkflowActiveTab === index ? "100%" : "0%",
-                        }}
-                      />
-                      <span
-                        className={`relative z-10 ${
-                          smartWorkflowActiveTab === index
-                            ? "text-white"
-                            : "text-[#486946]"
-                        }`}
-                      >
-                        {label}
-                      </span>
-                    </button>
-                  </div>
-                )
-              )}
+                      {tab.label}
+                    </span>
+                  </button>
+                </div>
+              ))}
             </div>
 
-            {/* Content section with fixed image and changing text */}
-            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
+            {/* Content section */}
+            <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-20">
               {/* Fixed image container */}
               <div className="flex justify-center items-center w-full md:w-1/2">
-                <div className="w-full h-48 md:h-56 lg:h-64  rounded-3xl flex items-center justify-center relative">
-                  <RiveSecondComponent
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      background: "white",
-                      borderRadius: "30px",
-                    }}
-                  />
-
-                  {/* SVG Overlay */}
-                  <div className="absolute inset-0 pointer-events-none">
+                <div className="w-full h-48 md:h-56 lg:h-64 rounded-3xl flex items-center justify-center relative">
+                  <RiveSecondComponent className="w-full h-full md:w-[600px] md:h-[320px] bg-white rounded-3xl" />
+                  <div className="absolute inset-0 md:w-[520px] md:h-[500px] md:-top-[8.94rem] md:left-10 pointer-events-none">
                     <Image
-                      src="/workflow.svg" // Replace with your SVG file path
+                      src="/workflow.svg"
                       alt="Overlay Pattern"
                       layout="fill"
-                      className="w-full h-full py-[0.30rem]" // Adjust opacity as needed
+                      className="w-full h-full md:pt-10"
                     />
                   </div>
                 </div>
@@ -761,143 +545,32 @@ const LandingPage: React.FC = () => {
 
               {/* Dynamic text content */}
               <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
-                {smartWorkflowActiveTab === 0 && (
+                {SECTION_CONTENT.workflows.tabs[smartWorkflowActiveTab] && (
                   <>
                     <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Find the right journalist to tell your story
+                      {
+                        SECTION_CONTENT.workflows.tabs[smartWorkflowActiveTab]
+                          .title
+                      }
                     </h3>
                     <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Choose whom to pitch with customized automated
-                          databases
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Personalize outreach based on their content
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Track past interactions with relevant journalists
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {smartWorkflowActiveTab === 1 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Write Specialized Pitches in minutes
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Write well researched pitches easily in no time
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Mimic your pitch & have the model write in your pitch
-                          style
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Personalized pitches at scale
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {smartWorkflowActiveTab === 2 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Your PR-optimized writing companion
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Streamline your PR writing with an AI assistant
-                          experienced in content workflows
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Re purpose new story angles to mirror the brand tone
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Plan content timelines with automated next steps
-                        </span>
-                      </li>
+                      {SECTION_CONTENT.workflows.tabs[
+                        smartWorkflowActiveTab
+                      ].points.map((point, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center gap-2 md:gap-3 lg:gap-5"
+                        >
+                          <Image
+                            src="/plus2.svg"
+                            alt="Plus Icon"
+                            className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                            width={16}
+                            height={16}
+                          />
+                          <span className="flex-1">{point}</span>
+                        </li>
+                      ))}
                     </ul>
                   </>
                 )}
@@ -909,191 +582,77 @@ const LandingPage: React.FC = () => {
         <div className="mt-1 py-16 lg:py-28 md:mt-20 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start">
             <h2 className="text-3xl lg:text-4xl text-[#454545] font-[250]">
-              Analytics
+              {SECTION_CONTENT.analytics.title}
             </h2>
             <h2 className="text-xl md:text-2xl text-gray-400 mt-2 font-extralight">
-              Real time reporting
+              {SECTION_CONTENT.analytics.subtitle}
             </h2>
 
             {/* Tab buttons */}
-            <div className="gap-1 sm:gap-2 mt-8 flex flex-wrap">
-              {["Curated News", "Trend Spotter", "Insights"].map(
-                (label, index) => (
-                  <div key={index} className="relative">
-                    <button
-                      onClick={() => setActiveTab(index)}
-                      className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
+            <div className="gap-1 sm:gap-3 mt-8 flex flex-wrap">
+              {SECTION_CONTENT.analytics.tabs.map((tab, index) => (
+                <div key={index} className="relative">
+                  <button
+                    onClick={() => handleAnalyticsTabClick(index)}
+                    className="border border-[#A2BEA0] font-light text-xs md:text-sm lg:text-base rounded-full px-3 md:px-4 py-1.5 mb-2 relative overflow-hidden bg-white"
+                  >
+                    <div
+                      className={`absolute inset-0 h-full bg-[#A2BEA0] transition-all duration-500 ease-in-out`}
+                      style={{
+                        width: activeTab === index ? "100%" : "0%",
+                      }}
+                    />
+                    <span
+                      className={`relative z-10 ${
+                        activeTab === index ? "text-white" : "text-[#486946]"
+                      }`}
                     >
-                      <div
-                        className={`absolute inset-0 h-full bg-[#A2BEA0] transition-all duration-500 ease-in-out`}
-                        style={{
-                          width: activeTab === index ? "100%" : "0%",
-                        }}
-                      />
-                      <span
-                        className={`relative z-10 ${
-                          activeTab === index ? "text-white" : "text-[#486946]"
-                        }`}
-                      >
-                        {label}
-                      </span>
-                    </button>
-                  </div>
-                )
-              )}
+                      {tab.label}
+                    </span>
+                  </button>
+                </div>
+              ))}
             </div>
 
-            {/* Content section with fixed image and changing text */}
+            {/* Content section */}
             <div className="flex flex-col md:flex-row w-full gap-4 md:gap-6 lg:gap-10 xl:gap-40 mt-6 md:mt-8 lg:mt-10">
               {/* Fixed image container */}
-              <div className="flex justify-center items-center w-full md:w-1/2">
-                <div className="w-full h-48 md:h-56 lg:h-64 bg-gray-200 rounded-3xl flex items-center justify-center"></div>
+              <div className="md:w-[40%] h-48 md:h-56 lg:h-64 rounded-3xl flex items-center justify-center relative">
+                <div className="absolute inset-0  pointer-events-none">
+                  <Image
+                    src="/analytics.svg"
+                    alt="Overlay Pattern"
+                    layout="fill"
+                    className=""
+                  />
+                </div>
               </div>
 
               {/* Dynamic text content */}
               <div className="flex flex-col items-start justify-center w-full md:w-1/2 mt-6 md:mt-0">
-                {activeTab === 0 && (
+                {SECTION_CONTENT.analytics.tabs[activeTab] && (
                   <>
                     <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Score Your Media Impact
+                      {SECTION_CONTENT.analytics.tabs[activeTab].title}
                     </h3>
                     <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Evaluate media mentions based on reach, engagement, &
-                          sentiment for precise impact assessment
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Gauge public sentiment for deeper insights
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Predict future impact based on historical performance
-                          data, enabling proactive decision-making in media
-                          outreach
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {activeTab === 1 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Hands-Free Reporting
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Automate complex data consolidation into detailed PR
-                          reports in seconds—no manual work required
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Access live dashboards that automatically update with
-                          real-time insights style
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Create concise report summaries that highlight key
-                          takeaways for quick stakeholder review
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                )}
-
-                {activeTab === 2 && (
-                  <>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl text-[#454545] font-light">
-                      Let AI take over your next move
-                    </h3>
-                    <ul className="text-sm md:text-base lg:text-lg xl:text-[19px] w-full max-w-full lg:max-w-[32rem] xl:max-w-none text-gray-400 space-y-6 md:space-y-5 font-light list-inside mt-4 md:mt-6 lg:mt-8">
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          AI pinpoints your next PR move, adapting suggestions
-                          to your campaign&apos;s progress and goals
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Catch a crisis early— know how to handle it before it
-                          erupts
-                        </span>
-                      </li>
-                      <li className="flex items-start gap-2 md:gap-3 lg:gap-5">
-                        <Image
-                          src="/plus2.svg"
-                          alt="Plus Icon"
-                          className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
-                          width={16}
-                          height={16}
-                        />
-                        <span className="flex-1">
-                          Plan content timelines with automated next steps
-                        </span>
-                      </li>
+                      {SECTION_CONTENT.analytics.tabs[activeTab].points.map(
+                        (point, index) => (
+                          <li
+                            key={index}
+                            className="flex items-center gap-2 md:gap-3 lg:gap-5"
+                          >
+                            <Image
+                              src="/plus2.svg"
+                              alt="Plus Icon"
+                              className="inline-block w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5 mt-1 flex-shrink-0"
+                              width={16}
+                              height={16}
+                            />
+                            <span className="flex-1">{point}</span>
+                          </li>
+                        )
+                      )}
                     </ul>
                   </>
                 )}
@@ -1113,59 +672,70 @@ const LandingPage: React.FC = () => {
           </p>
         </div>
         <section className="bg-white mt-10">
-          <div className="py-4 px-2 mx-auto max-w-screen-xl sm:py-4 lg:px-6">
-            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 gap-1 h-full">
+          <div className="py-4 px-2 mx-auto max-w-screen-xl items-center sm:py-4 lg:px-6">
+            <div className="flex justify-center items-center">
+              {" "}
+              {/* Added flex and centering */}
+              <Image
+                src="/ui.png"
+                alt="UI Screenshot"
+                className="inline-block flex-shrink-0"
+                width={1000}
+                height={800}
+              />
+            </div>
+            {/* <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 gap-1 h-full">
               <div className="col-span-2 sm:col-span-1 md:col-span-2 bg-gray-50 h-auto flex flex-col">
                 <a className="group relative flex flex-col overflow-hidden rounded-lg px-4 pb-4 pt-40 flex-grow">
-                  {/* <Image
+                  <Image
                     src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt=""
                     className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
-                  /> */}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-b from-gray-900/25 to-gray-900/5" />
-                  {/* <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
+                  <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
                     Wines
-                  </h3> */}
+                  </h3>
                 </a>
               </div>
               <div className="col-span-2 sm:col-span-1 md:col-span-2 bg-stone-50">
                 <div className="grid gap-1 grid-cols-2 sm:grid-cols-2 lg:grid-cols-2">
                   <a className="group relative flex flex-col overflow-hidden rounded-lg px-4 pb-4 pt-40">
-                    {/* <Image
+                    <Image
                       src="https://images.unsplash.com/photo-1571104508999-893933ded431?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       alt=""
                       className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
-                    /> */}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-b from-gray-900/25 to-gray-900/5" />
-                    {/* <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
+                    <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
                       Whiskey
-                    </h3> */}
+                    </h3>
                   </a>
                   <a className="group relative flex flex-col overflow-hidden rounded-lg px-4 pb-4 pt-40">
-                    {/* <Image
+                    <Image
                       src="https://images.unsplash.com/photo-1626897505254-e0f811aa9bf7?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                       alt=""
                       className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
-                    /> */}
+                    />
                     <div className="absolute inset-0 bg-gradient-to-b from-gray-900/25 to-gray-900/5" />
-                    {/* <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
+                    <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
                       Vodka
-                    </h3> */}
+                    </h3>
                   </a>
                 </div>
                 <a className="group relative flex flex-col overflow-hidden rounded-lg px-4 pb-4 pt-40 mt-1">
-                  {/* <Image
+                  <Image
                     src="https://images.unsplash.com/photo-1504675099198-7023dd85f5a3?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                     alt=""
                     className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
-                  /> */}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-b from-gray-900/25 to-gray-900/5" />
-                  {/* <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
+                  <h3 className="z-10 text-2xl font-medium text-white absolute top-0 left-0 p-4 xs:text-xl md:text-3xl">
                     Gin
-                  </h3> */}
+                  </h3>
                 </a>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
         {/*------------------------- Faq ------------------------- */}
@@ -1318,7 +888,7 @@ const LandingPage: React.FC = () => {
             {/* End Accordion */}
           </div>
         </div>{" "}
-        <section className="z-20 lg:py-5 relative flex flex-col mt-10 sm:mt-40 mx-4  md:mx-40 xl:mx-72  bg-gradient-to-tr from-[#f2fcd4c9] to-[#ebeff7] rounded-full  overflow-visible">
+        <section className="z-20 lg:py-5 relative flex flex-col mt-10 sm:mt-40 mx-4  md:mx-40 xl:mx-72  bg-gradient-to-tr from-[#f2fcd4c9] to-[#ebeff7] rounded-[2rem]  overflow-visible">
           {/* <Image
             src="/noise.svg" // Update with the correct path
             alt="Arrow"
@@ -1336,9 +906,15 @@ const LandingPage: React.FC = () => {
                 alt="Arrow"
                 width={96}
                 height={96}
-                className="hidden md:block absolute -top-32 -right-28 w-32 h-32 z-50" // Ensure it's on top
+                className="hidden md:block absolute -top-36 -right-28 w-32 h-32 z-50" // Ensure it's on top
               />
-              <HoverBorderGradient className="text-sm bg-black text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 z-10 hover:bg-gray-100 transition duration-300">
+              <HoverBorderGradient  onClick={() =>
+                window.open(
+                  "https://calendly.com/siddhar/30min",
+                  "_blank",
+                  "noopener"
+                )
+              }  className="text-sm bg-black text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 z-10 hover:bg-gray-100 transition duration-300">
                 Schedule Demo
               </HoverBorderGradient>
             </div>
@@ -1369,7 +945,7 @@ const LandingPage: React.FC = () => {
             </a>
           </div>
           <h1 className=" mt-10  text-gray-500">Socials</h1>
-          <div className="flex justify-between  mt-5  sm:mb-16">
+          <div className="flex justify-between sm:mr-40   mt-5  sm:mb-16">
             <ul className=" space-y-3 items-center mb-6 text-sm font-light text-gray-500 sm:mb-0 ">
               <li>
                 <a href="#" className="hover:underline me-4 md:me-6">
@@ -1395,10 +971,10 @@ const LandingPage: React.FC = () => {
               </li>
             </ul>
           </div>
-          <hr className="my-6  border-gray-200 sm:mx-auto lg:my-8" />
-          <div className="flex  justify-center sm:block sm:justify-between">
-            <div className="flex flex-col items-center sm:flex-row sm:justify-between text-sm text-gray-400 font-light">
-              <div className="mb-4 sm:mb-0">
+          <hr className="my-6 border-gray-200 sm:mx-auto lg:my-8" />
+          <div className="flex justify-center sm:block sm:justify-between">
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-between text-sm text-gray-400 font-light">
+              <div className="mt-4 sm:mt-0 text-center sm:text-left">
                 © 2024 <a className="hover:underline">Overtly</a>.
               </div>
               <ul className="flex  sm:flex-row sm:items-center text-sm font-normal text-gray-500 ">
