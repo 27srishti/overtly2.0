@@ -3,7 +3,6 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,7 +24,6 @@ import { Calendar } from "@/components/ui/calendar";
 import debounce from 'lodash/debounce';
 import { Input } from "@/components/ui/input";
 import { OpenInNewWindowIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Slider } from "@/components/ui/slider";
 import { toast } from "@/components/ui/use-toast";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useParams } from "next/navigation";
@@ -33,9 +31,24 @@ import { auth } from "@/lib/firebase/firebase";
 import Link from "next/link";
 import { Icons } from "@/components/ui/Icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import "../../../../components/Customcomponent/topics.css";
+import { Progress } from "@/components/ui/progress";
+
+
+
+interface Topic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
+interface Subtopic {
+  name: string;
+  subtopics?: Subtopic[];
+}
+
 interface Article {
   title: string;
-  imageUrl?: string;
+  image?: string;
   timeAgo?: string;
   summary?: string;
   detailedContent?: string;
@@ -47,6 +60,13 @@ interface Article {
   source?: string;
   date?: string;
   snippet?: string;
+  body?: any;
+  social_score?: any;
+  relevance?: number;
+  authors?: any;
+  topics: { topics: Topic[] };
+  sentiment?: any;
+
 }
 
 interface AuthorSuggestion {
@@ -81,7 +101,7 @@ const Page = () => {
     to: addDays(new Date(2022, 0, 20), 20),
   });
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-
+  const [progress, setProgress] = useState(0)
   const toggleAdvancedFilter = () => {
     setIsAdvancedOpen((prev) => !prev);
   };
@@ -97,7 +117,8 @@ const Page = () => {
   const [locationQuery, setLocationQuery] = useState('');
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestions[]>([]);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-
+  const [ArticleModalData, setArticleModalData] = useState<Article>()
+  const [isHovering, setIsHovering] = useState(false)
 
   const handleClickOutside = (event: MouseEvent) => {
     dropdownRefs.current.forEach((ref, index) => {
@@ -108,6 +129,8 @@ const Page = () => {
       }
     });
   };
+
+
 
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -171,15 +194,26 @@ const Page = () => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setAuthUser(authUser);
-        fetchNewsArticles(authUser);
+        const articles = await fetchNewsArticles(authUser) || [];
+        setArticles(articles);
+        console.log(articles)
       }
     });
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProgress(prevProgress => prevProgress < 80 ? prevProgress + 1 : prevProgress)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [progress]);
+
   async function fetchNewsArticles(user: User) {
     try {
-      const response = await fetch("/api/getnews", {
+      setProgress(10);
+      const response = await fetch("/api/get-curated-articles", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -187,19 +221,120 @@ const Page = () => {
         },
         body: JSON.stringify({
           client_id: clientid,
-          query: "",
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Something went wrong");
+        const errorData = await response.json();
+        console.log(response);
+        throw new Error(errorData.message || "Something went wrong");
       }
 
+      console.log("dsds" + await response.json());
       const data = await response.json();
-      console.log(data);
+
       const authors = data.map((item: { name: string }) => item.name);
       setAuthorSuggestions(authors);
-      return authors;
+      setProgress(80);
+      setTimeout(() => {
+        setProgress(100);
+      }, 100); 
+
+      return data;
+
+      // return [{
+      //   "title": "Biden-Harris Administration Releases New Report that Shows Gains in Health Care Coverage for Rural Americans",
+      //   "link": "https://www.hhs.gov/about/news/2024/11/01/biden-harris-administration-releases-new-report-shows-gains-health-care-coverage-rural-americans.html",
+      //   "snippet": "President Biden and Vice President Harris's efforts to strengthen access to health care are linked to historic gains in rural Americans' health insurance...",
+      //   "source": "HHS.gov",
+      //   "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhFKbHA-GxjrTr5Q14Cu-Ig6oFPGAOokAqOKQ2HW6NDIl2urZksiDlXFnIJQ&s",
+      //   "body": null,
+      //   "social_score": null,
+      //   "date": "5 days ago",
+      //   "relevance": 1,
+      //   "authors": null,
+      //   "summary": "The Biden-Harris Administration has released a new report highlighting improvements in health care coverage for rural Americans. This report is part of the ongoing efforts by the Department of Health and Human Services (HHS) to enhance access to health care services in rural areas. The report underscores the administration's commitment to addressing health disparities and ensuring that rural populations receive adequate health care coverage. The article also includes a disclaimer about the limitations of linking to non-federal websites, emphasizing that HHS does not endorse external content and is not responsible for the accessibility compliance of private websites.",
+      //   "topics": {
+      //     "topics": [
+      //       {
+      //         "name": "Biden-Harris Administration",
+      //         "subtopics": [
+      //           {
+      //             "name": "Health Care Initiatives",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Rural Health Care Coverage",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "name": "Department of Health and Human Services (HHS)",
+      //         "subtopics": [
+      //           {
+      //             "name": "Reports and Publications",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Health Care Coverage Reports",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           },
+      //           {
+      //             "name": "Web Notification Policies",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Website Disclaimers",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "name": "Health Care Coverage",
+      //         "subtopics": [
+      //           {
+      //             "name": "Rural Americans",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Access to Health Services",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         "name": "Website Disclaimers",
+      //         "subtopics": [
+      //           {
+      //             "name": "Non-Federal Websites",
+      //             "subtopics": [
+      //               {
+      //                 "name": "Accuracy and Endorsement",
+      //                 "subtopics": []
+      //               },
+      //               {
+      //                 "name": "Privacy Policy and Terms of Service",
+      //                 "subtopics": []
+      //               },
+      //               {
+      //                 "name": "Section 508 Compliance",
+      //                 "subtopics": []
+      //               }
+      //             ]
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   },
+      //   "sentiment": null
+      // }] as Article[];
+
+
     } catch (error) {
       toast({
         title: "Error",
@@ -208,6 +343,22 @@ const Page = () => {
       });
     }
   }
+
+
+  const renderSubtopics = (subtopics: Subtopic[], level: number) => {
+    const isSingleSubtopic = subtopics.length === 1;
+    return (
+      <div className={`branch lv${level} ${isSingleSubtopic ? "single-subtopic" : ""}`}>
+        {subtopics.map((subtopic, subIndex) => (
+          <div key={subIndex} className={`entry ${isSingleSubtopic ? "inline" : ""}`}>
+            <span className="label">{subtopic.name}</span>
+            {subtopic.subtopics && subtopic.subtopics.length > 0 && renderSubtopics(subtopic.subtopics, level + 1)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
 
   return (
     <div className="p-1">
@@ -222,7 +373,7 @@ const Page = () => {
         </div>
         <div className="font-raleway font-light text-[#828282] text-sm">Last Updated 3 hrs back</div>
       </div>
-      <Tabs defaultValue="Trends" className="w-full font-normal mt-16">
+      <Tabs defaultValue="Industry" className="w-full font-normal mt-16">
         <TabsList className=" flex flex-row justify-between gap-10">
           <div className="flex gap-7">
             <TabsTrigger
@@ -450,10 +601,10 @@ const Page = () => {
                           onSelect={setDate}
                           numberOfMonths={2}
                           className="px-4 py-2 bg-[#666A66] bg-opacity-10 cursor-pointer text-left  text-[15px] font-raleway"
-                         classNames={{
-                          day_range_middle:
-                          "aria-selected:bg-[#ADADAD] aria-selected:text-accent-foreground",
-                         }}
+                          classNames={{
+                            day_range_middle:
+                              "aria-selected:bg-[#ADADAD] aria-selected:text-accent-foreground",
+                          }}
                         />
                       </PopoverContent>
                     </Popover>
@@ -463,7 +614,7 @@ const Page = () => {
 
               <div className="flex items-center gap-5 font-raleway text-center">
                 <div className="flex-shrink-0 w-[90px]">Source</div>
-                <div className="relative w-[230px]"  ref={(el) => { dropdownRefs.current[1] = el; }}>
+                <div className="relative w-[230px]" ref={(el) => { dropdownRefs.current[1] = el; }}>
                   <Input
                     className="w-full rounded-full h-10 bg-transparent border-[#ADADAD] pl-5"
                     placeholder="Search sources..."
@@ -517,7 +668,7 @@ const Page = () => {
                     </div>
                   )}
                   {(authorSuggestions.length > 0 && authorQuery.length > 0) && (
-                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2 font-raleway"  ref={(el) => { dropdownRefs.current[2] = el; }}>
+                    <div className="absolute z-10 w-full mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD] px-2 p-2 font-raleway" ref={(el) => { dropdownRefs.current[2] = el; }}>
                       <ScrollArea className="h-72 w-250 rounded-md p-0">
                         {authorSuggestions.map((suggestion, index) => (
                           <div
@@ -572,7 +723,6 @@ const Page = () => {
                   <SelectValue placeholder="Any Time" />
                 </SelectTrigger>
                 <SelectContent className="mt-1 rounded-[14px] bg-[#F7F7F1] border p-0 border-[#ADADAD]  text-left text-[#666A66]  text-[15px] font-raleway p-2 px-2">
-
                   <SelectItem value="Past Hour">Past Hour</SelectItem>
                   <SelectItem value="Past 24 Hour">Past 24 Hour</SelectItem>
                   <SelectItem value="Past Week">Past Week</SelectItem>
@@ -596,17 +746,16 @@ const Page = () => {
               </Select>
             </div>
           </div>
-
           <div className="flex flex-col gap-40">
             <div>
               <div className="flex flex-col gap-4 mt-5">
-                {articles.map((article, index) => (
-                  <Dialog key={index}>
+                {articles.length > 0 ? articles.map((article, index) => (
+                  <Dialog key={index} >
                     <DialogTrigger>
-                      <div className="bg-[#D8D8D8] bg-opacity-20 flex flex gap-6 p-2 rounded-[21px]">
+                      <div className="bg-[#E6E5E5] bg-opacity-15 flex flex gap-6 p-2 rounded-[21px] border border-[#A2BEA0] border-opacity-25" onClick={() => setArticleModalData(article)}>
                         <div className="relative w-30 h-30 aspect-square">
                           <img
-                            src={article.imageUrl || "/placeholder.png"}
+                            src={article.image || "/placeholder.png"}
                             className="w-full h-full rounded-[18px] object-cover"
                             alt="Article Thumbnail"
                           />
@@ -617,7 +766,6 @@ const Page = () => {
                             }}
                           ></div>
                         </div>
-
                         <div className="flex flex-col gap-2 w-full">
                           <div className="flex flex-row justify-between pr-10">
                             <div className="font-semibold mt-2 text-[#2C2C2C] text-[15px]">
@@ -625,16 +773,15 @@ const Page = () => {
                                 ? article.title.slice(0, 60) + "..."
                                 : article.title}
                             </div>
-
                             <div className="flex flex-row gap-2 items-center gap-5">
                               <div className="flex flex-col gap-2">
-                                <div className="flex gap-2 items-center text-[.8rem] text-center text-[#2C5694] ">
+                                <div className="flex gap-2 items-center text-[.8rem] text-center text-[#43942C] ">
                                   <Link href={article.link}>
                                     {article.source}
                                   </Link>
                                 </div>
                               </div>
-                              <div className="flex gap-1 items-center text-[.8rem] text-center">
+                              <div className="flex gap-1 items-center text-[.8rem] text-center text-[#858383]">
                                 <svg
                                   width="17"
                                   height="17"
@@ -680,19 +827,30 @@ const Page = () => {
                             <div className="flex flex-col gap-2 w-full justify-start">
                               <div className="flex flex-row justify-between items-center">
                                 <div className="font-medium text-[25px] text-[#2C2C2C] font-montserrat">
-                                  Ilya Sutskever isn’t done working on AI safety
+                                  <div className="relative font-montserrat cursor-pointer">
+                                    <div
+                                      className="flex flex-row justify-between items-center"
+                                      onMouseEnter={() => setIsHovering(true)}
+                                      onMouseLeave={() => setIsHovering(false)}
+                                    >
+                                      <div className="font-medium text-[25px] text-[#2C2C2C]">
+                                        {ArticleModalData ? (
+                                          ArticleModalData.title.length > 60 ? ArticleModalData.title.slice(0, 40) + "..." : ArticleModalData.title
+                                        ) : "Loading..."}
+                                      </div>
+                                    </div>
+                                    {isHovering && ArticleModalData?.title && ArticleModalData.title.length > 60 && (
+                                      <div className="absolute left-0 top-full mt-2 p-2 bg-white border border-gray-200 rounded shadow-lg z-10 max-w-2md">
+                                        <div className="font-medium text-[16px] text-[#2C2C2C]">
+                                          {ArticleModalData.title}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="text-[8px]  font-regular leading-2 text-[#6F6F6F] font-inter pr-20">
-                                This week, Ilya Sutskever launched a new AI
-                                company, Safe Superintelligence Inc. (SSI), just
-                                one month after formally leaving OpenAI.
-                                Sutskever, alongside Jan Leike, was integral to
-                                OpenAI’s efforts to improve AI safety w ith the
-                                rise of “superintelligent” AI systems. Yet both
-                                Sutskever and Leike left the company after a
-                                dramatic falling-out with leadership over how to
-                                approach AI safety.
+                              <div className="text-[9px]  font-regular leading-2 text-[#6F6F6F] font-inter pr-20">
+                                {ArticleModalData?.snippet}
                               </div>
                               <div className="flex gap-3 items-center text-[.8rem] text-center">
                                 <div className="bg-[#D9D9D9] bg-opacity-25 py-1  px-6 rounded-[30px] text-[10px] ">
@@ -713,29 +871,32 @@ const Page = () => {
                               </div>
                             </div>
                             <div className="flex justify-center self-start items-center">
-                              <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
-                                Full&nbsp;Article
-                                <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
-                              </div>
+                              <Link href={ArticleModalData?.link || ""}>
+
+                                <div className="flex gap-2 items-center text-center bg-[#D9D9D9] bg-opacity-45 py-2 px-4 rounded-[30px] text-[11px] ">
+                                  Full&nbsp;Article
+                                  <OpenInNewWindowIcon className="fill-[#6B6B6B]" />
+                                </div>
+                              </Link>
                             </div>
                           </div>
                           <Tabs
-                            defaultValue="Trends"
+                            defaultValue="Summary"
                             className="w-full font-normal mt-5"
                           >
                             <TabsList className="mb-5 flex flex-row justify-between ml-3">
                               <div className="flex gap-8">
                                 <TabsTrigger
-                                  value="Trends"
+                                  value="Summary"
                                   className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
                                 >
                                   Summary
                                 </TabsTrigger>
                                 <TabsTrigger
-                                  value="Competition"
+                                  value="Topics"
                                   className="p-2 rounded-full px-7 data-[state=active]:text-[#ffffff] data-[state=active]:bg-[#FF9F9F] bg-transparent border text-[11px]"
                                 >
-                                  Questions
+                                  Topics
                                 </TabsTrigger>
                                 <TabsTrigger
                                   value="EconomicNews"
@@ -751,81 +912,43 @@ const Page = () => {
                                 </TabsTrigger>
                               </div>
                             </TabsList>
-                          </Tabs>
-                          <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
-                            Summary :
-                          </div>
-                          <div className="text-[12px] px-5 pt-3 pb-2  text-[#3E3E3E] font-raleway">
-                            <div className="container mx-auto p-4">
-                              <div className="text-2xl font-semibold mb-4">
-                                MacBook Power Issue Troubleshooting
+
+                            <TabsContent value="Summary" className="bg-none bg-transparent p-0">          <div>
+                              <div className="text-[22px] px-5 pt-3 pb-2 font-medium leading-5 text-[#2C2C2C]">
+                                Summary :
                               </div>
-                              <ol className="list-decimal ml-6 space-y-2">
-                                <li>
-                                  <div>Check the Power Adapter:</div>
-                                  <p>
-                                    Inspect your MacBook’s power adapter for any
-                                    signs of damage. If the cable or the adapter
-                                    itself is damaged, consider replacing it.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>Use a Different Outlet:</div>
-                                  <p>
-                                    Try plugging your MacBook into a different
-                                    outlet, preferably one that you know is
-                                    properly grounded.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>
-                                    Test with a Different Power Adapter:
+                              <div className="container mx-auto p-4 text-sm text-[#3E3E3E]">
+                                {ArticleModalData?.summary}
+                              </div>
+                            </div></TabsContent>
+
+                            <TabsContent value="Topics" className="bg-none bg-transparent p-0">
+                              <div className="">
+
+                                <div className="flex flex-col">
+                                  <div className="">
+                                    <div className="flex-1 overflow-y-auto scrollbar-hide max-h-[550px] ">
+                                      <div className="flex items-start  overflow-auto max-h-[500px] absolute z-10">
+                                        <h3 className="border border-yellow-300 rounded-full px-8 py-2 sticky top-0">
+                                          Topics
+                                        </h3>
+                                      </div>
+                                      <div id="wrapper" className="relative ml-12 pt-10">
+                                        {ArticleModalData && ArticleModalData.topics.topics.map((topic, index) => (
+                                          <div key={index} className="entry">
+                                            <span className="label">{topic.name}</span>
+                                            {topic.subtopics &&
+                                              topic.subtopics.length > 0 &&
+                                              renderSubtopics(topic.subtopics, 1)}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
                                   </div>
-                                  <p>
-                                    If possible, borrow a compatible power adapter
-                                    from another MacBook to see if the issue
-                                    persists. This can help determine if the
-                                    problem is with the adapter or the MacBook.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>Use a Grounded Power Adapter:</div>
-                                  <p>
-                                    Some power adapters come with a detachable
-                                    plug. Ensure you are using the grounded plug
-                                    version if available.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>Check for Software Updates:</div>
-                                  <p>
-                                    Ensure your MacBook is running the latest
-                                    version of macOS. Sometimes, software updates
-                                    can address hardware-related issues.
-                                  </p>
-                                </li>
-                                <li>
-                                  <div>
-                                    Reset the SMC (System Management Controller):
-                                  </div>
-                                  <p>
-                                    Resetting the SMC can sometimes resolve
-                                    power-related issues on MacBooks. Here’s how
-                                    you can reset it:
-                                    <ul className="list-disc ml-6 mt-2">
-                                      <li>Shut down your MacBook.</li>
-                                      <li>
-                                        On the built-in keyboard, press and hold
-                                        the Shift, Control, and Option keys on the
-                                        left side, then press the power button at
-                                        the same time.
-                                      </li>
-                                    </ul>
-                                  </p>
-                                </li>
-                              </ol>
-                            </div>
-                          </div>
+                                </div>
+                              </div>
+                            </TabsContent>
+                          </Tabs>
                         </div>
                         <div className="flex flex-col gap-4">
                           <div className="flex flex-col gap-3 bg-[#D9D9D9] p-8 rounded-[30px] bg-opacity-20">
@@ -885,13 +1008,28 @@ const Page = () => {
                       </div>
                     </DialogContent>
                   </Dialog>
-                ))}
+                )) : <div>
+
+
+
+                  <div className="w-full max-w-md mx-auto p-4 space-y-4 mt-20">
+                    <div className="text-[#6B8A6B] text-center">
+                      Extracting Relevant Articles...
+                    </div>
+                    <Progress
+                      value={progress}
+                      className="h-2 w-full "
+                      indicatorColor="bg-[#EBF1D5]" />
+                  </div>
+                  <div className="text-center text-sm text-[#6B8A6B]">
+                    {progress}%
+                  </div>
+                </div>}
               </div>
             </div>
           </div>
         </TabsContent>
-
-        <TabsContent value="Competition">Competition</TabsContent>
+        <TabsContent value="Topic">f</TabsContent>
         <TabsContent value="EconomicNews">Economic News</TabsContent>
         <TabsContent value="Digest">Digest</TabsContent>
       </Tabs >

@@ -93,11 +93,11 @@ async function getData(
       }
     }
 
-    // Get total count of documents
+
     const totalSnapshot = await cityRef.get();
     const total = totalSnapshot.size;
 
-    // Get paginated documents
+
     const querySnapshot = await cityRef
       .offset((page - 1) * perPage)
       .limit(perPage)
@@ -114,8 +114,7 @@ async function getData(
       filesCategory: doc.data().filesCategory,
       file_type: doc.data().file_type,
     }));
-
-    // console.log("Fetch successful:", files);
+;
     return { data: files, total };
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -193,7 +192,6 @@ export default async function Page({
   async function getCompetes(
     client: string
   ): Promise<{ data: any[]; total: number }> {
-    // Adjust the type as necessary
     try {
       const session = cookies().get("session")?.value || "";
 
@@ -212,12 +210,9 @@ export default async function Page({
       const cityRef = db.collection(
         `users/${decodedClaims.uid}/clients/${client}/competes`
       );
-
-      // Get total count of documents
       const totalSnapshot = await cityRef.get();
       const total = totalSnapshot.size;
 
-      // Get all documents without pagination
       const querySnapshot = await cityRef.get();
 
       const competes = querySnapshot.docs.map((doc) => ({
@@ -234,7 +229,6 @@ export default async function Page({
 
   const { data: competes } = await getCompetes(params.client);
 
-  console.log(competes);
 
   return (
     <div className="w-full px-16 mt-4 font-montserrat">
@@ -245,8 +239,8 @@ export default async function Page({
       </div>
       <div>
         <Tabs defaultValue="documents" className="w-full pb-5">
-          <TabsList className="mb-5 flex flex-row justify-between ml-3">
-            <div className="flex gap-8">
+          <TabsList className="mb-5 flex flex-col md:flex-row justify-between ml-3">
+            <div className="flex flex-wrap gap-4 md:gap-8">
               <Link
                 href={`/dashboard/${params.client}/datalibrary?tab=documents&page=1&per_page=5&view=folder`}
               >

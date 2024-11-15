@@ -3,9 +3,7 @@
 import React, {
   useState,
   useCallback,
-  useMemo,
   useEffect,
-  useRef,
 } from "react";
 import {
   useRouter,
@@ -31,27 +29,20 @@ import { Filetypes } from "@/lib/dropdown";
 import { DashboardIcon, ListBulletIcon } from "@radix-ui/react-icons";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { auth, db, storage } from "@/lib/firebase/firebase";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { deleteObject, ref } from "firebase/storage";
 import clearCachesByServerAction from "@/lib/revalidation";
 import Uploadbtn from "./specificfileupload";
 import { logErrorToFirestore } from "@/lib/firebase/logs";
+import { Textarea } from "@/components/ui/normaltextarea";
 
 interface File {
   name: string;
@@ -81,7 +72,11 @@ const FolderView = () => {
   const searchParams = useSearchParams();
   const [currentFiles, setCurrentFiles] = useState("");
   const [files, setFiles] = useState<FilesData[]>([]);
-  const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files); // New state for filtered files
+  const [filteredFiles, setFilteredFiles] = useState<FilesData[]>(files);
+  const [coreContextExists, setCoreContextExists] = useState(false);
+  const [companyBioData, setCompanyBioData] = useState<any>(null);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const createQueryString = useCallback(
     (params: { [s: string]: unknown } | ArrayLike<unknown>) => {
@@ -115,7 +110,6 @@ const FolderView = () => {
 
   useEffect(() => {
     if (currentFiles) {
-      // Only fetch if currentFiles is set
       FetchcurrentFiletypefiles();
     }
   }, [currentFiles]);
@@ -123,10 +117,10 @@ const FolderView = () => {
   useEffect(() => {
     setFilteredFiles(
       files.filter(file =>
-        file.name.toLowerCase().includes(filterInput.toLowerCase()) // Filter logic
+        file.name.toLowerCase().includes(filterInput.toLowerCase())
       )
     );
-  }, [filterInput, files]); // Update filtered files when filterInput or files change
+  }, [filterInput, files]);
 
   const handleFileTypeSelect = (value: string) => {
     setCurrentFiles(value);
@@ -147,7 +141,7 @@ const FolderView = () => {
       );
       const q = query(
         filesCollectionRef,
-        where("file_type", "==", currentFiles) // Ensure currentFiles is set correctly
+        where("file_type", "==", currentFiles)
       );
 
       const querySnapshot = await getDocs(q);
@@ -156,7 +150,7 @@ const FolderView = () => {
         ...doc.data(),
       })) as FilesData[];
 
-      console.log("Fetched files:", fetchedFiles); // Log fetched files
+      console.log("Fetched files:", fetchedFiles);
       setFiles(fetchedFiles);
     } catch (error) {
       console.error("Error fetching files from Firestore:", error);
@@ -218,10 +212,10 @@ const FolderView = () => {
             console.log(response.json());
           })
           .catch(async (error) => {
-            await logErrorToFirestore(authUser.uid, params.client, "file", error.message ,{
+            await logErrorToFirestore(authUser.uid, params.client, "file", error.message, {
               client_id: params.client,
               file_name: file.bucketName,
-            } ); // Log the error
+            });
           });
       }
     } catch (error) {
@@ -232,17 +226,71 @@ const FolderView = () => {
     }
   };
 
+
+  const handleOpenCompanyBio = async () => {
+    const authUser = auth.currentUser;
+    if (!authUser) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    try {
+      const docRef = doc(db, `users/${authUser.uid}/clients/${params.client}`);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setCoreContextExists(!!data.core_context);
+        setCompanyBioData(data.core_context);
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Error fetching document:", error);
+    }
+  };
+
+  const handleInputChange = (key: string, value: any) => {
+    setCompanyBioData((prevData: any) => ({
+      ...prevData,
+      [key]: value,
+    }));
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    const authUser = auth.currentUser;
+    if (!authUser) {
+      console.error("User is not authenticated");
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      const docRef = doc(db, `users/${authUser.uid}/clients/${params.client}`);
+      await setDoc(docRef, { core_context: companyBioData }, { merge: true });
+      console.log("Document successfully updated!");
+      setEditingField(null);
+    } catch (error) {
+      console.error("Error updating document:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+
   const renderedFiletypes = Filetypes.map((option) => (
     <Dialog key={option.value}>
       <DialogTrigger className="text-left">
         <div
-          className={`flex flex-col p-5 rounded-[35px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${option.color}`}
+          className={`flex flex-col p-5 rounded-[20px] gap-5 text-[#3B3B3B] max-w-[275px] aspect-w-4 aspect-h-3 ${option.color} transition-all duration-300`}
           onClick={() => handleFileTypeSelect(option.value)}
         >
           <div className="flex flex-row justify-between items-center">
-            <span
-              className={`p-2 rounded-full h-[32px] w-[32px] ${option.colorwheel}`}
-            ></span>
+            <div
+              className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
+            >
+              <option.icon className="" /> </div>
             <div>
               <Icons.Expand className="w-[12px] h-[12px] mr-5" />
             </div>
@@ -259,7 +307,7 @@ const FolderView = () => {
       </DialogTrigger>
       <DialogContent className="max-w-[90vw] max-h-[90vh] min-w-[90vw] min-h-[90vh] p-10 px-12 pb-8 font-montserrat pt-5">
         <div>
-          <div className="mb0-10">
+          <div className="mb-10">
             <div className="text-xl mt-3 ml-1 font-medium mb-2">
               {option.value}
             </div>
@@ -290,22 +338,20 @@ const FolderView = () => {
                       </svg>
                     </div>
                   </div>
-                  <>
-                    <Uploadbtn data={option} />
-                  </>
+                  <Uploadbtn data={option} />
                 </div>
 
                 <div>
                   <Table className="border-separate border-spacing-y-4">
                     <TableBody>
-                      {filteredFiles.length > 0 ? ( // Use filteredFiles instead of files
+                      {filteredFiles.length > 0 ? (
                         filteredFiles.map((file, index) => (
                           <div
                             key={index}
-                            className="bg-[#D8D8D8] bg-opacity-20 bg-opacity-[20%] flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828] "
+                            className="bg-[#D8D8D8] bg-opacity-20 flex justify-between mx-6 p-2 px-3 gap-10 mb-2 rounded-[18px] items-center text-current font-montserrat font-[#282828]"
                           >
-                            <div className="flex gap-10 text-center items-center font-medium ">
-                              <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5] ">
+                            <div className="flex gap-10 text-center items-center font-medium">
+                              <div className="flex p-3 rounded-xl gap-4 items-center bg-[#E5E5E5]">
                                 <svg
                                   width="13"
                                   height="16"
@@ -319,7 +365,6 @@ const FolderView = () => {
                                   />
                                 </svg>
                               </div>
-
                               {file.name}
                             </div>
                             <AlertDialog>
@@ -388,15 +433,13 @@ const FolderView = () => {
       <div className="mb-4 flex justify-end">
         <div className="relative flex gap-2 bg-[#F5F6F1] rounded-full mx-6 p-1">
           <div
-            className={`absolute top-0 bottom-0 left-0 w-1/2 bg-[#3E3E3E] bg-opacity-80 rounded-full transition-transform duration-300 ${
-              list ? "translate-x-0" : "translate-x-full"
-            }`}
+            className={`absolute top-0 bottom-0 left-0 w-1/2 bg-[#3E3E3E] bg-opacity-80 rounded-full transition-transform duration-300 ${list ? "translate-x-0" : "translate-x-full"
+              }`}
           ></div>
 
           <div
-            className={`flex-1 flex items-center justify-center gap-4 cursor-pointer rounded-full px-5 transition-colors duration-300 ${
-              list ? "text-white" : "text-black"
-            }`}
+            className={`flex-1 flex items-center justify-center gap-4 cursor-pointer rounded-full px-5 transition-colors duration-300 ${list ? "text-white" : "text-black"
+              }`}
             onClick={() => handleViewModeChange(true)}
             style={{ flexBasis: "50%", zIndex: 1 }}
           >
@@ -404,9 +447,8 @@ const FolderView = () => {
           </div>
 
           <div
-            className={`flex-1 flex items-center justify-center gap-3 cursor-pointer rounded-full px-5 transition-colors duration-300 ${
-              !list ? "text-white" : "text-black"
-            }`}
+            className={`flex-1 flex items-center justify-center gap-3 cursor-pointer rounded-full px-5 transition-colors duration-300 ${!list ? "text-white" : "text-black"
+              }`}
             onClick={() => handleViewModeChange(false)}
             style={{ flexBasis: "50%", zIndex: 1 }}
           >
@@ -438,7 +480,133 @@ const FolderView = () => {
         </div>
       </div>
 
-      <div className="mx-10 grid grid-cols-4 gap-5 mt-5 font-montserrat">
+      <div className="mx-5 grid grid-cols-1 sm:grid-cols-2 2md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4  2xl:grid-cols-5 place-items-center gap-5 mt-5 font-montserrat">
+        <Dialog>
+          <DialogTrigger className="text-left">
+            <div
+              className={`flex flex-col p-5 rounded-[20px] gap-5 text-[#3B3B3B] max-w-[275px]  bg-[#FFC8C8] bg-opacity-60`}
+              onClick={() => handleOpenCompanyBio()}
+            >
+              <div className="flex flex-row justify-between items-center">
+                <div
+                  className="w-[12px] h-[12px] mr-5 p-2 rounded-full h-[32px] w-[32px] bg-[#FFFFFF] bg-opacity-50 flex item-center justify-between"
+                >
+                  <Icons.ProfileCard className="" />
+                </div>
+                <div>
+                  <Icons.Expand className="w-[12px] h-[12px] mr-5" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-[10px] font-medium font-montserrat">
+                <div className="text-[14px] break-words leading-tight">
+                  AAA
+                </div>
+                <div className="text-[10px] leading-tight">
+                  All document relation general information on company details
+                </div>
+              </div>
+            </div>
+          </DialogTrigger>
+
+          <DialogContent className="max-w-[80vw] max-h-[85vh] min-w-[80vw] min-h-[85vh] p-10 px-14 pb-8 font-montserrat pt-5 text-[#545454] py-9">
+            {coreContextExists ? (
+              <div className="p-6 space-y-6">
+                <div className="flex justify-between">
+                  <h2 className="text-2xl font-medium">Company Bio</h2>
+                  <div className="flex gap-3 text-sm">
+                    <button className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5">Uploaded Files</button>
+                    <button className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-3 px-5" onClick={() => { setCoreContextExists(false) }}>Regenerate</button>
+                  </div>
+                </div>
+                <hr className="mt-5" />
+                <div className="max-h-[55vh] overflow-y-auto scrollbar-hide space-y-3">
+                  {Object.entries(companyBioData).map(([key, value]) => (
+                    <div key={key} className="flex gap-8">
+                      <div className="w-48 text-sm text-muted-foreground font-medium">
+                        # {key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </div>
+                      <div className="flex-1 text-sm">
+                        {editingField === key ? (
+                          Array.isArray(value) ? (
+                            <div className="border border-gray-600 rounded-md p-1 scrollbar-hide">
+                              <Textarea
+                                value={value.length > 0 ? value.join(', ') : '--'}
+                                onChange={(e) => handleInputChange(key, e.target.value.split(',').map((item) => item.trim()))}
+                                onBlur={() => setEditingField(null)}
+                                className="w-full rounded p-1 border-none outline-none shadow-none focus-visible:ring-transparent scrollbar-hide"
+                                autoFocus
+                              />
+                            </div>
+                          ) : (
+                            <div className="border border-gray-600 rounded-md p-1 scrollbar-hide">
+                              <Textarea
+                                value={typeof value === 'string' ? value : '---'}
+                                onChange={(e) => handleInputChange(key, e.target.value)}
+                                onBlur={() => setEditingField(null)}
+                                className="w-full rounded p-1 border-none outline-none shadow-none focus-visible:ring-transparent scrollbar-hide"
+                                autoFocus
+                              />
+                            </div>
+                          )
+                        ) : (
+                          <span onClick={() => setEditingField(key)} className="cursor-pointer">
+                            {Array.isArray(value) ? (value.length > 0 ? value.join(', ') : '--') : (value || '--') as string}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-end">
+                  <button onClick={handleSave} className="bg-[#D5D5D5] bg-opacity-25 rounded-full p-2 px-5" disabled={isSaving}>
+                    {isSaving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div className="font-medium text-2xl mb-5">Company Bio</div>
+                <hr />
+                <div className="p-6 sm:p-16 flex flex-col gap-4 sm:gap-5 items-center sm:px-28 mt-[4rem]">
+                  <div className="flex items-center font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <span>Upload company bio documents</span>
+                    </div>
+                    <Uploadbtn data={"CompanyBio"} />
+                  </div>
+
+                  <div className="p-2 rounded-full font-medium text-sm bg-[#F5F4F4]">OR</div>
+
+                  <div className="flex items-center font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <span>Generate Company bio</span>
+                    </div>
+
+                    <div className="flex max-w-xl items-center gap-2 rounded-full bg-[#F6F6F6] p-2 text-base">
+                      <Input
+                        type="text"
+                        placeholder="www.amazon.com"
+                        className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+                      />
+                      <Button className="rounded-full bg-[#2D2D2D] px-6 hover:bg-[#1a1a1a]">
+                        Generate
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="p-2 rounded-full font-medium text-sm bg-[#F5F4F4]">OR</div>
+                  <div className="flex items-center font-raleway text-xl font-medium gap flex justify-between w-full">
+                    <div className="flex items-center gap-2">
+                      <span>Manually fill-up bio</span>
+                    </div>
+                    <div className="bg-[#F5F4F4] border-0 shadow-none p-3 rounded-full text-base px-8">
+                      Answer Few Questions
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
         {renderedFiletypes}
       </div>
     </div>
