@@ -209,7 +209,7 @@ const LandingPage: React.FC = () => {
       ],
     },
     analytics: {
-      title: "Analytics",
+      title: "Analytics &",
       subtitle: "Real time reporting",
       tabs: [
         {
@@ -329,7 +329,7 @@ const LandingPage: React.FC = () => {
                 [@media(min-width:1600px)]:text-[5.5rem] [@media(min-width:1920px)]:text-[6rem] 
                 mt-40 lg:mt-10 font-light text-[#454545]"
               >
-                <h1 className="leading-[1.5] sm:leading-[1.2] bg-gradient-to-b from-black to-gray-400 bg-clip-text text-transparent">
+                <h1 className="leading-[1.4] sm:leading-[1.2] bg-gradient-to-b from-black to-gray-400 bg-clip-text text-transparent">
                   Revolutionizing How Businesses Tell
                   <br />
                   Their Story to the World
@@ -337,12 +337,12 @@ const LandingPage: React.FC = () => {
               </div>
 
               <p
-                className="mt-5 sm:mt-10 lg:text-lg xl:text-lg 
+                className="mt-5 text-lg sm:mt-10 lg:text-lg xl:text-lg 
                 [@media(min-width:1600px)]:text-xl [@media(min-width:1920px)]:text-2xl 
                 font-light text-[#8A8A8A]"
               >
-                Drives research, derives insights, replicates human thinking &
-                writing, turns insights
+                Drives research, insights, replicates human thinking &
+                writing, turns insights{" "}
                 <br className="hidden lg:flex" />
                 into actionable PR workflows with analytics & metric tracking.
               </p>
@@ -358,7 +358,7 @@ const LandingPage: React.FC = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <button
-                className="bg-[#2C2B2B] hover:bg-black text-white rounded-full text-xs lg:text-base 4xl:text-2xl mr-1 ml-1 px-4 my-1 py-2"
+                className="bg-[#2C2B2B] hover:bg-black text-white rounded-full text-xs lg:text-base 4xl:text-2xl mr-1 ml-1 px-8 md:px-4 my-1 py-2"
                 onClick={handleJoinWaitlist}
               >
                 Join Waitlist
@@ -528,7 +528,7 @@ const LandingPage: React.FC = () => {
             <h2 className="text-3xl lg:text-4xl text-[#454545] font-[250]">
               {SECTION_CONTENT.workflows.title}
             </h2>
-            <h2 className="text-xl md:text-2xl text-gray-400 mt-2 font-extralight">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mt-2 font-extralight">
               {SECTION_CONTENT.workflows.subtitle}
             </h2>
 
@@ -618,7 +618,7 @@ const LandingPage: React.FC = () => {
             <h2 className="text-3xl lg:text-4xl text-[#454545] font-[250]">
               {SECTION_CONTENT.analytics.title}
             </h2>
-            <h2 className="text-xl md:text-2xl text-gray-400 mt-2 font-extralight">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl text-gray-400 mt-2 font-extralight">
               {SECTION_CONTENT.analytics.subtitle}
             </h2>
 
@@ -922,7 +922,7 @@ const LandingPage: React.FC = () => {
             {/* End Accordion */}
           </div>
         </div>{" "}
-        <section className="z-20 lg:py-5 relative flex flex-col mt-10 sm:mt-40 mx-4  md:mx-40 xl:mx-72  bg-gradient-to-tr from-[#f2fcd4c9] to-[#ebeff7] rounded-[2rem]  overflow-visible">
+        <section className="z-20 lg:py-5 relative flex flex-col mt-10 sm:mt-40 mx-4  md:mx-40 xl:mx-72  bg-gradient-to-tr from-[#f2fcd4c9] to-[#ebeff7] rounded-full  overflow-visible">
           {/* <Image
             src="/noise.svg" // Update with the correct path
             alt="Arrow"
@@ -931,7 +931,7 @@ const LandingPage: React.FC = () => {
             className="absolute w-full h-full" // Ensure it's on top
           /> */}
           <div className="flex flex-col md:flex-row justify-between items-center px-4 sm:px-8 md:px-20 m-5 sm:m-8 md:m-10 ">
-            <h2 className="text-lg sm:text-4xl md:w-[30rem] md:text-4xl text-left text-gray-700 font-light p-2 sm:p-3 md:p-5 font-readex sm:mb-2 ">
+            <h2 className="text-lg sm:text-4xl md:w-[30rem] md:text-4xl text-center md:text-left text-gray-700 font-light p-2 sm:p-3 md:p-5 font-readex sm:mb-2 ">
               Accelerate your PR work with modern AI tech
             </h2>
             <div className="relative mt-4 md:mt-0">
@@ -1013,12 +1013,12 @@ const LandingPage: React.FC = () => {
               </div>
               <ul className="flex  sm:flex-row sm:items-center text-sm font-normal text-gray-500 ">
                 <li>
-                  <a href="#" className="hover:underline me-4 md:me-6">
+                  <a href="https://overtly.io/privacy-policy" className="hover:underline me-4 md:me-6">
                     Privacy Policy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline me-4 md:me-6">
+                  <a href="https://overtly.io/terms-of-service" className="hover:underline me-4 md:me-6">
                     Terms of Service
                   </a>
                 </li>

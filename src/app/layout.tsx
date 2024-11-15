@@ -8,8 +8,8 @@ import { Montserrat } from "next/font/google";
 import { Raleway } from "next/font/google";
 
 export const metadata: Metadata = {
-  title: "Your AI Publist",
-  description: "Next gen PR automation platform",
+  title: "Overtly - AI PR Automation",
+  description: "Next Gen AI Engine For PR Professionals",
   icons: {
     icon: "/favicon.png",
   },
