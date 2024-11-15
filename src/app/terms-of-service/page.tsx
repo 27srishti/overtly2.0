@@ -4,30 +4,30 @@ import React from 'react';
 const TermsOfServicePage = () => {
     return (
         <div className={`font-montserrat mx-auto`}>
-            <div className="sticky top-0 z-50 pt-4 px-10 border-b pb-2 bg-[#FAFCFA]">
-                <div className="bg-opacity-20 backdrop-filter py-2">
-                    <div className="container flex justify-between px-2 items-center">
+            <div className="sticky top-0 z-50 pt-2 sm:pt-4 px-2 sm:px-10 border-b pb-1 sm:pb-2 bg-[#FAFCFA]">
+                <div className="bg-opacity-20 backdrop-filter py-1 sm:py-2">
+                    <div className="container flex justify-between px-1 sm:px-2 items-center">
                         <Link href="/dashboard">
                             <div className="flex items-center justify-center text-lg cursor-pointer">
-                                <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
+                                <img src="/fullimage.png" className="w-24 sm:w-36 ml-1 sm:ml-3" alt="Logo" />
                             </div>
                         </Link>
 
-                        <div className="flex items-center gap-10">
+                        <div className="flex items-center gap-2 sm:gap-10">
                             <Link href="/login">
-                                <button className="bg-[#333333] text-white px-4 py-2 rounded-full">Login</button>
+                                <button className="bg-[#333333] text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-base whitespace-nowrap">Login</button>
                             </Link>
                             <Link href="/signup">
-                                <button className="bg-[#333333] text-white px-4 py-2 rounded-full">Get started</button>
+                                <button className="bg-[#333333] text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-base whitespace-nowrap">Get started</button>
                             </Link>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <h1 className="text-4xl font-bold mb-6 text-[#545454] text-center mt-10">Terms of Service</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold mb-6 text-[#545454] text-center mt-6 sm:mt-10">Terms of Service</h1>
 
-            <div className='mx-52 mb-10'>
+            <div className='mx-4 sm:mx-12 md:mx-24 lg:mx-52 mb-10'>
                 <p className="text-sm text-gray-600 mb-4">
                     <strong>Effective Date</strong>: 20/10/2024
                 </p>

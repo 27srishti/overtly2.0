@@ -3,54 +3,51 @@ import React from 'react';
 
 const PrivacyPolicyPage = () => {
     return (
-        <div className={` font-montserrat mx-auto`}>
-
-
-            <div className="sticky top-0 z-50 pt-4 px-10 border-b pb-2 bg-[#FAFCFA]">
-                <div className=" bg-opacity-20  backdrop-filter py-2">
-                    <div className="container flex justify-between px-2 items-center">
+        <div className="font-montserrat mx-auto">
+            <div className="sticky top-0 z-50 pt-2 sm:pt-4 px-2 sm:px-10 border-b pb-1 sm:pb-2 bg-[#FAFCFA]">
+                <div className="bg-opacity-20 backdrop-filter py-1 sm:py-2">
+                    <div className="container flex justify-between px-1 sm:px-2 items-center">
                         <Link href="/dashboard">
                             <div className="flex items-center justify-center text-lg cursor-pointer">
-                                <img src="/fullimage.png" className="w-36 ml-3" alt="Logo" />
+                                <img src="/fullimage.png" className="w-24 sm:w-36 ml-1 sm:ml-3" alt="Logo" />
                             </div>
                         </Link>
 
-                        <div className="flex items-center gap-10">
+                        <div className="flex items-center gap-2 sm:gap-10">
                             <Link href="/login">
-                                <button className="bg-[#333333] text-white px-4 py-2 rounded-full">Login</button>
+                                <button className="bg-[#333333] text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-base whitespace-nowrap">Login</button>
                             </Link>
                             <Link href="/signup">
-                                <button className="bg-[#333333] text-white px-4 py-2 rounded-full">Get started</button>
+                                <button className="bg-[#333333] text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-base whitespace-nowrap">Get started</button>
                             </Link>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <h1 className="text-2xl sm:text-4xl font-bold mb-4 sm:mb-6 text-[#545454] text-center mt-6 sm:mt-10">Privacy Policy</h1>
 
-            <h1 className="text-4xl font-bold mb-6 text-[#545454] text-center mt-10 ">Privacy Policy</h1>
-
-            <div className='mx-52 mb-10'>
-                <p className="text-sm text-gray-600 mb-4">
+            <div className='mx-2 sm:mx-10 md:mx-20 lg:mx-52 mb-6 sm:mb-10'>
+                <p className="text-[11px] sm:text-sm text-gray-600 mb-3 sm:mb-4">
                     <strong>Effective Date</strong>: 20/10/2024
                 </p>
-                <p className="mb-6 text-[#545454]">
+                <p className="mb-4 sm:mb-6 text-[#545454] text-xs sm:text-base">
                     At <strong>Overtly.io</strong> (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;), we are committed to protecting and respecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website <a href="https://overtly.io" className="text-blue-500 underline">https://overtly.io</a> (the &quot;Site&quot;) and use our AI-based software-as-a-service platform (&quot;Service&quot;). Please read this Privacy Policy carefully to understand our views and practices regarding your personal data and how we treat it.
                 </p>
-                <p className="mb-6 text-[#545454]">
+                <p className="mb-4 sm:mb-6 text-[#545454] text-xs sm:text-base">
                     By using our Site or Service, you agree to the collection and use of information in accordance with this policy.
                 </p>
 
-                <h2 className="text-2xl font-semibold mt-6 mb-4 text-[#2C2C2C]">1. Information We Collect</h2>
-                <h3 className="text-xl font-semibold mb-2 text-[#2C2C2C]">Personal Data</h3>
-                <p className="mb-4 text-[#545454]">
+                <h2 className="text-lg sm:text-2xl font-semibold mt-4 sm:mt-6 mb-3 sm:mb-4 text-[#2C2C2C]">1. Information We Collect</h2>
+                <h3 className="text-base sm:text-xl font-semibold mb-2 text-[#2C2C2C]">Personal Data</h3>
+                <p className="mb-4 sm:mb-6 text-[#545454] text-xs sm:text-base">
                     When you use our Service, we may collect the following personal data:
                 </p>
-                <ul className="list-disc list-inside mb-6 text-[#545454]">
-                    <li><strong>Contact Information</strong>: Name, email address, phone number, company name, job title, etc.</li>
-                    <li><strong>Account Information</strong>: Username, password, and other information you provide to register for an account.</li>
-                    <li><strong>Billing Information</strong>: Payment details such as credit card numbers and billing addresses (collected and processed through third-party payment providers).</li>
-                    <li><strong>Communications</strong>: Any information you provide when contacting customer support, including emails and other messages.</li>
+                <ul className="list-disc list-inside mb-4 sm:mb-6 text-[#545454] text-xs sm:text-base pl-2 sm:pl-0">
+                    <li className="mb-1 sm:mb-2"><strong>Contact Information</strong>: Name, email address, phone number, company name, job title, etc.</li>
+                    <li className="mb-1 sm:mb-2"><strong>Account Information</strong>: Username, password, and other information you provide to register for an account.</li>
+                    <li className="mb-1 sm:mb-2"><strong>Billing Information</strong>: Payment details such as credit card numbers and billing addresses (collected and processed through third-party payment providers).</li>
+                    <li className="mb-1 sm:mb-2"><strong>Communications</strong>: Any information you provide when contacting customer support, including emails and other messages.</li>
                 </ul>
 
                 <h3 className="text-xl font-semibold mb-2 text-[#2C2C2C]">Automatically Collected Data</h3>
@@ -144,8 +141,6 @@ const PrivacyPolicyPage = () => {
                     Email: <a href="mailto:contact@overtly.io" className="text-blue-500 underline">contact@overtly.io</a>
                 </p>
             </div>
-
-
         </div>
     );
 };
