@@ -259,7 +259,7 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="absolute top-8 left-5 lg:top-10 lg:left-10">
             <Image
-              src="/logo.svg"
+              src="/logo1.svg"
               className="w-32 sm:w-28 md:w-32 4xl:w-60 ml-3"
               alt="Logo"
               width={128}
@@ -450,7 +450,7 @@ const LandingPage: React.FC = () => {
                       className="w-full h-full"
                     />
                   </div>
-                  <div className="absolute inset-0 z-10 -top-4 -left-[2rem] md:-top-44 md:-left-14">
+                  <div className="absolute inset-0 -top-4 -left-[2rem] md:-top-44 md:-left-14 z-0">
                     <RiveFirstComponent className="w-full h-full md:w-[600px] md:h-[600px] rounded-3xl bg-transparent" />
                   </div>
                 </div>
@@ -936,7 +936,7 @@ const LandingPage: React.FC = () => {
           <div className="mt-28 sm:mt-40 sm:flex sm:items-center sm:justify-between">
             <a className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
               <Image
-                src="/logo.svg"
+                src="/logo1.svg"
                 className="w-40 "
                 alt="Logo"
                 width={96}
