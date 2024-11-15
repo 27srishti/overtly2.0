@@ -269,7 +269,7 @@ const LandingPage: React.FC = () => {
   }, [isPaused]); // Re-run effect when isPaused changes
 
   return (
-    <section className="font-readex">
+    <section className="font-readex ">
       <div
         style={{
           background:
@@ -323,13 +323,13 @@ const LandingPage: React.FC = () => {
                 </span>
               </div>
             </div>
-            <div className="m-4">
+            <div className="m-4 ">
               <div
-                className="text-[2.9rem] sm:text-[4rem] lg:text-[4rem] xl:text-[4rem] 
+                className="text-[2.3rem] xs:text-[2.9rem] sm:text-[4rem] lg:text-[4rem] xl:text-[4rem] 
                 [@media(min-width:1600px)]:text-[5.5rem] [@media(min-width:1920px)]:text-[6rem] 
                 mt-40 lg:mt-10 font-light text-[#454545]"
               >
-                <h1 className="leading-[1.4] sm:leading-[1.2] bg-gradient-to-b from-black to-gray-400 bg-clip-text text-transparent">
+                <h1 className="leading-[1.4]   sm:leading-[1.2] bg-gradient-to-b from-black to-gray-400 bg-clip-text text-transparent">
                   Revolutionizing How Businesses Tell
                   <br />
                   Their Story to the World
@@ -434,7 +434,7 @@ const LandingPage: React.FC = () => {
           </p>
         </div>
         {/*-------------------------  how it works - research ------------------------- */}
-        <div className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
+        <div className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-4 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start">
             <h2 className="mt-5 sm:mt-0 text-3xl md:text-4xl lg:text-5xl text-[#454545] font-[250]">
               {SECTION_CONTENT.research.title}
