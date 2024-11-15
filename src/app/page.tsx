@@ -434,7 +434,7 @@ const LandingPage: React.FC = () => {
           </p>
         </div>
         {/*-------------------------  how it works - research ------------------------- */}
-        <div className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-4 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
+        <div className="mt-20 py-16 lg:py-28 p-4 mx-3 md:p-6 md:mx-4 lg:p-8 lg:mx-20 xl:px-20 sm:py-32 bg-gradient-to-b from-blue-50 to-white rounded-3xl">
           <div className="flex flex-col max-w-7xl mx-auto items-start">
             <h2 className="mt-5 sm:mt-0 text-3xl md:text-4xl lg:text-5xl text-[#454545] font-[250]">
               {SECTION_CONTENT.research.title}
