@@ -408,7 +408,7 @@ const LandingPage: React.FC = () => {
                 .map((_, index) => (
                   <div
                     key={index}
-                    className="flex shrink-0 animate-logo-cloud flex-row justify-around gap-8"
+                    className="flex shrink-0 animate-logo-cloud flex-row justify-around gap-12"
                   >
                     {logos.map((logo, key) => (
                       <Image
@@ -917,7 +917,7 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
         {/*------------------------------------------------- Bento section   --------------------------------------------------------------------------- */}
-       
+        
         {/*------------------------- Faq ------------------------- */}
         {/* FAQ */}
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mt-20 mx-auto">
