@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { HoverBorderGradient } from "@/components/ui/HoverBorderGradient";
 import { useRive, Layout, Fit, Alignment } from "@rive-app/react-canvas";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
 
 const logos = [
   { name: "Vercel", url: "/pubs1.svg" },
@@ -14,6 +15,14 @@ const logos = [
   { name: "Airbnb", url: "/pubs6.svg" },
   { name: "Tina", url: "/pubs7.svg" },
   { name: "Stackoverflow", url: "/pubs8.svg" },
+  { name: "Stackoverflow", url: "/pubs9.svg" },
+  { name: "Stackoverflow", url: "/pubs10.svg" },
+  { name: "Stackoverflow", url: "/pubs11.svg" },
+  { name: "Stackoverflow", url: "/pubs12.svg" },
+
+  { name: "Stackoverflow", url: "/pubs14.svg" },
+  { name: "Stackoverflow", url: "/pubs15.svg" },
+  { name: "Stackoverflow", url: "/pubs16.svg" },
 ];
 
 const LandingPage: React.FC = () => {
@@ -250,17 +259,17 @@ const LandingPage: React.FC = () => {
 
     const interval = setInterval(() => {
       // Research tabs
-      setResearchActiveTab((prev) => 
+      setResearchActiveTab((prev) =>
         prev === SECTION_CONTENT.research.tabs.length - 1 ? 0 : prev + 1
       );
-      
+
       // Workflow tabs
-      setSmartWorkflowActiveTab((prev) => 
+      setSmartWorkflowActiveTab((prev) =>
         prev === SECTION_CONTENT.workflows.tabs.length - 1 ? 0 : prev + 1
       );
-      
+
       // Analytics tabs
-      setActiveTab((prev) => 
+      setActiveTab((prev) =>
         prev === SECTION_CONTENT.analytics.tabs.length - 1 ? 0 : prev + 1
       );
     }, 3000);
@@ -287,8 +296,7 @@ const LandingPage: React.FC = () => {
             borderRadius: "24px 24px 0 0",
           }}
         >
-   
-        <div className="absolute inset-0 h-full w-full flex justify-center z-0">
+          <div className="absolute inset-0 h-full w-full flex justify-center z-0">
             <div className="h-full w-full bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:60px_60px] opacity-5"></div>
           </div>
           <div className="absolute top-8 left-5 lg:top-10 lg:left-10">
@@ -300,7 +308,7 @@ const LandingPage: React.FC = () => {
               height={128}
             />
           </div>
-          <div className="sm:text-center mb-10  ">
+          <div className="sm:text-center mb-10 md:mt-10 ">
             <div className="hidden  sm:flex flex-col sm:flex-row justify-center mb-4 ">
               <div className="flex  items-center border px-5 py-1 rounded-3xl font-light shadow-sm border-[#B57F19]/[0.17] z-0">
                 <Image
@@ -329,7 +337,7 @@ const LandingPage: React.FC = () => {
                 [@media(min-width:1600px)]:text-[5.5rem] [@media(min-width:1920px)]:text-[6rem] 
                 mt-40 lg:mt-10 font-light text-[#454545]"
               >
-                <h1 className="leading-[1.4]   sm:leading-[1.2] bg-gradient-to-b from-black to-gray-400 bg-clip-text text-transparent">
+                <h1 className="leading-[1.4]   sm:leading-[1.2] bg-gradient-to-b from-black to-gray-900 bg-clip-text text-transparent">
                   Revolutionizing How Businesses Tell
                   <br />
                   Their Story to the World
@@ -341,9 +349,8 @@ const LandingPage: React.FC = () => {
                 [@media(min-width:1600px)]:text-xl [@media(min-width:1920px)]:text-2xl 
                 font-light text-[#8A8A8A]"
               >
-                Drives research, insights, replicates human thinking &
-                writing, turns insights{" "}
-                <br className="hidden lg:flex" />
+                Drives research, insights, replicates human thinking & writing,
+                turns insights <br className="hidden lg:flex" />
                 into actionable PR workflows with analytics & metric tracking.
               </p>
             </div>
@@ -381,7 +388,7 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
       </div>
-      {/*-------------------------  sponsors------------------------- */}
+      {/*-------------------------  publications------------------------- */}
       <section className="max-w-screen-2xl mt-10 sm:mt-0 mx-auto z-0">
         <div className="w-full sm:py-12 text-center">
           <div className="text-lg px-10 font-light text-[#454545]">
@@ -418,6 +425,143 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* ----------------------------- journo section------------------------------------------- */}
+        <section
+          id="features"
+          className="px-2 space-y-6 py-8 md:py-12 lg:py-24 max-w-5xl mx-auto"
+        >
+          <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
+            <div
+              className="relative overflow-hidden rounded-2xl border bg-gray-100/50 p-2"
+              onMouseEnter={() => setHoveredIndex(0)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <AnimatePresence>
+                {hoveredIndex === 0 && (
+                  <motion.span
+                    className="absolute inset-0 h-full w-full bg-gray-200/50 block rounded-lg z-0"
+                    layoutId="hoverBackground"
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      transition: { duration: 0.15 },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transition: { duration: 0.15, delay: 0.2 },
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+              <div className="flex h-[180px] flex-col justify-between rounded-md p-6 relative z-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="40px"
+                  viewBox="0 -960 960 960"
+                  width="40px"
+                  fill="#414040"
+                >
+                  <path d="m105-399-65-47 200-320 120 140 160-260 120 180 135-214 65 47-198 314-119-179-152 247-121-141-145 233Zm475 159q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29ZM784-80 676-188q-21 14-45.5 21t-50.5 7q-75 0-127.5-52.5T400-340q0-75 52.5-127.5T580-520q75 0 127.5 52.5T760-340q0 26-7 50.5T732-244l108 108-56 56Z" />
+                </svg>
+                <div className="space-y-2 ">
+                  <h3 className="font-medium   text-[#1a1919]">
+                    Analytical Depth
+                  </h3>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Drive Deeper & Specialized Research & Analysis to reach
+                    stronger conclusions.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="relative overflow-hidden rounded-2xl border bg-gray-100/50 p-2"
+              onMouseEnter={() => setHoveredIndex(1)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <AnimatePresence>
+                {hoveredIndex === 1 && (
+                  <motion.span
+                    className="absolute inset-0 h-full w-full bg-gray-200/50 block rounded-lg z-0"
+                    layoutId="hoverBackground"
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      transition: { duration: 0.15 },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transition: { duration: 0.15, delay: 0.2 },
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+              <div className="flex h-[180px] flex-col justify-between rounded-md p-6 relative z-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="40px"
+                  viewBox="0 -960 960 960"
+                  width="40px"
+                  fill="#414040"
+                >
+                  <path d="m438-298 226-226-57-57-169 169-85-85-57 57 142 142Zm42 218q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-800q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Zm0-360ZM224-866l56 56-170 170-56-56 170-170Zm512 0 170 170-56 56-170-170 56-56ZM480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160Z" />
+                </svg>
+                <div className="space-y-2">
+                  <h3 className="font-medium   text-[#1a1919]">10 hours</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Free up 10 hours a month by automating Insight Discovery,
+                    media databases & tailored pitching tools.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className="relative overflow-hidden rounded-2xl border bg-gray-100/50 p-2"
+              onMouseEnter={() => setHoveredIndex(2)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <AnimatePresence>
+                {hoveredIndex === 2 && (
+                  <motion.span
+                    className="absolute inset-0 h-full w-full bg-gray-200/50 block rounded-lg z-0"
+                    layoutId="hoverBackground"
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      transition: { duration: 0.15 },
+                    }}
+                    exit={{
+                      opacity: 0,
+                      transition: { duration: 0.15, delay: 0.2 },
+                    }}
+                  />
+                )}
+              </AnimatePresence>
+              <div className="flex h-[180px] flex-col justify-between rounded-md p-6 relative z-10">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="40px"
+                  viewBox="0 -960 960 960"
+                  width="40px"
+                  fill="#434242"
+                >
+                  <path d="M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-155.5t86-127Q252-817 325-848.5T480-880q83 0 155.5 31.5t127 86q54.5 54.5 86 127T880-480q0 82-31.5 155t-86 127.5q-54.5 54.5-127 86T480-80Zm0-82q26-36 45-75t31-83H404q12 44 31 83t45 75Zm-104-16q-18-33-31.5-68.5T322-320H204q29 50 72.5 87t99.5 55Zm208 0q56-18 99.5-55t72.5-87H638q-9 38-22.5 73.5T584-178ZM170-400h136q-3-20-4.5-39.5T300-480q0-21 1.5-40.5T306-560H170q-5 20-7.5 39.5T160-480q0 21 2.5 40.5T170-400Zm216 0h188q3-20 4.5-39.5T580-480q0-21-1.5-40.5T574-560H386q-3 20-4.5 39.5T380-480q0 21 1.5 40.5T386-400Zm268 0h136q5-20 7.5-39.5T800-480q0-21-2.5-40.5T790-560H654q3 20 4.5 39.5T660-480q0 21-1.5 40.5T654-400Zm-16-240h118q-29-50-72.5-87T584-782q18 33 31.5 68.5T638-640Zm-234 0h152q-12-44-31-83t-45-75q-26 36-45 75t-31 83Zm-200 0h118q9-38 22.5-73.5T376-782q-56 18-99.5 55T204-640Z" />
+                </svg>
+                <div className="space-y-2">
+                  <h3 className="font-medium     text-[#1a1919]">
+                    A breakthrough platform
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    The first-ever platform designed to fully understand & cater
+                    to the complexities of PR.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         {/*-------------------------  features------------------------- */}
         <div className="text-center mt-20 px-5">
           <button className="bg-[#FFF8E9] border border-[#FFC227] text-gray-600 text-sm font-[500] rounded-full px-8 py-1.5">
@@ -772,6 +916,8 @@ const LandingPage: React.FC = () => {
             </div> */}
           </div>
         </section>
+        {/*------------------------------------------------- Bento section   --------------------------------------------------------------------------- */}
+       
         {/*------------------------- Faq ------------------------- */}
         {/* FAQ */}
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mt-20 mx-auto">
@@ -942,13 +1088,16 @@ const LandingPage: React.FC = () => {
                 height={96}
                 className="hidden md:block absolute -top-36 -right-28 w-32 h-32 z-50" // Ensure it's on top
               />
-              <HoverBorderGradient  onClick={() =>
-                window.open(
-                  "https://calendly.com/siddhar/30min",
-                  "_blank",
-                  "noopener"
-                )
-              }  className="text-sm bg-black text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 z-10 hover:bg-gray-100 transition duration-300">
+              <HoverBorderGradient
+                onClick={() =>
+                  window.open(
+                    "https://calendly.com/siddhar/30min",
+                    "_blank",
+                    "noopener"
+                  )
+                }
+                className="text-sm bg-black text-white rounded-full px-4 sm:px-6 py-2 sm:py-3 z-10 hover:bg-gray-100 transition duration-300"
+              >
                 Schedule Demo
               </HoverBorderGradient>
             </div>
@@ -1013,12 +1162,18 @@ const LandingPage: React.FC = () => {
               </div>
               <ul className="flex  sm:flex-row sm:items-center text-sm font-normal text-gray-500 ">
                 <li>
-                  <a href="https://overtly.io/privacy-policy" className="hover:underline me-4 md:me-6">
+                  <a
+                    href="https://overtly.io/privacy-policy"
+                    className="hover:underline me-4 md:me-6"
+                  >
                     Privacy Policy
                   </a>
                 </li>
                 <li>
-                  <a href="https://overtly.io/terms-of-service" className="hover:underline me-4 md:me-6">
+                  <a
+                    href="https://overtly.io/terms-of-service"
+                    className="hover:underline me-4 md:me-6"
+                  >
                     Terms of Service
                   </a>
                 </li>
